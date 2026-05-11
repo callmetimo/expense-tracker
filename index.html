@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Expense">
+<title>Expense Tracker</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --bg2: #1a1a1a;
+    --bg3: #242424;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #f0f0f0;
+    --text2: #999;
+    --text3: #666;
+    --accent: #c8f060;
+    --accent-dim: rgba(200,240,96,0.12);
+    --accent-dark: #8fb52a;
+    --red: #ff6b6b;
+    --red-dim: rgba(255,107,107,0.12);
+    --blue: #60a0f0;
+    --blue-dim: rgba(96,160,240,0.12);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+  }
+  .header {
+    padding: 56px 20px 20px;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .app-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .app-title span { color: var(--accent); }
+  .auth-btn {
+    background: var(--bg3);
+    border: 0.5px solid var(--border2);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .auth-btn.signed-in { border-color: var(--accent); color: var(--accent); }
+  .auth-btn svg { width: 14px; height: 14px; }
+
+  /* Tab switcher */
+  .tab-bar {
+    display: flex;
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 3px;
+  }
+  .tab {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.2s;
+  }
+  .tab.active { background: var(--accent); color: #0f0f0f; font-weight: 600; }
+
+  /* Page sections */
+  .page { display: none; padding: 0 20px; }
+  .page.active { display: block; }
+
+  /* Form */
+  .form-section { margin-top: 20px; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 12px 14px;
+    font-size: 16px;
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--text3); }
+  select.form-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+  /* Amount input */
+  .amount-wrapper { position: relative; }
+  .amount-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 16px; }
+  .amount-input { padding-left: 50px !important; font-size: 20px !important; font-weight: 600; }
+
+  /* Autocomplete */
+  .autocomplete-wrapper { position: relative; }
+  .autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    z-index: 200;
+    max-height: 180px;
+    overflow-y: auto;
+    margin-top: 4px;
+  }
+  .autocomplete-item {
+    padding: 10px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .autocomplete-item:last-child { border-bottom: none; }
+  .autocomplete-item:active, .autocomplete-item.highlighted { background: var(--accent-dim); color: var(--accent); }
+
+  /* Sheet toggle */
+  .sheet-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+  .sheet-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border);
+    background: var(--bg3);
+    color: var(--text2);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .sheet-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* Submit button */
+  .submit-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #0f0f0f;
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.2px;
+  }
+  .submit-btn:active { transform: scale(0.98); opacity: 0.9; }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--accent); color: var(--accent); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+
+  /* History list */
+  .history-header { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; margin-bottom: 12px; }
+  .history-title { font-size: 13px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+  .history-filter {
+    background: var(--bg3);
+    border: 0.5px solid var(--border);
+    color: var(--text2);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .tx-item {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .tx-item:active { border-color: var(--border2); }
+  .tx-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .tx-icon.opex { background: var(--accent-dim); }
+  .tx-icon.cc-bca { background: var(--blue-dim); }
+  .tx-icon.cc-niaga { background: var(--red-dim); }
+  .tx-info { flex: 1; min-width: 0; }
+  .tx-payee { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tx-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .tx-amount { font-size: 15px; font-weight: 600; text-align: right; flex-shrink: 0; }
+  .tx-amount.opex { color: var(--accent); }
+  .tx-amount.cc-bca { color: var(--blue); }
+  .tx-amount.cc-niaga { color: var(--red); }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+  .badge-opex { background: var(--accent-dim); color: var(--accent); }
+  .badge-bca { background: var(--blue-dim); color: var(--blue); }
+  .badge-niaga { background: var(--red-dim); color: var(--red); }
+
+  /* Edit modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 500;
+    display: flex;
+    align-items: flex-end;
+    display: none;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2);
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-top: 0.5px solid var(--border2);
+  }
+  .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 16px; }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-delete {
+    flex: 1;
+    padding: 14px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--red);
+    background: var(--red-dim);
+    color: var(--red);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-save {
+    flex: 2;
+    padding: 14px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--accent);
+    color: #0f0f0f;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Offline queue badge */
+  .queue-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,165,0,0.15);
+    color: orange;
+    border: 0.5px solid rgba(255,165,0,0.3);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
+
+  /* Sync button */
+  .sync-btn {
+    background: var(--bg3);
+    border: 0.5px solid var(--border);
+    color: var(--text2);
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .sync-btn svg { width: 14px; height: 14px; }
+  .spinning { animation: spin 1s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* Status bar */
+  .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--text3); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); }
+  .status-dot.online { background: var(--accent); }
+
+  /* Loading overlay */
+  .loading { display: none; text-align: center; padding: 40px; color: var(--text2); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">xpns<span>.</span></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="sync-btn" id="syncBtn" onclick="syncQueue()" title="Sync pending">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
+        Sync
+      </button>
+      <button class="auth-btn" id="authBtn" onclick="handleAuth()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span id="authLabel">Login</span>
+      </button>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('input')">Input</div>
+    <div class="tab" onclick="switchTab('history')">Riwayat</div>
+  </div>
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Belum login</span>
+    <span id="queueInfo"></span>
+  </div>
+</div>
+
+<!-- INPUT PAGE -->
+<div class="page active" id="page-input">
+  <div class="form-section">
+    <div class="sheet-toggle">
+      <div class="sheet-btn active" data-sheet="opex" onclick="switchSheet('opex')">💳 OPEX</div>
+      <div class="sheet-btn" data-sheet="cc-bca" onclick="switchSheet('cc-bca')">🔵 CC BCA</div>
+      <div class="sheet-btn" data-sheet="cc-niaga" onclick="switchSheet('cc-niaga')">🔴 CC Niaga</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tanggal</label>
+      <input type="date" class="form-input" id="inputDate" style="opacity:0;position:absolute;pointer-events:none;">
+      <div class="form-input" id="inputDateDisplay" onclick="document.getElementById('inputDate').showPicker()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+        <span id="inputDateText">Pilih tanggal...</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+    </div>
+
+    <!-- OPEX fields -->
+    <div id="fields-opex">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Kategori</label>
+        <input type="text" class="form-input" id="opex-category" placeholder="Pilih kategori..." autocomplete="off" oninput="showAC('opex-category', opexCategories)" onfocus="showAC('opex-category', opexCategories)">
+        <div class="autocomplete-list" id="ac-opex-category" style="display:none"></div>
+      </div>
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Payee / Tempat</label>
+        <input type="text" class="form-input" id="opex-payee" placeholder="Nama payee..." autocomplete="off" oninput="showAC('opex-payee', getPayeeSuggestions('opex'))" onfocus="showAC('opex-payee', getPayeeSuggestions('opex'))">
+        <div class="autocomplete-list" id="ac-opex-payee" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <select class="form-input" id="opex-platform">
+          <option value="">Pilih payment method...</option>
+          <option>BCA</option>
+          <option>eWallet</option>
+          <option>Flazz</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CC fields -->
+    <div id="fields-cc" style="display:none">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Transaction</label>
+        <input type="text" class="form-input" id="cc-transaction" placeholder="Nama transaksi..." autocomplete="off" oninput="showAC('cc-transaction', getPayeeSuggestions('cc'))" onfocus="showAC('cc-transaction', getPayeeSuggestions('cc'))">
+        <div class="autocomplete-list" id="ac-cc-transaction" style="display:none"></div>
+      </div>
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Kategori</label>
+        <input type="text" class="form-input" id="cc-category" placeholder="Pilih kategori..." autocomplete="off" oninput="showAC('cc-category', ccCategories)" onfocus="showAC('cc-category', ccCategories)">
+        <div class="autocomplete-list" id="ac-cc-category" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Nominal</label>
+      <div class="amount-wrapper">
+        <span class="amount-prefix">Rp</span>
+        <input type="number" class="form-input amount-input" id="inputAmount" placeholder="0" inputmode="numeric">
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitTransaction()">Simpan Transaksi</button>
+  </div>
+</div>
+
+<!-- HISTORY PAGE -->
+<div class="page" id="page-history">
+  <div class="history-header">
+    <div class="history-title">Transaksi Lokal</div>
+    <select class="history-filter" id="historyFilter" onchange="renderHistory()">
+      <option value="all">Semua</option>
+      <option value="opex">OPEX</option>
+      <option value="cc-bca">CC BCA</option>
+      <option value="cc-niaga">CC Niaga</option>
+    </select>
+  </div>
+  <div id="historyList"></div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="editModalTitle">Edit Transaksi</div>
+    <div id="editModalBody"></div>
+    <div class="modal-actions">
+      <button class="btn-delete" onclick="deleteTransaction()">Hapus</button>
+      <button class="btn-save" onclick="saveEdit()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const SPREADSHEET_ID = '1cSlRQPTNSCvfiumzi3nCXBHJq-d8rIPR63W1D_8N5dI';
+const CLIENT_ID = '108173053804-tnpritpf7k8k8o2ndjdr8f7t15nek5gg.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+
+const opexCategories = ['Auto','Books','Charity','Clothing','Meals','Entertainment','Gifts','Groceries','Health','Home Repair','Household','Medical','Self Care','Transport','Travel','Utilities'];
+const ccCategories = ['Entertainment','Meals','Utilities','Gas','Medical','Groceries','Travel','Administration','Insurance'];
+const opexPayees = ['Azko','Angpau','Apotek','Bengkel','Bensin','Beras','Books','Breakfast','Buah','Cinema','Coffee','Cuci AC','Cuci Mobil','Cukur Rambut','Dinner','Gramedia','Ice Cream','Jahit','Jus','KRL','Laundry','Lunch','Marketplace','Media','Minimarket','MRT','Nitrogen','Ojol','Parkir','Pijat','Pulsa','Rujak','Service','Snack','Supermarket','Tambal Ban','Taxi','TJ','Tokopedia','Tol','Tukang','Uniqlo'];
+
+let currentSheet = 'opex';
+let tokenClient = null;
+let accessToken = null;
+let editingIndex = null;
+
+// Local storage queue
+let queue = JSON.parse(localStorage.getItem('xpns_queue') || '[]');
+let history = JSON.parse(localStorage.getItem('xpns_history') || '[]');
+
+// Get today's date
+function getTodayDate() {
+  const d = new Date();
+  return d.toISOString().split('T')[0];
+}
+document.getElementById('inputDate').value = getTodayDate();
+document.getElementById('inputDateText').textContent = formatDate(getTodayDate());
+document.getElementById('inputDate').addEventListener('change', function() {
+  document.getElementById('inputDateText').textContent = this.value ? formatDate(this.value) : 'Pilih tanggal...';
+});
+
+// Tab switch
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('page-' + tab).classList.add('active');
+  if (tab === 'history') renderHistory();
+}
+
+// Sheet switch
+function switchSheet(sheet) {
+  currentSheet = sheet;
+  document.querySelectorAll('.sheet-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-sheet="${sheet}"]`).classList.add('active');
+  document.getElementById('fields-opex').style.display = sheet === 'opex' ? 'block' : 'none';
+  document.getElementById('fields-cc').style.display = sheet !== 'opex' ? 'block' : 'none';
+}
+
+// Autocomplete
+function showAC(fieldId, list) {
+  const input = document.getElementById(fieldId);
+  const dropdown = document.getElementById('ac-' + fieldId);
+  const val = input.value.toLowerCase();
+  const filtered = val ? list.filter(i => i.toLowerCase().includes(val)) : list;
+  if (!filtered.length) { dropdown.style.display = 'none'; return; }
+  dropdown.innerHTML = filtered.map(i =>
+    `<div class="autocomplete-item" onmousedown="selectAC('${fieldId}', '${i.replace(/'/g,"\\'")}' )">${i}</div>`
+  ).join('');
+  dropdown.style.display = 'block';
+}
+
+function selectAC(fieldId, val) {
+  document.getElementById(fieldId).value = val;
+  document.getElementById('ac-' + fieldId).style.display = 'none';
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.autocomplete-wrapper')) {
+    document.querySelectorAll('.autocomplete-list').forEach(d => d.style.display = 'none');
+  }
+});
+
+// Get payee suggestions from history + preset
+function getPayeeSuggestions(type) {
+  const fromHistory = [...new Set(
+    history.filter(t => type === 'cc' ? t.sheet !== 'opex' : t.sheet === 'opex')
+           .map(t => t.sheet === 'opex' ? t.payee : t.transaction)
+           .filter(Boolean)
+  )];
+  if (type === 'opex') return [...new Set([...opexPayees, ...fromHistory])];
+  return fromHistory;
+}
+
+// Format amount
+function formatRp(num) {
+  return 'Rp' + Number(num).toLocaleString('id-ID');
+}
+
+// Format date for display: "11 May 2026"
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+}
+
+function updateDateDisplay(inputId, displayId) {
+  const val = document.getElementById(inputId).value;
+  const displayEl = document.getElementById(displayId);
+  if (val && displayEl) {
+    displayEl.querySelector('span').textContent = formatDate(val);
+  }
+}
+
+// Wire up date input change
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('inputDate');
+  if (inp) {
+    inp.addEventListener('change', () => updateDateDisplay('inputDate', 'inputDateDisplay'));
+  }
+});
+
+// Format date for sheets (e.g. "11 May")
+function formatDateForSheet(dateStr) {
+  const [y, m, d] = dateStr.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${parseInt(d)} ${months[parseInt(m)-1]}`;
+}
+
+// Get month string
+function getMonth(dateStr) {
+  const [y, m] = dateStr.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[parseInt(m)-1]} ${y}`;
+}
+
+// Submit transaction
+function submitTransaction() {
+  const date = document.getElementById('inputDate').value;
+  const amount = document.getElementById('inputAmount').value;
+
+  if (!date || !amount) { showToast('Tanggal dan nominal wajib diisi', 'error'); return; }
+
+  let tx = { id: Date.now(), date, sheet: currentSheet, synced: false };
+
+  if (currentSheet === 'opex') {
+    const category = document.getElementById('opex-category').value;
+    const payee = document.getElementById('opex-payee').value;
+    const platform = document.getElementById('opex-platform').value;
+    if (!category || !payee || !platform) { showToast('Semua field wajib diisi', 'error'); return; }
+    tx = { ...tx, category, payee, platform, amount: parseInt(amount) };
+  } else {
+    const transaction = document.getElementById('cc-transaction').value;
+    const category = document.getElementById('cc-category').value;
+    if (!transaction || !category) { showToast('Semua field wajib diisi', 'error'); return; }
+    tx = { ...tx, transaction, category, amount: parseInt(amount) };
+  }
+
+  // Add to queue and history
+  queue.push({ ...tx });
+  history.unshift({ ...tx });
+  saveLocal();
+  updateStatus();
+
+  // Try immediate sync
+  if (accessToken) {
+    syncSingle(tx).then(ok => {
+      if (ok) {
+        queue = queue.filter(q => q.id !== tx.id);
+        history = history.map(h => h.id === tx.id ? { ...h, synced: true } : h);
+        saveLocal();
+        updateStatus();
+        showToast('Tersimpan ke Google Sheets ✓', 'success');
+      } else {
+        showToast('Tersimpan lokal, sync pending', '');
+      }
+    });
+  } else {
+    showToast('Tersimpan lokal (login dulu untuk sync)', '');
+  }
+
+  resetForm();
+}
+
+function resetForm() {
+  document.getElementById('inputAmount').value = '';
+  document.getElementById('inputDate').value = getTodayDate();
+  document.getElementById('inputDateText').textContent = formatDate(getTodayDate());
+  if (currentSheet === 'opex') {
+    document.getElementById('opex-category').value = '';
+    document.getElementById('opex-payee').value = '';
+    document.getElementById('opex-platform').value = '';
+  } else {
+    document.getElementById('cc-transaction').value = '';
+    document.getElementById('cc-category').value = '';
+  }
+}
+
+// Build row for sheets
+function buildRow(tx) {
+  const dateDisplay = formatDateForSheet(tx.date);
+  const month = getMonth(tx.date);
+
+  if (tx.sheet === 'opex') {
+    return [dateDisplay, month, tx.category, tx.payee, tx.platform, tx.amount];
+  } else {
+    return [dateDisplay, tx.transaction, tx.category, tx.amount];
+  }
+}
+
+// Get sheet range
+function getRange(sheet) {
+  if (sheet === 'opex') return `Opex!A:F`;
+  if (sheet === 'cc-bca') return `CC!H:K`;
+  if (sheet === 'cc-niaga') return `CC!B:E`;
+}
+
+// Sync single transaction
+async function syncSingle(tx) {
+  try {
+    const range = getRange(tx.sheet);
+    const row = buildRow(tx);
+
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
+      {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values: [row] })
+      }
+    );
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Sync all pending
+async function syncQueue() {
+  if (!accessToken) { handleAuth(); return; }
+  if (!queue.length) { showToast('Tidak ada yang perlu di-sync', ''); return; }
+
+  const btn = document.getElementById('syncBtn');
+  btn.querySelector('svg').classList.add('spinning');
+
+  let success = 0;
+  for (const tx of [...queue]) {
+    const ok = await syncSingle(tx);
+    if (ok) {
+      queue = queue.filter(q => q.id !== tx.id);
+      history = history.map(h => h.id === tx.id ? { ...h, synced: true } : h);
+      success++;
+    }
+  }
+
+  saveLocal();
+  updateStatus();
+  btn.querySelector('svg').classList.remove('spinning');
+  showToast(`Berhasil sync ${success} transaksi`, 'success');
+  renderHistory();
+}
+
+// Auth
+function handleAuth() {
+  if (accessToken) {
+    accessToken = null;
+    localStorage.removeItem('xpns_token');
+    document.getElementById('authLabel').textContent = 'Login';
+    document.getElementById('authBtn').classList.remove('signed-in');
+    updateStatus();
+    return;
+  }
+  if (tokenClient) {
+    tokenClient.requestAccessToken({ prompt: '' });
+  } else {
+    showToast('Google API belum dimuat', 'error');
+  }
+}
+
+function initGoogleAuth() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: (response) => {
+      if (response.access_token) {
+        accessToken = response.access_token;
+        localStorage.setItem('xpns_token', accessToken);
+        document.getElementById('authLabel').textContent = 'Logout';
+        document.getElementById('authBtn').classList.add('signed-in');
+        updateStatus();
+        showToast('Login berhasil!', 'success');
+        if (queue.length) syncQueue();
+      }
+    }
+  });
+}
+
+// History render
+function renderHistory() {
+  const filter = document.getElementById('historyFilter').value;
+  const list = document.getElementById('historyList');
+  const filtered = filter === 'all' ? history : history.filter(t => t.sheet === filter);
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state">Belum ada transaksi tersimpan</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map((tx, i) => {
+    const origIdx = history.indexOf(tx);
+    const icon = tx.sheet === 'opex' ? '💳' : tx.sheet === 'cc-bca' ? '🔵' : '🔴';
+    const amtClass = tx.sheet === 'opex' ? 'opex' : tx.sheet === 'cc-bca' ? 'cc-bca' : 'cc-niaga';
+    const badge = tx.sheet === 'opex' ? `<span class="badge badge-opex">OPEX</span>` :
+                  tx.sheet === 'cc-bca' ? `<span class="badge badge-bca">CC BCA</span>` :
+                  `<span class="badge badge-niaga">CC Niaga</span>`;
+    const payeeName = tx.sheet === 'opex' ? tx.payee : tx.transaction;
+    const syncDot = tx.synced ? '✓' : '⏳';
+    return `<div class="tx-item" onclick="openEdit(${origIdx})">
+      <div class="tx-icon ${amtClass}">${icon}</div>
+      <div class="tx-info">
+        <div class="tx-payee">${payeeName} ${badge}</div>
+        <div class="tx-meta">${formatDate(tx.date)} · ${tx.category} · ${syncDot}</div>
+      </div>
+      <div class="tx-amount ${amtClass}">${formatRp(tx.amount)}</div>
+    </div>`;
+  }).join('');
+}
+
+// Edit modal
+function openEdit(idx) {
+  editingIndex = idx;
+  const tx = history[idx];
+  document.getElementById('editModalTitle').textContent = 'Edit ' + (tx.sheet === 'opex' ? 'OPEX' : tx.sheet.toUpperCase());
+
+  let fields = `
+    <div class="form-group">
+      <label class="form-label">Tanggal</label>
+      <input type="date" class="form-input" id="edit-date" value="${tx.date}">
+    </div>`;
+
+  if (tx.sheet === 'opex') {
+    fields += `
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Kategori</label>
+        <input type="text" class="form-input" id="edit-category" value="${tx.category || ''}" autocomplete="off" oninput="showAC('edit-category', opexCategories)" onfocus="showAC('edit-category', opexCategories)">
+        <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div>
+      </div>
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Payee</label>
+        <input type="text" class="form-input" id="edit-payee" value="${tx.payee || ''}" autocomplete="off" oninput="showAC('edit-payee', opexPayees)" onfocus="showAC('edit-payee', opexPayees)">
+        <div class="autocomplete-list" id="ac-edit-payee" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <select class="form-input" id="edit-platform">
+          <option ${tx.platform==='BCA'?'selected':''}>BCA</option>
+          <option ${tx.platform==='eWallet'?'selected':''}>eWallet</option>
+          <option ${tx.platform==='Flazz'?'selected':''}>Flazz</option>
+        </select>
+      </div>`;
+  } else {
+    fields += `
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Transaction</label>
+        <input type="text" class="form-input" id="edit-transaction" value="${tx.transaction || ''}" autocomplete="off">
+        <div class="autocomplete-list" id="ac-edit-transaction" style="display:none"></div>
+      </div>
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Kategori</label>
+        <input type="text" class="form-input" id="edit-category" value="${tx.category || ''}" autocomplete="off" oninput="showAC('edit-category', ccCategories)" onfocus="showAC('edit-category', ccCategories)">
+        <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div>
+      </div>`;
+  }
+
+  fields += `
+    <div class="form-group">
+      <label class="form-label">Nominal</label>
+      <div class="amount-wrapper">
+        <span class="amount-prefix">Rp</span>
+        <input type="number" class="form-input amount-input" id="edit-amount" value="${tx.amount}" inputmode="numeric">
+      </div>
+    </div>`;
+
+  document.getElementById('editModalBody').innerHTML = fields;
+  document.getElementById('editModal').classList.add('open');
+}
+
+function saveEdit() {
+  const tx = history[editingIndex];
+  const date = document.getElementById('edit-date').value;
+  const amount = parseInt(document.getElementById('edit-amount').value);
+
+  if (tx.sheet === 'opex') {
+    tx.category = document.getElementById('edit-category').value;
+    tx.payee = document.getElementById('edit-payee').value;
+    tx.platform = document.getElementById('edit-platform').value;
+  } else {
+    tx.transaction = document.getElementById('edit-transaction').value;
+    tx.category = document.getElementById('edit-category').value;
+  }
+
+  tx.date = date;
+  tx.amount = amount;
+  tx.synced = false; // Mark for re-sync if needed
+
+  saveLocal();
+  closeModal();
+  renderHistory();
+  showToast('Perubahan tersimpan', 'success');
+}
+
+function deleteTransaction() {
+  if (!confirm('Hapus transaksi ini?')) return;
+  const tx = history[editingIndex];
+  history.splice(editingIndex, 1);
+  queue = queue.filter(q => q.id !== tx.id);
+  saveLocal();
+  closeModal();
+  renderHistory();
+  updateStatus();
+  showToast('Transaksi dihapus', '');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('open');
+  editingIndex = null;
+}
+
+document.getElementById('editModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('editModal')) closeModal();
+});
+
+// Local storage
+function saveLocal() {
+  localStorage.setItem('xpns_queue', JSON.stringify(queue));
+  localStorage.setItem('xpns_history', JSON.stringify(history));
+}
+
+// Update status
+function updateStatus() {
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  const qInfo = document.getElementById('queueInfo');
+
+  if (accessToken) {
+    dot.classList.add('online');
+    text.textContent = 'Terhubung ke Sheets';
+  } else {
+    dot.classList.remove('online');
+    text.textContent = 'Belum login';
+  }
+
+  qInfo.textContent = queue.length ? `· ${queue.length} pending` : '';
+}
+
+// Toast
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Init
+window.onload = function() {
+  const script = document.createElement('script');
+  script.src = 'https://accounts.google.com/gsi/client';
+  script.onload = initGoogleAuth;
+  document.head.appendChild(script);
+  updateStatus();
+};
+</script>
+</body>
+</html>
