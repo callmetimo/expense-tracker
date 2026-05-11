@@ -546,7 +546,7 @@ function getRange(sheet) {
 // ── Apps Script API ──────────────────────────────────────────
 async function syncSingle(tx) {
   try {
-    const payload = { sheet: tx.sheet, date: isoToSheetDate(tx.date), month: isoToMonth(tx.date), amount: tx.amount };
+    const payload = { sheet: tx.sheet, date: isoToSheetDate(tx.date), month: isoToMonth(tx.date), monthHeader: isoToMonth(tx.date), amount: tx.amount };
     if (tx.sheet === 'opex') {
       payload.category = tx.category;
       payload.payee = tx.payee;
