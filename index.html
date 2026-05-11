@@ -3,230 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Expense">
-<title>Expense Tracker</title>
+<meta name="apple-mobile-web-app-title" content="xpns">
+<title>xpns</title>
 <style>
-  :root {
-    --bg: #0f0f0f;
-    --bg2: #1a1a1a;
-    --bg3: #242424;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.15);
-    --text: #f0f0f0;
-    --text2: #999;
-    --text3: #666;
-    --accent: #c8f060;
-    --accent-dim: rgba(200,240,96,0.12);
-    --red: #ff6b6b;
-    --red-dim: rgba(255,107,107,0.12);
-    --blue: #60a0f0;
-    --blue-dim: rgba(96,160,240,0.12);
-    --radius: 14px;
-    --radius-sm: 8px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    max-width: 430px;
-    margin: 0 auto;
-    padding-bottom: 80px;
-  }
-  .header {
-    padding: 56px 20px 20px;
-    background: var(--bg);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 0.5px solid var(--border);
-  }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .app-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
-  .app-title span { color: var(--accent); }
-  .sync-btn {
-    background: var(--bg3);
-    border: 0.5px solid var(--border);
-    color: var(--text2);
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .sync-btn svg { width: 14px; height: 14px; }
-  .spinning { animation: spin 1s linear infinite; }
-  @keyframes spin { from{transform:rotate(0deg)}to{transform:rotate(360deg)} }
+:root {
+  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--bg4:#2e2e2e;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+  --text:#f0f0f0;--text2:#999;--text3:#555;
+  --accent:#c8f060;--accent-dim:rgba(200,240,96,0.12);
+  --red:#ff6b6b;--red-dim:rgba(255,107,107,0.12);
+  --blue:#60a0f0;--blue-dim:rgba(96,160,240,0.12);
+  --orange:#ffaa44;--orange-dim:rgba(255,170,68,0.12);
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:430px;margin:0 auto;padding-bottom:90px}
 
-  .tab-bar {
-    display: flex;
-    background: var(--bg3);
-    border-radius: 10px;
-    padding: 3px;
-  }
-  .tab {
-    flex: 1; padding: 8px; text-align: center;
-    font-size: 13px; font-weight: 500; border-radius: 8px;
-    cursor: pointer; color: var(--text2); transition: all 0.2s;
-  }
-  .tab.active { background: var(--accent); color: #0f0f0f; font-weight: 600; }
+/* HEADER */
+.header{padding:52px 20px 16px;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:0.5px solid var(--border)}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.app-title{font-size:26px;font-weight:700;letter-spacing:-0.5px}
+.app-title span{color:var(--accent)}
+.sync-btn{background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);padding:7px 13px;border-radius:20px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.sync-btn svg{width:13px;height:13px}
+.spinning{animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.tab-bar{display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px}
+.tab{flex:1;padding:7px 4px;text-align:center;font-size:12px;font-weight:500;border-radius:7px;cursor:pointer;color:var(--text2);transition:all 0.2s;white-space:nowrap}
+.tab.active{background:var(--accent);color:#0f0f0f;font-weight:600}
+.status-bar{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--text3)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
+.status-dot.online{background:var(--accent)}
 
-  .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--text3); }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); }
-  .status-dot.online { background: var(--accent); }
+/* PAGES */
+.page{display:none;padding:0 20px}
+.page.active{display:block}
 
-  .page { display: none; padding: 0 20px; }
-  .page.active { display: block; }
+/* FORM */
+.form-section{margin-top:18px}
+.form-group{margin-bottom:13px}
+.form-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;display:block}
+.form-input{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 13px;font-size:16px;font-family:inherit;appearance:none;-webkit-appearance:none;outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--text3)}
+select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.amount-wrapper{position:relative}
+.amount-prefix{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:16px}
+.amount-input{padding-left:48px !important;font-size:20px !important;font-weight:600}
+.autocomplete-wrapper{position:relative}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius-sm);z-index:200;max-height:160px;overflow-y:auto;margin-top:3px}
+.autocomplete-item{padding:10px 13px;font-size:15px;cursor:pointer;border-bottom:0.5px solid var(--border)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:active{background:var(--accent-dim);color:var(--accent)}
+.sheet-toggle{display:flex;gap:6px;margin-bottom:13px}
+.sheet-btn{flex:1;padding:9px 4px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.2s}
+.sheet-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.date-input-hidden{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0}
+.date-display{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 13px;font-size:16px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s}
+.date-display svg{opacity:0.4;flex-shrink:0}
+.submit-btn{width:100%;background:var(--accent);color:#0f0f0f;border:none;border-radius:var(--radius);padding:15px;font-size:16px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity 0.2s,transform 0.1s}
+.submit-btn:active{transform:scale(0.98);opacity:0.9}
 
-  .form-section { margin-top: 20px; }
-  .form-group { margin-bottom: 14px; }
-  .form-label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
-  .form-input {
-    width: 100%;
-    background: var(--bg3);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    padding: 12px 14px;
-    font-size: 16px;
-    font-family: inherit;
-    appearance: none; -webkit-appearance: none;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-input:focus { border-color: var(--accent); }
-  .form-input::placeholder { color: var(--text3); }
-  select.form-input {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
-  }
+/* HISTORY */
+.history-header{display:flex;align-items:center;justify-content:space-between;margin-top:18px;margin-bottom:10px}
+.history-title{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px}
+.history-filter{background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer}
+.tx-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.tx-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tx-icon.opex{background:var(--accent-dim)}
+.tx-icon.cc-bca{background:var(--blue-dim)}
+.tx-icon.cc-niaga{background:var(--red-dim)}
+.tx-info{flex:1;min-width:0}
+.tx-payee{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.tx-amount{font-size:14px;font-weight:600;text-align:right;flex-shrink:0}
+.tx-amount.opex{color:var(--accent)}
+.tx-amount.cc-bca{color:var(--blue)}
+.tx-amount.cc-niaga{color:var(--red)}
+.badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:500;margin-left:3px}
+.badge-opex{background:var(--accent-dim);color:var(--accent)}
+.badge-bca{background:var(--blue-dim);color:var(--blue)}
+.badge-niaga{background:var(--red-dim);color:var(--red)}
+.badge-pending{background:rgba(255,165,0,0.15);color:orange}
 
-  .amount-wrapper { position: relative; }
-  .amount-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 16px; }
-  .amount-input { padding-left: 50px !important; font-size: 20px !important; font-weight: 600; }
+/* CHART PAGE */
+.chart-section{margin-top:18px}
+.chart-toggle-row{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.chart-toggle-btn{flex:1;min-width:0;padding:8px 4px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--bg3);color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.2s;white-space:nowrap}
+.chart-toggle-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.range-row{display:flex;gap:5px;margin-bottom:18px}
+.range-btn{flex:1;padding:7px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.2s}
+.range-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.chart-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.chart-card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
+.chart-loading{text-align:center;padding:40px;color:var(--text3);font-size:13px}
+.chart-empty{text-align:center;padding:30px;color:var(--text3);font-size:13px}
 
-  .autocomplete-wrapper { position: relative; }
-  .autocomplete-list {
-    position: absolute; top: 100%; left: 0; right: 0;
-    background: var(--bg2); border: 0.5px solid var(--border2);
-    border-radius: var(--radius-sm); z-index: 200;
-    max-height: 180px; overflow-y: auto; margin-top: 4px;
-  }
-  .autocomplete-item {
-    padding: 10px 14px; font-size: 15px; cursor: pointer;
-    border-bottom: 0.5px solid var(--border);
-  }
-  .autocomplete-item:last-child { border-bottom: none; }
-  .autocomplete-item:active { background: var(--accent-dim); color: var(--accent); }
+/* Summary cards */
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.summary-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px}
+.summary-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.summary-value{font-size:18px;font-weight:600;color:var(--accent)}
+.summary-sub{font-size:11px;color:var(--text3);margin-top:2px}
 
-  .sheet-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
-  .sheet-btn {
-    flex: 1; padding: 10px; border-radius: var(--radius-sm);
-    border: 0.5px solid var(--border); background: var(--bg3);
-    color: var(--text2); font-size: 13px; font-weight: 500;
-    cursor: pointer; text-align: center; transition: all 0.2s;
-  }
-  .sheet-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+/* Bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:140px;padding-bottom:20px;position:relative}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.bar-stack{width:100%;display:flex;flex-direction:column-reverse;border-radius:3px 3px 0 0;overflow:hidden;cursor:pointer;transition:opacity 0.2s;min-height:2px}
+.bar-stack:hover{opacity:0.85}
+.bar-segment{width:100%;transition:height 0.3s}
+.bar-label{font-size:9px;color:var(--text3);margin-top:4px;text-align:center;white-space:nowrap;overflow:hidden;width:100%;position:absolute;bottom:0}
+.bar-value{font-size:9px;color:var(--text2);text-align:center;margin-bottom:2px;display:none}
 
-  .date-display {
-    width: 100%; background: var(--bg3); border: 0.5px solid var(--border);
-    border-radius: var(--radius-sm); color: var(--text);
-    padding: 12px 14px; font-size: 16px; font-family: inherit;
-    cursor: pointer; display: flex; align-items: center; justify-content: space-between;
-    transition: border-color 0.2s;
-  }
-  .date-display:focus { border-color: var(--accent); outline: none; }
-  .date-display svg { opacity: 0.4; flex-shrink: 0; }
+/* Donut chart */
+.donut-wrapper{display:flex;gap:16px;align-items:center}
+.donut-svg-wrap{flex-shrink:0}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.legend-label{color:var(--text2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.legend-val{color:var(--text);font-size:11px;font-weight:500;white-space:nowrap}
 
-  .submit-btn {
-    width: 100%; background: var(--accent); color: #0f0f0f;
-    border: none; border-radius: var(--radius);
-    padding: 16px; font-size: 16px; font-weight: 700;
-    cursor: pointer; margin-top: 8px;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-  .submit-btn:active { transform: scale(0.98); opacity: 0.9; }
-  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:flex-end;display:none}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:85vh;overflow-y:auto;border-top:0.5px solid var(--border2)}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:16px}
+.modal-actions{display:flex;gap:8px;margin-top:12px}
+.btn-delete{flex:1;padding:13px;border-radius:var(--radius);border:0.5px solid var(--red);background:var(--red-dim);color:var(--red);font-size:14px;font-weight:600;cursor:pointer}
+.btn-save{flex:2;padding:13px;border-radius:var(--radius);border:none;background:var(--accent);color:#0f0f0f;font-size:14px;font-weight:700;cursor:pointer}
 
-  .toast {
-    position: fixed; bottom: 100px; left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--bg2); border: 0.5px solid var(--border2);
-    color: var(--text); padding: 12px 20px; border-radius: 30px;
-    font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 1000; white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: var(--accent); color: var(--accent); }
-  .toast.error { border-color: var(--red); color: var(--red); }
-
-  .history-header { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; margin-bottom: 12px; }
-  .history-title { font-size: 13px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
-  .history-filter {
-    background: var(--bg3); border: 0.5px solid var(--border);
-    color: var(--text2); padding: 5px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
-  }
-
-  .tx-item {
-    background: var(--bg2); border: 0.5px solid var(--border);
-    border-radius: var(--radius); padding: 14px; margin-bottom: 8px;
-    display: flex; align-items: center; gap: 12px; cursor: pointer;
-  }
-  .tx-icon {
-    width: 40px; height: 40px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-  }
-  .tx-icon.opex { background: var(--accent-dim); }
-  .tx-icon.cc-bca { background: var(--blue-dim); }
-  .tx-icon.cc-niaga { background: var(--red-dim); }
-  .tx-info { flex: 1; min-width: 0; }
-  .tx-payee { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tx-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
-  .tx-amount { font-size: 15px; font-weight: 600; text-align: right; flex-shrink: 0; }
-  .tx-amount.opex { color: var(--accent); }
-  .tx-amount.cc-bca { color: var(--blue); }
-  .tx-amount.cc-niaga { color: var(--red); }
-
-  .badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 500; margin-left: 4px; }
-  .badge-opex { background: var(--accent-dim); color: var(--accent); }
-  .badge-bca { background: var(--blue-dim); color: var(--blue); }
-  .badge-niaga { background: var(--red-dim); color: var(--red); }
-  .badge-pending { background: rgba(255,165,0,0.15); color: orange; }
-
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    z-index: 500; align-items: flex-end; display: none;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--bg2); border-radius: 20px 20px 0 0;
-    padding: 20px; width: 100%; max-height: 85vh; overflow-y: auto;
-    border-top: 0.5px solid var(--border2);
-  }
-  .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 16px; }
-  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
-  .modal-actions { display: flex; gap: 8px; margin-top: 12px; }
-  .btn-delete {
-    flex: 1; padding: 14px; border-radius: var(--radius);
-    border: 0.5px solid var(--red); background: var(--red-dim);
-    color: var(--red); font-size: 15px; font-weight: 600; cursor: pointer;
-  }
-  .btn-save {
-    flex: 2; padding: 14px; border-radius: var(--radius);
-    border: none; background: var(--accent); color: #0f0f0f;
-    font-size: 15px; font-weight: 700; cursor: pointer;
-  }
-
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
-
-  /* Date picker hidden input trick */
-  .date-input-hidden {
-    position: absolute; opacity: 0; pointer-events: none;
-    width: 1px; height: 1px; top: 0; left: 0;
-  }
+/* Toast */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg2);border:0.5px solid var(--border2);color:var(--text);padding:11px 18px;border-radius:30px;font-size:13px;opacity:0;transition:all 0.3s;z-index:1000;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:var(--accent);color:var(--accent)}
+.toast.error{border-color:var(--red);color:var(--red)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
 </style>
 </head>
 <body>
@@ -234,23 +150,24 @@
 <div class="header">
   <div class="header-top">
     <div class="app-title">xpns<span>.</span></div>
-    <button class="sync-btn" id="syncBtn" onclick="syncQueue()">
+    <button class="sync-btn" onclick="syncQueue()">
       <svg id="syncIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
       Sync
     </button>
   </div>
   <div class="tab-bar">
-    <div class="tab active" onclick="switchTab('input', this)">Input</div>
-    <div class="tab" onclick="switchTab('history', this)">Riwayat</div>
+    <div class="tab active" onclick="switchTab('input',this)">Input</div>
+    <div class="tab" onclick="switchTab('history',this)">Riwayat</div>
+    <div class="tab" onclick="switchTab('chart',this)">Chart</div>
   </div>
   <div class="status-bar">
-    <div class="status-dot" id="statusDot"></div>
+    <div class="status-dot online" id="statusDot"></div>
     <span id="statusText">Siap</span>
     <span id="queueInfo"></span>
   </div>
 </div>
 
-<!-- INPUT PAGE -->
+<!-- INPUT -->
 <div class="page active" id="page-input">
   <div class="form-section">
     <div class="sheet-toggle">
@@ -258,62 +175,45 @@
       <div class="sheet-btn" data-sheet="cc-bca" onclick="switchSheet('cc-bca')">🔵 CC BCA</div>
       <div class="sheet-btn" data-sheet="cc-niaga" onclick="switchSheet('cc-niaga')">🔴 CC Niaga</div>
     </div>
-
-    <!-- Date field -->
-    <div class="form-group" style="position:relative;">
+    <div class="form-group" style="position:relative">
       <label class="form-label">Tanggal</label>
       <input type="date" id="inputDateRaw" class="date-input-hidden">
       <div class="date-display" id="inputDateDisplay" tabindex="0">
         <span id="inputDateText"></span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
     </div>
-
-    <!-- OPEX fields -->
     <div id="fields-opex">
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Kategori</label>
-        <input type="text" class="form-input" id="opex-category" placeholder="Ketik atau pilih kategori..." autocomplete="off"
-          oninput="showAC('opex-category', opexCategories)"
-          onfocus="showAC('opex-category', opexCategories)">
+        <input type="text" class="form-input" id="opex-category" placeholder="Ketik atau pilih..." autocomplete="off" oninput="showAC('opex-category',opexCategories)" onfocus="showAC('opex-category',opexCategories)">
         <div class="autocomplete-list" id="ac-opex-category" style="display:none"></div>
       </div>
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Payee / Tempat</label>
-        <input type="text" class="form-input" id="opex-payee" placeholder="Nama payee..." autocomplete="off"
-          oninput="showAC('opex-payee', getPayeeSuggestions('opex'))"
-          onfocus="showAC('opex-payee', getPayeeSuggestions('opex'))">
+        <input type="text" class="form-input" id="opex-payee" placeholder="Nama payee..." autocomplete="off" oninput="showAC('opex-payee',getPayeeSuggestions('opex'))" onfocus="showAC('opex-payee',getPayeeSuggestions('opex'))">
         <div class="autocomplete-list" id="ac-opex-payee" style="display:none"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Payment Method</label>
         <select class="form-input" id="opex-platform">
           <option value="">Pilih payment method...</option>
-          <option>BCA</option>
-          <option>eWallet</option>
-          <option>Flazz</option>
+          <option>BCA</option><option>eWallet</option><option>Flazz</option>
         </select>
       </div>
     </div>
-
-    <!-- CC fields -->
     <div id="fields-cc" style="display:none">
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Transaction</label>
-        <input type="text" class="form-input" id="cc-transaction" placeholder="Nama transaksi..." autocomplete="off"
-          oninput="showAC('cc-transaction', getPayeeSuggestions('cc'))"
-          onfocus="showAC('cc-transaction', getPayeeSuggestions('cc'))">
+        <input type="text" class="form-input" id="cc-transaction" placeholder="Nama transaksi..." autocomplete="off" oninput="showAC('cc-transaction',getPayeeSuggestions('cc'))" onfocus="showAC('cc-transaction',getPayeeSuggestions('cc'))">
         <div class="autocomplete-list" id="ac-cc-transaction" style="display:none"></div>
       </div>
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Kategori</label>
-        <input type="text" class="form-input" id="cc-category" placeholder="Ketik atau pilih kategori..." autocomplete="off"
-          oninput="showAC('cc-category', ccCategories)"
-          onfocus="showAC('cc-category', ccCategories)">
+        <input type="text" class="form-input" id="cc-category" placeholder="Ketik atau pilih..." autocomplete="off" oninput="showAC('cc-category',ccCategories)" onfocus="showAC('cc-category',ccCategories)">
         <div class="autocomplete-list" id="ac-cc-category" style="display:none"></div>
       </div>
     </div>
-
     <div class="form-group">
       <label class="form-label">Nominal</label>
       <div class="amount-wrapper">
@@ -321,12 +221,11 @@
         <input type="number" class="form-input amount-input" id="inputAmount" placeholder="0" inputmode="numeric">
       </div>
     </div>
-
     <button class="submit-btn" onclick="submitTransaction()">Simpan Transaksi</button>
   </div>
 </div>
 
-<!-- HISTORY PAGE -->
+<!-- HISTORY -->
 <div class="page" id="page-history">
   <div class="history-header">
     <div class="history-title">Transaksi Lokal</div>
@@ -338,6 +237,24 @@
     </select>
   </div>
   <div id="historyList"></div>
+</div>
+
+<!-- CHART -->
+<div class="page" id="page-chart">
+  <div class="chart-section">
+    <div class="chart-toggle-row">
+      <div class="chart-toggle-btn active" data-view="all" onclick="switchChartView('all',this)">All</div>
+      <div class="chart-toggle-btn" data-view="opex" onclick="switchChartView('opex',this)">OPEX</div>
+      <div class="chart-toggle-btn" data-view="cc-bca" onclick="switchChartView('cc-bca',this)">CC BCA</div>
+      <div class="chart-toggle-btn" data-view="cc-niaga" onclick="switchChartView('cc-niaga',this)">CC Niaga</div>
+    </div>
+    <div class="range-row">
+      <div class="range-btn active" data-range="3" onclick="switchRange(3,this)">3 Bln</div>
+      <div class="range-btn" data-range="6" onclick="switchRange(6,this)">6 Bln</div>
+      <div class="range-btn" data-range="12" onclick="switchRange(12,this)">12 Bln</div>
+    </div>
+    <div id="chartContent"><div class="chart-loading">Memuat data...</div></div>
+  </div>
 </div>
 
 <!-- Edit Modal -->
@@ -352,260 +269,180 @@
     </div>
   </div>
 </div>
-
 <div id="toast" class="toast"></div>
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
-
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const opexCategories = ['Auto','Books','Charity','Clothing','Meals','Entertainment','Gifts','Groceries','Health','Home Repair','Household','Medical','Self Care','Transport','Travel','Utilities'];
 const ccCategories = ['Entertainment','Meals','Utilities','Gas','Medical','Groceries','Travel','Administration','Insurance'];
 const opexPayees = ['Azko','Angpau','Apotek','Bengkel','Bensin','Beras','Books','Breakfast','Buah','Cinema','Coffee','Cuci AC','Cuci Mobil','Cukur Rambut','Dinner','Gramedia','Ice Cream','Jahit','Jus','KRL','Laundry','Lunch','Marketplace','Media','Minimarket','MRT','Nitrogen','Ojol','Parkir','Pijat','Pulsa','Rujak','Service','Snack','Supermarket','Tambal Ban','Taxi','TJ','Tokopedia','Tol','Tukang','Uniqlo'];
 
+// Category colors
+const CAT_COLORS = {
+  'Transport':'#60a0f0','Meals':'#c8f060','Entertainment':'#ff6b6b','Groceries':'#ffaa44',
+  'Household':'#a78bfa','Medical':'#34d399','Utilities':'#f472b6','Auto':'#fb923c',
+  'Gas':'#fbbf24','Travel':'#22d3ee','Insurance':'#e879f9','Health':'#4ade80',
+  'Home Repair':'#f87171','Clothing':'#818cf8','Books':'#6ee7b7','Charity':'#fde68a',
+  'Gifts':'#fca5a5','Self Care':'#c4b5fd','Administration':'#93c5fd','Other':'#6b7280'
+};
+
 let currentSheet = 'opex';
 let editingIndex = null;
-let queue = JSON.parse(localStorage.getItem('xpns_queue') || '[]');
-let txHistory = JSON.parse(localStorage.getItem('xpns_history') || '[]');
+let queue = JSON.parse(localStorage.getItem('xpns_queue')||'[]');
+let txHistory = JSON.parse(localStorage.getItem('xpns_history')||'[]');
+let chartData = null;
+let currentChartView = 'all';
+let currentRange = 3;
 
-// ── Date helpers ──────────────────────────────────────────────
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// ── Date ──────────────────────────────────────────────────────
+function getTodayISO(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function isoToDisplay(iso){if(!iso)return'';const[y,m,d]=iso.split('-');return `${parseInt(d)} ${MONTHS[parseInt(m)-1]} ${y}`}
+function isoToSheetDate(iso){const[,m,d]=iso.split('-');return `${parseInt(d)} ${MONTHS[parseInt(m)-1]}`}
+function isoToMonth(iso){const[y,m]=iso.split('-');return `${MONTHS[parseInt(m)-1]} ${y}`}
 
-function getTodayISO() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
+function initDatePicker(){
+  const raw=document.getElementById('inputDateRaw');
+  const display=document.getElementById('inputDateDisplay');
+  const text=document.getElementById('inputDateText');
+  const today=getTodayISO();
+  raw.value=today; text.textContent=isoToDisplay(today);
+  display.addEventListener('click',()=>{try{raw.showPicker()}catch(e){raw.focus();raw.click()}});
+  display.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){try{raw.showPicker()}catch(e2){raw.focus()}}});
+  raw.addEventListener('change',()=>{text.textContent=raw.value?isoToDisplay(raw.value):'Pilih tanggal...'});
 }
 
-function isoToDisplay(iso) {
-  if (!iso) return '';
-  const [y,m,d] = iso.split('-');
-  return `${parseInt(d)} ${MONTHS[parseInt(m)-1]} ${y}`;
-}
-
-function isoToSheetDate(iso) {
-  const [,m,d] = iso.split('-');
-  return `${parseInt(d)} ${MONTHS[parseInt(m)-1]}`;
-}
-
-function isoToMonth(iso) {
-  const [y,m] = iso.split('-');
-  return `${MONTHS[parseInt(m)-1]} ${y}`;
-}
-
-// ── Date picker setup ─────────────────────────────────────────
-function initDatePicker() {
-  const raw = document.getElementById('inputDateRaw');
-  const display = document.getElementById('inputDateDisplay');
-  const text = document.getElementById('inputDateText');
-
-  const today = getTodayISO();
-  raw.value = today;
-  text.textContent = isoToDisplay(today);
-
-  display.addEventListener('click', () => {
-    try { raw.showPicker(); } catch(e) { raw.focus(); raw.click(); }
-  });
-  display.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      try { raw.showPicker(); } catch(e2) { raw.focus(); }
-    }
-  });
-  raw.addEventListener('change', () => {
-    text.textContent = raw.value ? isoToDisplay(raw.value) : 'Pilih tanggal...';
-  });
-}
-
-// ── Tabs & sheets ─────────────────────────────────────────────
-function switchTab(tab, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+// ── Tabs ──────────────────────────────────────────────────────
+function switchTab(tab,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('page-' + tab).classList.add('active');
-  if (tab === 'history') renderHistory();
+  document.getElementById('page-'+tab).classList.add('active');
+  if(tab==='history') renderHistory();
+  if(tab==='chart') loadChartData();
 }
 
-function switchSheet(sheet) {
-  currentSheet = sheet;
-  document.querySelectorAll('.sheet-btn').forEach(b => b.classList.remove('active'));
+function switchSheet(sheet){
+  currentSheet=sheet;
+  document.querySelectorAll('.sheet-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`[data-sheet="${sheet}"]`).classList.add('active');
-  document.getElementById('fields-opex').style.display = sheet === 'opex' ? 'block' : 'none';
-  document.getElementById('fields-cc').style.display = sheet !== 'opex' ? 'block' : 'none';
+  document.getElementById('fields-opex').style.display=sheet==='opex'?'block':'none';
+  document.getElementById('fields-cc').style.display=sheet!=='opex'?'block':'none';
 }
 
 // ── Autocomplete ──────────────────────────────────────────────
-function showAC(fieldId, list) {
-  const input = document.getElementById(fieldId);
-  const dropdown = document.getElementById('ac-' + fieldId);
-  if (!dropdown) return;
-  const val = input.value.toLowerCase();
-  const filtered = val ? list.filter(i => i.toLowerCase().includes(val)) : list;
-  if (!filtered.length) { dropdown.style.display = 'none'; return; }
-  dropdown.innerHTML = filtered.map(i =>
-    `<div class="autocomplete-item" onmousedown="selectAC('${fieldId}','${i.replace(/'/g,"\\'")}')">${i}</div>`
-  ).join('');
-  dropdown.style.display = 'block';
+function showAC(fieldId,list){
+  const input=document.getElementById(fieldId);
+  const dd=document.getElementById('ac-'+fieldId);
+  if(!dd)return;
+  const val=input.value.toLowerCase();
+  const filtered=val?list.filter(i=>i.toLowerCase().includes(val)):list;
+  if(!filtered.length){dd.style.display='none';return}
+  dd.innerHTML=filtered.map(i=>`<div class="autocomplete-item" onmousedown="selectAC('${fieldId}','${i.replace(/'/g,"\\'")}' )">${i}</div>`).join('');
+  dd.style.display='block';
 }
-
-function selectAC(fieldId, val) {
-  const el = document.getElementById(fieldId);
-  if (el) el.value = val;
-  const dd = document.getElementById('ac-' + fieldId);
-  if (dd) dd.style.display = 'none';
+function selectAC(fieldId,val){
+  const el=document.getElementById(fieldId);if(el)el.value=val;
+  const dd=document.getElementById('ac-'+fieldId);if(dd)dd.style.display='none';
 }
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('.autocomplete-wrapper'))
-    document.querySelectorAll('.autocomplete-list').forEach(d => d.style.display = 'none');
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.autocomplete-wrapper'))
+    document.querySelectorAll('.autocomplete-list').forEach(d=>d.style.display='none');
 });
-
-function getPayeeSuggestions(type) {
-  const fromHistory = [...new Set(
-    txHistory
-      .filter(t => type === 'cc' ? t.sheet !== 'opex' : t.sheet === 'opex')
-      .map(t => t.sheet === 'opex' ? t.payee : t.transaction)
-      .filter(Boolean)
-  )];
-  if (type === 'opex') return [...new Set([...opexPayees, ...fromHistory])];
+function getPayeeSuggestions(type){
+  const fromHistory=[...new Set(txHistory.filter(t=>type==='cc'?t.sheet!=='opex':t.sheet==='opex').map(t=>t.sheet==='opex'?t.payee:t.transaction).filter(Boolean))];
+  if(type==='opex')return[...new Set([...opexPayees,...fromHistory])];
   return fromHistory;
 }
 
 // ── Format ────────────────────────────────────────────────────
-function formatRp(n) {
-  return 'Rp' + Number(n).toLocaleString('id-ID');
+function formatRp(n){return'Rp'+Number(n).toLocaleString('id-ID')}
+function formatRpShort(n){
+  if(n>=1000000)return'Rp'+(n/1000000).toFixed(1)+'jt';
+  if(n>=1000)return'Rp'+(n/1000).toFixed(0)+'rb';
+  return'Rp'+n;
 }
 
 // ── Submit ────────────────────────────────────────────────────
-function submitTransaction() {
-  const date = document.getElementById('inputDateRaw').value;
-  const amount = document.getElementById('inputAmount').value;
-  if (!date || !amount) { showToast('Tanggal dan nominal wajib diisi', 'error'); return; }
-
-  let tx = { id: Date.now(), date, sheet: currentSheet, synced: false };
-
-  if (currentSheet === 'opex') {
-    const category = document.getElementById('opex-category').value;
-    const payee = document.getElementById('opex-payee').value;
-    const platform = document.getElementById('opex-platform').value;
-    if (!category || !payee || !platform) { showToast('Semua field wajib diisi', 'error'); return; }
-    Object.assign(tx, { category, payee, platform, amount: parseInt(amount) });
+function submitTransaction(){
+  const date=document.getElementById('inputDateRaw').value;
+  const amount=document.getElementById('inputAmount').value;
+  if(!date||!amount){showToast('Tanggal dan nominal wajib diisi','error');return}
+  let tx={id:Date.now(),date,sheet:currentSheet,synced:false};
+  if(currentSheet==='opex'){
+    const category=document.getElementById('opex-category').value;
+    const payee=document.getElementById('opex-payee').value;
+    const platform=document.getElementById('opex-platform').value;
+    if(!category||!payee||!platform){showToast('Semua field wajib diisi','error');return}
+    Object.assign(tx,{category,payee,platform,amount:parseInt(amount)});
   } else {
-    const transaction = document.getElementById('cc-transaction').value;
-    const category = document.getElementById('cc-category').value;
-    if (!transaction || !category) { showToast('Semua field wajib diisi', 'error'); return; }
-    Object.assign(tx, { transaction, category, amount: parseInt(amount) });
+    const transaction=document.getElementById('cc-transaction').value;
+    const category=document.getElementById('cc-category').value;
+    if(!transaction||!category){showToast('Semua field wajib diisi','error');return}
+    Object.assign(tx,{transaction,category,amount:parseInt(amount)});
   }
-
-  queue.push({...tx});
-  txHistory.unshift({...tx});
-  saveLocal();
-  updateStatus();
-
-  syncSingle(tx).then(ok => {
-    if (ok) {
-      queue = queue.filter(q => q.id !== tx.id);
-      txHistory = txHistory.map(h => h.id === tx.id ? {...h, synced: true} : h);
-      saveLocal();
-      updateStatus();
-      showToast('Tersimpan ke Google Sheets ✓', 'success');
-    } else {
-      showToast('Tersimpan lokal — tap Sync untuk upload', '');
-    }
+  queue.push({...tx}); txHistory.unshift({...tx}); saveLocal(); updateStatus();
+  syncSingle(tx).then(ok=>{
+    if(ok){
+      queue=queue.filter(q=>q.id!==tx.id);
+      txHistory=txHistory.map(h=>h.id===tx.id?{...h,synced:true}:h);
+      saveLocal(); updateStatus();
+      showToast('Tersimpan ke Google Sheets ✓','success');
+    } else showToast('Tersimpan lokal — tap Sync untuk upload','');
   });
-
   resetForm();
 }
 
-function resetForm() {
-  document.getElementById('inputAmount').value = '';
-  const today = getTodayISO();
-  document.getElementById('inputDateRaw').value = today;
-  document.getElementById('inputDateText').textContent = isoToDisplay(today);
-  ['opex-category','opex-payee','cc-transaction','cc-category'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('opex-platform').value = '';
+function resetForm(){
+  document.getElementById('inputAmount').value='';
+  const today=getTodayISO();
+  document.getElementById('inputDateRaw').value=today;
+  document.getElementById('inputDateText').textContent=isoToDisplay(today);
+  ['opex-category','opex-payee','cc-transaction','cc-category'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+  document.getElementById('opex-platform').value='';
 }
 
-// ── Build sheet row ───────────────────────────────────────────
-function buildRow(tx) {
-  const d = isoToSheetDate(tx.date);
-  const m = isoToMonth(tx.date);
-  if (tx.sheet === 'opex') return [d, m, tx.category, tx.payee, tx.platform, tx.amount];
-  return [d, tx.transaction, tx.category, tx.amount];
+// ── Sync ──────────────────────────────────────────────────────
+async function syncSingle(tx){
+  try{
+    const payload={sheet:tx.sheet,date:isoToSheetDate(tx.date),month:isoToMonth(tx.date),monthHeader:isoToMonth(tx.date),amount:tx.amount};
+    if(tx.sheet==='opex'){payload.category=tx.category;payload.payee=tx.payee;payload.platform=tx.platform}
+    else{payload.transaction=tx.transaction;payload.category=tx.category}
+    const res=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    const json=await res.json().catch(()=>({}));
+    if(json.status!=='ok')console.error('Apps Script error:',json);
+    return json.status==='ok';
+  }catch(e){console.error('Sync error:',e);return false}
 }
 
-function getRange(sheet) {
-  if (sheet === 'opex')     return 'Opex!A:F';
-  if (sheet === 'cc-bca')   return 'CC!H:K';
-  if (sheet === 'cc-niaga') return 'CC!B:E';
-}
-
-// ── Apps Script API ──────────────────────────────────────────
-async function syncSingle(tx) {
-  try {
-    const payload = { sheet: tx.sheet, date: isoToSheetDate(tx.date), month: isoToMonth(tx.date), monthHeader: isoToMonth(tx.date), amount: tx.amount };
-    if (tx.sheet === 'opex') {
-      payload.category = tx.category;
-      payload.payee = tx.payee;
-      payload.platform = tx.platform;
-    } else {
-      payload.transaction = tx.transaction;
-      payload.category = tx.category;
-    }
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    });
-    const json = await res.json().catch(() => ({}));
-    if (json.status !== 'ok') console.error('Apps Script error:', json);
-    return json.status === 'ok';
-  } catch(e) {
-    console.error('Sync error:', e);
-    return false;
-  }
-}
-
-async function syncQueue() {
-  if (!queue.length) { showToast('Tidak ada yang perlu di-sync', ''); return; }
-  const icon = document.getElementById('syncIcon');
+async function syncQueue(){
+  if(!queue.length){showToast('Tidak ada yang perlu di-sync','');return}
+  const icon=document.getElementById('syncIcon');
   icon.classList.add('spinning');
-  let success = 0;
-  for (const tx of [...queue]) {
-    const ok = await syncSingle(tx);
-    if (ok) {
-      queue = queue.filter(q => q.id !== tx.id);
-      txHistory = txHistory.map(h => h.id === tx.id ? {...h, synced: true} : h);
-      success++;
-    }
+  let success=0;
+  for(const tx of[...queue]){
+    const ok=await syncSingle(tx);
+    if(ok){queue=queue.filter(q=>q.id!==tx.id);txHistory=txHistory.map(h=>h.id===tx.id?{...h,synced:true}:h);success++}
   }
-  saveLocal();
-  updateStatus();
-  icon.classList.remove('spinning');
-  showToast(success ? `Berhasil sync ${success} transaksi ✓` : 'Sync gagal, coba lagi', success ? 'success' : 'error');
+  saveLocal(); updateStatus(); icon.classList.remove('spinning');
+  showToast(success?`Berhasil sync ${success} transaksi ✓`:'Sync gagal, coba lagi',success?'success':'error');
   renderHistory();
 }
 
 // ── History ───────────────────────────────────────────────────
-function renderHistory() {
-  const filter = document.getElementById('historyFilter').value;
-  const list = document.getElementById('historyList');
-  const filtered = filter === 'all' ? txHistory : txHistory.filter(t => t.sheet === filter);
-  if (!filtered.length) {
-    list.innerHTML = '<div class="empty-state">Belum ada transaksi tersimpan</div>';
-    return;
-  }
-  list.innerHTML = filtered.map(tx => {
-    const origIdx = txHistory.indexOf(tx);
-    const icon = tx.sheet === 'opex' ? '💳' : tx.sheet === 'cc-bca' ? '🔵' : '🔴';
-    const cls = tx.sheet === 'opex' ? 'opex' : tx.sheet === 'cc-bca' ? 'cc-bca' : 'cc-niaga';
-    const badgeCls = tx.sheet === 'opex' ? 'badge-opex' : tx.sheet === 'cc-bca' ? 'badge-bca' : 'badge-niaga';
-    const badgeLabel = tx.sheet === 'opex' ? 'OPEX' : tx.sheet === 'cc-bca' ? 'CC BCA' : 'CC Niaga';
-    const payeeName = tx.sheet === 'opex' ? tx.payee : tx.transaction;
-    const syncBadge = tx.synced ? '' : '<span class="badge badge-pending">pending</span>';
+function renderHistory(){
+  const filter=document.getElementById('historyFilter').value;
+  const list=document.getElementById('historyList');
+  const filtered=filter==='all'?txHistory:txHistory.filter(t=>t.sheet===filter);
+  if(!filtered.length){list.innerHTML='<div class="empty-state">Belum ada transaksi tersimpan</div>';return}
+  list.innerHTML=filtered.map(tx=>{
+    const origIdx=txHistory.indexOf(tx);
+    const icon=tx.sheet==='opex'?'💳':tx.sheet==='cc-bca'?'🔵':'🔴';
+    const cls=tx.sheet==='opex'?'opex':tx.sheet==='cc-bca'?'cc-bca':'cc-niaga';
+    const badgeCls=tx.sheet==='opex'?'badge-opex':tx.sheet==='cc-bca'?'badge-bca':'badge-niaga';
+    const badgeLabel=tx.sheet==='opex'?'OPEX':tx.sheet==='cc-bca'?'CC BCA':'CC Niaga';
+    const payeeName=tx.sheet==='opex'?tx.payee:tx.transaction;
+    const syncBadge=tx.synced?'':'<span class="badge badge-pending">pending</span>';
     return `<div class="tx-item" onclick="openEdit(${origIdx})">
       <div class="tx-icon ${cls}">${icon}</div>
       <div class="tx-info">
@@ -617,152 +454,300 @@ function renderHistory() {
   }).join('');
 }
 
-// ── Edit modal ────────────────────────────────────────────────
-function openEdit(idx) {
-  editingIndex = idx;
-  const tx = txHistory[idx];
-  document.getElementById('editModalTitle').textContent =
-    'Edit ' + (tx.sheet === 'opex' ? 'OPEX' : tx.sheet === 'cc-bca' ? 'CC BCA' : 'CC Niaga');
-
-  let fields = `
-    <div class="form-group" style="position:relative;">
-      <label class="form-label">Tanggal</label>
-      <input type="date" id="edit-date-raw" class="date-input-hidden" value="${tx.date}">
-      <div class="date-display" id="edit-date-display" tabindex="0" onclick="triggerEditDate()">
-        <span id="edit-date-text">${isoToDisplay(tx.date)}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-    </div>`;
-
-  if (tx.sheet === 'opex') {
-    fields += `
-      <div class="form-group autocomplete-wrapper">
-        <label class="form-label">Kategori</label>
-        <input type="text" class="form-input" id="edit-category" value="${tx.category||''}" autocomplete="off"
-          oninput="showAC('edit-category',opexCategories)" onfocus="showAC('edit-category',opexCategories)">
-        <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div>
-      </div>
-      <div class="form-group autocomplete-wrapper">
-        <label class="form-label">Payee</label>
-        <input type="text" class="form-input" id="edit-payee" value="${tx.payee||''}" autocomplete="off"
-          oninput="showAC('edit-payee',opexPayees)" onfocus="showAC('edit-payee',opexPayees)">
-        <div class="autocomplete-list" id="ac-edit-payee" style="display:none"></div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Payment Method</label>
-        <select class="form-input" id="edit-platform">
-          <option ${tx.platform==='BCA'?'selected':''}>BCA</option>
-          <option ${tx.platform==='eWallet'?'selected':''}>eWallet</option>
-          <option ${tx.platform==='Flazz'?'selected':''}>Flazz</option>
-        </select>
-      </div>`;
+// ── Edit Modal ────────────────────────────────────────────────
+function openEdit(idx){
+  editingIndex=idx;
+  const tx=txHistory[idx];
+  document.getElementById('editModalTitle').textContent='Edit '+(tx.sheet==='opex'?'OPEX':tx.sheet==='cc-bca'?'CC BCA':'CC Niaga');
+  let fields=`<div class="form-group" style="position:relative">
+    <label class="form-label">Tanggal</label>
+    <input type="date" id="edit-date-raw" class="date-input-hidden" value="${tx.date}">
+    <div class="date-display" tabindex="0" onclick="triggerEditDate()">
+      <span id="edit-date-text">${isoToDisplay(tx.date)}</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div></div>`;
+  if(tx.sheet==='opex'){
+    fields+=`<div class="form-group autocomplete-wrapper"><label class="form-label">Kategori</label>
+      <input type="text" class="form-input" id="edit-category" value="${tx.category||''}" autocomplete="off" oninput="showAC('edit-category',opexCategories)" onfocus="showAC('edit-category',opexCategories)">
+      <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div></div>
+    <div class="form-group autocomplete-wrapper"><label class="form-label">Payee</label>
+      <input type="text" class="form-input" id="edit-payee" value="${tx.payee||''}" autocomplete="off" oninput="showAC('edit-payee',opexPayees)" onfocus="showAC('edit-payee',opexPayees)">
+      <div class="autocomplete-list" id="ac-edit-payee" style="display:none"></div></div>
+    <div class="form-group"><label class="form-label">Payment Method</label>
+      <select class="form-input" id="edit-platform">
+        <option ${tx.platform==='BCA'?'selected':''}>BCA</option>
+        <option ${tx.platform==='eWallet'?'selected':''}>eWallet</option>
+        <option ${tx.platform==='Flazz'?'selected':''}>Flazz</option>
+      </select></div>`;
   } else {
-    fields += `
-      <div class="form-group autocomplete-wrapper">
-        <label class="form-label">Transaction</label>
-        <input type="text" class="form-input" id="edit-transaction" value="${tx.transaction||''}" autocomplete="off">
-        <div class="autocomplete-list" id="ac-edit-transaction" style="display:none"></div>
-      </div>
-      <div class="form-group autocomplete-wrapper">
-        <label class="form-label">Kategori</label>
-        <input type="text" class="form-input" id="edit-category" value="${tx.category||''}" autocomplete="off"
-          oninput="showAC('edit-category',ccCategories)" onfocus="showAC('edit-category',ccCategories)">
-        <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div>
-      </div>`;
+    fields+=`<div class="form-group autocomplete-wrapper"><label class="form-label">Transaction</label>
+      <input type="text" class="form-input" id="edit-transaction" value="${tx.transaction||''}" autocomplete="off">
+      <div class="autocomplete-list" id="ac-edit-transaction" style="display:none"></div></div>
+    <div class="form-group autocomplete-wrapper"><label class="form-label">Kategori</label>
+      <input type="text" class="form-input" id="edit-category" value="${tx.category||''}" autocomplete="off" oninput="showAC('edit-category',ccCategories)" onfocus="showAC('edit-category',ccCategories)">
+      <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div></div>`;
   }
-
-  fields += `
-    <div class="form-group">
-      <label class="form-label">Nominal</label>
-      <div class="amount-wrapper">
-        <span class="amount-prefix">Rp</span>
-        <input type="number" class="form-input amount-input" id="edit-amount" value="${tx.amount}" inputmode="numeric">
-      </div>
-    </div>`;
-
-  document.getElementById('editModalBody').innerHTML = fields;
-
-  // Wire edit date picker after render
-  const editRaw = document.getElementById('edit-date-raw');
-  if (editRaw) {
-    editRaw.addEventListener('change', () => {
-      document.getElementById('edit-date-text').textContent = isoToDisplay(editRaw.value);
-    });
-  }
-
+  fields+=`<div class="form-group"><label class="form-label">Nominal</label>
+    <div class="amount-wrapper"><span class="amount-prefix">Rp</span>
+      <input type="number" class="form-input amount-input" id="edit-amount" value="${tx.amount}" inputmode="numeric">
+    </div></div>`;
+  document.getElementById('editModalBody').innerHTML=fields;
+  const editRaw=document.getElementById('edit-date-raw');
+  if(editRaw) editRaw.addEventListener('change',()=>{document.getElementById('edit-date-text').textContent=isoToDisplay(editRaw.value)});
   document.getElementById('editModal').classList.add('open');
 }
-
-function triggerEditDate() {
-  const raw = document.getElementById('edit-date-raw');
-  if (raw) { try { raw.showPicker(); } catch(e) { raw.focus(); raw.click(); } }
+function triggerEditDate(){const raw=document.getElementById('edit-date-raw');if(raw){try{raw.showPicker()}catch(e){raw.focus();raw.click()}}}
+function saveEdit(){
+  const tx=txHistory[editingIndex];
+  const dateRaw=document.getElementById('edit-date-raw');
+  tx.date=dateRaw?dateRaw.value:tx.date;
+  tx.amount=parseInt(document.getElementById('edit-amount').value);
+  if(tx.sheet==='opex'){tx.category=document.getElementById('edit-category').value;tx.payee=document.getElementById('edit-payee').value;tx.platform=document.getElementById('edit-platform').value}
+  else{tx.transaction=document.getElementById('edit-transaction').value;tx.category=document.getElementById('edit-category').value}
+  tx.synced=false;
+  const qi=queue.findIndex(q=>q.id===tx.id);if(qi>-1)queue[qi]={...tx};
+  saveLocal();closeModal();renderHistory();updateStatus();showToast('Perubahan tersimpan','success');
 }
-
-function saveEdit() {
-  const tx = txHistory[editingIndex];
-  const dateRaw = document.getElementById('edit-date-raw');
-  tx.date = dateRaw ? dateRaw.value : tx.date;
-  tx.amount = parseInt(document.getElementById('edit-amount').value);
-  if (tx.sheet === 'opex') {
-    tx.category = document.getElementById('edit-category').value;
-    tx.payee = document.getElementById('edit-payee').value;
-    tx.platform = document.getElementById('edit-platform').value;
-  } else {
-    tx.transaction = document.getElementById('edit-transaction').value;
-    tx.category = document.getElementById('edit-category').value;
-  }
-  tx.synced = false;
-  // Update in queue if pending
-  const qi = queue.findIndex(q => q.id === tx.id);
-  if (qi > -1) queue[qi] = {...tx};
-  saveLocal();
-  closeModal();
-  renderHistory();
-  updateStatus();
-  showToast('Perubahan tersimpan', 'success');
+function deleteTransaction(){
+  if(!confirm('Hapus transaksi ini?'))return;
+  const tx=txHistory[editingIndex];txHistory.splice(editingIndex,1);queue=queue.filter(q=>q.id!==tx.id);
+  saveLocal();closeModal();renderHistory();updateStatus();showToast('Transaksi dihapus','');
 }
-
-function deleteTransaction() {
-  if (!confirm('Hapus transaksi ini dari riwayat lokal?')) return;
-  const tx = txHistory[editingIndex];
-  txHistory.splice(editingIndex, 1);
-  queue = queue.filter(q => q.id !== tx.id);
-  saveLocal();
-  closeModal();
-  renderHistory();
-  updateStatus();
-  showToast('Transaksi dihapus', '');
-}
-
-function closeModal() {
-  document.getElementById('editModal').classList.remove('open');
-  editingIndex = null;
-}
-document.getElementById('editModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('editModal')) closeModal();
-});
+function closeModal(){document.getElementById('editModal').classList.remove('open');editingIndex=null}
+document.getElementById('editModal').addEventListener('click',e=>{if(e.target===document.getElementById('editModal'))closeModal()});
 
 // ── Local storage ─────────────────────────────────────────────
-function saveLocal() {
-  localStorage.setItem('xpns_queue', JSON.stringify(queue));
-  localStorage.setItem('xpns_history', JSON.stringify(txHistory));
-}
-
-function updateStatus() {
-  const dot = document.getElementById('statusDot');
-  const text = document.getElementById('statusText');
-  const qInfo = document.getElementById('queueInfo');
+function saveLocal(){localStorage.setItem('xpns_queue',JSON.stringify(queue));localStorage.setItem('xpns_history',JSON.stringify(txHistory))}
+function updateStatus(){
+  const dot=document.getElementById('statusDot');
   dot.classList.add('online');
-  text.textContent = 'Siap';
-  qInfo.textContent = queue.length ? `· ${queue.length} pending` : '';
+  document.getElementById('statusText').textContent='Siap';
+  document.getElementById('queueInfo').textContent=queue.length?`· ${queue.length} pending`:'';
 }
 
 // ── Toast ─────────────────────────────────────────────────────
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (type ? ' ' + type : '');
-  setTimeout(() => t.className = 'toast', 3000);
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.className='toast',3000);
+}
+
+// ── CHART ─────────────────────────────────────────────────────
+async function loadChartData(){
+  if(chartData){renderChart();return}
+  document.getElementById('chartContent').innerHTML='<div class="chart-loading">Memuat data dari Sheets...</div>';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?type=all');
+    const json=await res.json();
+    if(json.status==='ok'){
+      chartData=json.data;
+      renderChart();
+    } else {
+      document.getElementById('chartContent').innerHTML='<div class="chart-empty">Gagal memuat data. Coba lagi.</div>';
+    }
+  }catch(e){
+    document.getElementById('chartContent').innerHTML='<div class="chart-empty">Gagal memuat data.</div>';
+  }
+}
+
+function switchChartView(view,el){
+  currentChartView=view;
+  document.querySelectorAll('.chart-toggle-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderChart();
+}
+
+function switchRange(range,el){
+  currentRange=range;
+  document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderChart();
+}
+
+// Parse sheet date string e.g. "11 May" with current/recent year context
+function parseSheetDate(dateStr, fallbackYear){
+  if(!dateStr) return null;
+  const s = String(dateStr).trim();
+  // Already ISO
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s);
+  // "11 May" format
+  const m = s.match(/^(\d{1,2})\s+([A-Za-z]{3})$/);
+  if(m){
+    const day=parseInt(m[1]);
+    const mon=MONTHS.findIndex(x=>x.toLowerCase()===m[2].toLowerCase());
+    if(mon>=0) return new Date(fallbackYear, mon, day);
+  }
+  return null;
+}
+
+function getMonthKey(date){ return `${MONTHS[date.getMonth()]} ${date.getFullYear()}` }
+
+function getLastNMonths(n){
+  const months=[];
+  const now=new Date();
+  for(let i=n-1;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push(getMonthKey(d));
+  }
+  return months;
+}
+
+function aggregateByMonthCategory(rows, nMonths){
+  const months=getLastNMonths(nMonths);
+  const result={};
+  months.forEach(m=>result[m]={});
+
+  // Try to figure out year from month string context
+  const nowYear=new Date().getFullYear();
+
+  rows.forEach(row=>{
+    let date=null;
+    // Try ISO date first (from local history)
+    if(row.date && /^\d{4}-\d{2}-\d{2}/.test(String(row.date))){
+      date=new Date(row.date);
+    } else if(row.month){
+      // Use month field directly e.g. "May 2026"
+      const mp=row.month.match(/^([A-Za-z]{3})\s+(\d{4})$/);
+      if(mp){
+        const mon=MONTHS.findIndex(x=>x.toLowerCase()===mp[1].toLowerCase());
+        if(mon>=0) date=new Date(parseInt(mp[2]),mon,1);
+      }
+    } else if(row.date){
+      // Try parsing "11 May" — guess year
+      date=parseSheetDate(row.date, nowYear);
+    }
+    if(!date) return;
+
+    const mk=getMonthKey(date);
+    if(!result[mk]) return; // outside range
+
+    const cat=row.category||'Other';
+    result[mk][cat]=(result[mk][cat]||0)+Number(row.amount||0);
+  });
+  return {months, data:result};
+}
+
+function getSourceRows(){
+  if(!chartData) return {opex:[],ccBca:[],ccNiaga:[]};
+  return {
+    opex: chartData.opex||[],
+    ccBca: chartData.ccBca||[],
+    ccNiaga: chartData.ccNiaga||[]
+  };
+}
+
+function renderChart(){
+  if(!chartData){loadChartData();return}
+  const src=getSourceRows();
+  let rows=[];
+  if(currentChartView==='all') rows=[...src.opex,...src.ccBca,...src.ccNiaga];
+  else if(currentChartView==='opex') rows=src.opex;
+  else if(currentChartView==='cc-bca') rows=src.ccBca;
+  else if(currentChartView==='cc-niaga') rows=src.ccNiaga;
+
+  const {months,data}=aggregateByMonthCategory(rows,currentRange);
+
+  // Summary for current month
+  const currentMonth=months[months.length-1];
+  const currentMonthData=data[currentMonth]||{};
+  const currentTotal=Object.values(currentMonthData).reduce((a,b)=>a+b,0);
+  const prevMonth=months[months.length-2];
+  const prevTotal=prevMonth?Object.values(data[prevMonth]||{}).reduce((a,b)=>a+b,0):0;
+  const avgTotal=months.slice(0,-1).reduce((s,m)=>s+Object.values(data[m]||{}).reduce((a,b)=>a+b,0),0)/Math.max(months.length-1,1);
+
+  // All categories across range
+  const allCats=[...new Set(months.flatMap(m=>Object.keys(data[m]||{})))].sort();
+
+  // Max total for bar scaling
+  const maxTotal=Math.max(...months.map(m=>Object.values(data[m]||{}).reduce((a,b)=>a+b,0)),1);
+
+  const viewLabel=currentChartView==='all'?'All Expenses':currentChartView==='opex'?'OPEX':currentChartView==='cc-bca'?'CC BCA':'CC Niaga';
+
+  let html=`
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-label">${currentMonth}</div>
+      <div class="summary-value">${formatRpShort(currentTotal)}</div>
+      <div class="summary-sub">${viewLabel}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">vs Bulan Lalu</div>
+      <div class="summary-value" style="color:${currentTotal>prevTotal?'var(--red)':'var(--accent)'}">
+        ${prevTotal>0?(((currentTotal-prevTotal)/prevTotal*100)>0?'+':'')+((currentTotal-prevTotal)/prevTotal*100).toFixed(0)+'%':'—'}
+      </div>
+      <div class="summary-sub">Rata-rata ${formatRpShort(Math.round(avgTotal))}/bln</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-title">Total per Bulan (${currentRange} Bulan)</div>
+    <div class="bar-chart" id="barChart">`;
+
+  months.forEach(m=>{
+    const mData=data[m]||{};
+    const total=Object.values(mData).reduce((a,b)=>a+b,0);
+    const heightPct=maxTotal>0?(total/maxTotal*100):0;
+    const shortLabel=m.split(' ')[0]; // "May"
+    html+=`<div class="bar-col">
+      <div style="font-size:9px;color:var(--text2);margin-bottom:3px;text-align:center">${total>0?formatRpShort(total):''}</div>
+      <div class="bar-stack" style="height:${Math.max(heightPct,2)}%" title="${m}: ${formatRp(total)}">`;
+    allCats.forEach(cat=>{
+      const val=mData[cat]||0;
+      if(!val)return;
+      const segPct=total>0?(val/total*100):0;
+      const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
+      html+=`<div class="bar-segment" style="height:${segPct}%;background:${color}" title="${cat}: ${formatRp(val)}"></div>`;
+    });
+    html+=`</div><div class="bar-label">${shortLabel}</div></div>`;
+  });
+
+  html+=`</div></div>`;
+
+  // Donut for current month
+  if(allCats.length>0 && currentTotal>0){
+    html+=`<div class="chart-card">
+      <div class="chart-card-title">Breakdown ${currentMonth}</div>
+      <div class="donut-wrapper">
+        <div class="donut-svg-wrap">${buildDonut(currentMonthData, 90)}</div>
+        <div class="donut-legend">`;
+    const sorted=Object.entries(currentMonthData).sort((a,b)=>b[1]-a[1]);
+    sorted.forEach(([cat,val])=>{
+      const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
+      const pct=currentTotal>0?((val/currentTotal)*100).toFixed(0):0;
+      html+=`<div class="legend-item">
+        <div class="legend-dot" style="background:${color}"></div>
+        <div class="legend-label">${cat}</div>
+        <div class="legend-val">${pct}%</div>
+      </div>`;
+    });
+    html+=`</div></div></div>`;
+  }
+
+  document.getElementById('chartContent').innerHTML=html;
+}
+
+function buildDonut(data, size){
+  const total=Object.values(data).reduce((a,b)=>a+b,0);
+  if(!total) return '';
+  const r=size/2-10; const cx=size/2; const cy=size/2;
+  const circumference=2*Math.PI*r;
+  let offset=0;
+  let paths='';
+  const sorted=Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  sorted.forEach(([cat,val])=>{
+    const pct=val/total;
+    const dash=pct*circumference;
+    const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="14"
+      stroke-dasharray="${dash} ${circumference-dash}"
+      stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset+=dash;
+  });
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="14"/>
+    ${paths}
+    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="var(--text)" font-size="10" font-weight="600">${formatRpShort(total)}</text>
+  </svg>`;
 }
 
 // ── Init ──────────────────────────────────────────────────────
