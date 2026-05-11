@@ -738,6 +738,7 @@ function renderMonthly(){
   const catData=catMap[selKey]||{},total=Object.values(catData).reduce((a,b)=>a+b,0),selRows=rawRows[selKey]||{};
   if(total>0){
     const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
+    if(!mSelCat||!catData[mSelCat])mSelCat=sorted[0][0];
     let legendHTML=sorted.map(([cat,val])=>{
       const color=CAT_COLORS[cat]||CAT_COLORS['Other'],pct=((val/total)*100).toFixed(0),isActive=mSelCat===cat;
       return`<div class="legend-row${isActive?' active':''}" onclick="selectMonthlyCat('${cat.replace(/'/g,"\\'")}')">
@@ -750,7 +751,7 @@ function renderMonthly(){
     let detailHTML='';
     if(mSelCat&&selRows[mSelCat]){
       const color=CAT_COLORS[mSelCat]||CAT_COLORS['Other'];
-      const txList=selRows[mSelCat].sort((a,b)=>b.amount-a.amount);
+      const txList=[...selRows[mSelCat]].sort((a,b)=>b.amount-a.amount);
       detailHTML=`<div class="detail-section">
         <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>${mSelCat} · ${fRp(catData[mSelCat])}</div>
         ${txList.map(r=>`<div class="detail-item">
@@ -762,7 +763,7 @@ function renderMonthly(){
     }
     document.getElementById('monthlyDonutCard').innerHTML=`
       <div class="chart-card">
-        <div class="chart-card-title">Breakdown ${selKey} — tap for detail</div>
+        <div class="chart-card-title">Breakdown ${selKey} — tap category for transactions</div>
         <div class="donut-wrap"><div>${buildDonutSVG(catData,100)}</div><div class="donut-legend">${legendHTML}</div></div>
         ${detailHTML}
       </div>`;
@@ -771,7 +772,7 @@ function renderMonthly(){
   }
 }
 function selectMonth(k){mSelMonth=k;mSelCat=null;renderMonthly()}
-function selectMonthlyCat(cat){mSelCat=mSelCat===cat?null:cat;renderMonthly()}
+function selectMonthlyCat(cat){mSelCat=cat;renderMonthly()}
 
 // ── YEARLY ────────────────────────────────────────────────────
 function setYV(v,el){yView=v;ySelYear=null;ySelCat=null;document.querySelectorAll('#yearlySourceToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderYearly()}
@@ -840,6 +841,7 @@ function renderYearly(){
   const catData=cats[selY]||{},catTotal=Object.values(catData).reduce((a,b)=>a+b,0);
   if(catTotal>0){
     const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
+    if(!ySelCat||!catData[ySelCat])ySelCat=sorted[0][0];
     let legendHTML=sorted.map(([cat,val])=>{
       const color=CAT_COLORS[cat]||CAT_COLORS['Other'],pct=((val/catTotal)*100).toFixed(0),isActive=ySelCat===cat;
       return`<div class="legend-row${isActive?' active':''}" onclick="selectYearlyCat('${cat.replace(/'/g,"\\'")}')">
@@ -852,7 +854,7 @@ function renderYearly(){
     let detailHTML='';
     if(ySelCat&&rawCats[selY][ySelCat]){
       const color=CAT_COLORS[ySelCat]||CAT_COLORS['Other'];
-      const txList=rawCats[selY][ySelCat].sort((a,b)=>b.amount-a.amount);
+      const txList=[...rawCats[selY][ySelCat]].sort((a,b)=>b.amount-a.amount);
       detailHTML=`<div class="detail-section">
         <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>${ySelCat} ${selY} · ${fRp(catData[ySelCat])}</div>
         ${txList.map(r=>`<div class="detail-item">
@@ -864,7 +866,7 @@ function renderYearly(){
     }
     document.getElementById('yearlyDonutCard').innerHTML=`
       <div class="chart-card">
-        <div class="chart-card-title">Category Breakdown ${selY} — tap for detail</div>
+        <div class="chart-card-title">Category Breakdown ${selY} — tap for transactions</div>
         <div class="donut-wrap"><div>${buildDonutSVG(catData,100)}</div><div class="donut-legend">${legendHTML}</div></div>
         ${detailHTML}
       </div>`;
@@ -872,7 +874,7 @@ function renderYearly(){
 
 }
 function selectYear(y){ySelYear=y;ySelCat=null;renderYearly()}
-function selectYearlyCat(cat){ySelCat=ySelCat===cat?null:cat;renderYearly()}
+function selectYearlyCat(cat){ySelCat=cat;renderYearly()}
 
 // ── CATEGORY TAB ──────────────────────────────────────────────
 function setCV(v,el){cView=v;cSelCat=null;document.querySelectorAll('#catSourceToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderCategory()}
