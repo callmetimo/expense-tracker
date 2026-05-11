@@ -170,10 +170,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
   <div class="tab-bar">
     <div class="tab active" onclick="switchTab('input',this)">Input</div>
-    <div class="tab" onclick="switchTab('history',this)">Riwayat</div>
-    <div class="tab" onclick="switchTab('monthly',this)">Bulanan</div>
-    <div class="tab" onclick="switchTab('yearly',this)">Tahunan</div>
-    <div class="tab" onclick="switchTab('category',this)">Kategori</div>
+    <div class="tab" onclick="switchTab('history',this)">History</div>
+    <div class="tab" onclick="switchTab('insights',this)">Insights</div>
   </div>
   <div class="status-bar">
     <div class="status-dot"></div>
@@ -237,7 +235,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <!-- HISTORY -->
 <div class="page" id="page-history">
   <div class="section-header">
-    <div class="section-title">Local Transactions</div>
+    <div class="section-title">Local transactions</div>
     <select class="filter-select" id="historyFilter" onchange="renderHistory()">
       <option value="all">All</option>
       <option value="opex">OPEX</option>
@@ -248,65 +246,73 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   <div id="historyList"></div>
 </div>
 
-<!-- MONTHLY -->
-<div class="page" id="page-monthly">
+<!-- INSIGHTS -->
+<div class="page" id="page-insights">
   <div class="chart-page-section">
-    <div class="toggle-row" id="monthlySourceToggle">
-      <div class="toggle-btn active" data-v="all" onclick="setMV('all',this)">All</div>
-      <div class="toggle-btn" data-v="opex" onclick="setMV('opex',this)">OPEX</div>
-      <div class="toggle-btn" data-v="cc-bca" onclick="setMV('cc-bca',this)">CC BCA</div>
-      <div class="toggle-btn" data-v="cc-niaga" onclick="setMV('cc-niaga',this)">CC Niaga</div>
+    <!-- Insights mode toggle -->
+    <div class="toggle-row" id="insightsModeToggle">
+      <div class="toggle-btn active" data-m="monthly" onclick="setIM('monthly',this)">Monthly</div>
+      <div class="toggle-btn" data-m="yearly" onclick="setIM('yearly',this)">Yearly</div>
+      <div class="toggle-btn" data-m="category" onclick="setIM('category',this)">Category</div>
     </div>
-    <div class="toggle-row" id="monthlyRangeToggle">
-      <div class="toggle-btn active" data-r="3" onclick="setMR(3,this)">3 Bln</div>
-      <div class="toggle-btn" data-r="6" onclick="setMR(6,this)">6 Bln</div>
-      <div class="toggle-btn" data-r="12" onclick="setMR(12,this)">12 Bln</div>
-      <div class="toggle-btn" data-r="ytd" onclick="setMR('ytd',this)">YTD</div>
+
+    <!-- Monthly controls -->
+    <div id="monthlyControls">
+      <div class="toggle-row" id="monthlySourceToggle">
+        <div class="toggle-btn active" data-v="all" onclick="setMV('all',this)">All</div>
+        <div class="toggle-btn" data-v="opex" onclick="setMV('opex',this)">OPEX</div>
+        <div class="toggle-btn" data-v="cc-bca" onclick="setMV('cc-bca',this)">CC BCA</div>
+        <div class="toggle-btn" data-v="cc-niaga" onclick="setMV('cc-niaga',this)">CC Niaga</div>
+      </div>
+      <div class="toggle-row" id="monthlyRangeToggle">
+        <div class="toggle-btn active" data-r="3" onclick="setMR(3,this)">3 Mo</div>
+        <div class="toggle-btn" data-r="6" onclick="setMR(6,this)">6 Mo</div>
+        <div class="toggle-btn" data-r="12" onclick="setMR(12,this)">12 Mo</div>
+        <div class="toggle-btn" data-r="ytd" onclick="setMR('ytd',this)">YTD</div>
+      </div>
     </div>
+
+    <!-- Yearly controls -->
+    <div id="yearlyControls" style="display:none">
+      <div class="toggle-row" id="yearlySourceToggle">
+        <div class="toggle-btn active" data-v="all" onclick="setYV('all',this)">All</div>
+        <div class="toggle-btn" data-v="opex" onclick="setYV('opex',this)">OPEX</div>
+        <div class="toggle-btn" data-v="cc-bca" onclick="setYV('cc-bca',this)">CC BCA</div>
+        <div class="toggle-btn" data-v="cc-niaga" onclick="setYV('cc-niaga',this)">CC Niaga</div>
+      </div>
+      <div class="toggle-row" id="yearlyRangeToggle">
+        <div class="toggle-btn active" data-r="3" onclick="setYR(3,this)">3 Yr</div>
+        <div class="toggle-btn" data-r="5" onclick="setYR(5,this)">5 Yr</div>
+        <div class="toggle-btn" data-r="all" onclick="setYR('all',this)">All Time</div>
+      </div>
+    </div>
+
+    <!-- Category controls -->
+    <div id="categoryControls" style="display:none">
+      <div class="toggle-row" id="catSourceToggle">
+        <div class="toggle-btn active" data-v="all" onclick="setCV('all',this)">All</div>
+        <div class="toggle-btn" data-v="opex" onclick="setCV('opex',this)">OPEX</div>
+        <div class="toggle-btn" data-v="cc-bca" onclick="setCV('cc-bca',this)">CC BCA</div>
+        <div class="toggle-btn" data-v="cc-niaga" onclick="setCV('cc-niaga',this)">CC Niaga</div>
+      </div>
+      <div class="toggle-row" id="catRangeToggle">
+        <div class="toggle-btn active" data-r="3" onclick="setCR(3,this)">3 Mo</div>
+        <div class="toggle-btn" data-r="6" onclick="setCR(6,this)">6 Mo</div>
+        <div class="toggle-btn" data-r="12" onclick="setCR(12,this)">12 Mo</div>
+        <div class="toggle-btn" data-r="ytd" onclick="setCR('ytd',this)">YTD</div>
+      </div>
+    </div>
+
+    <!-- Content areas -->
     <div id="monthlySummary"></div>
     <div id="monthlyBarCard"></div>
     <div id="monthlyDonutCard"></div>
-  </div>
-</div>
-
-<!-- YEARLY -->
-<div class="page" id="page-yearly">
-  <div class="chart-page-section">
-    <div class="toggle-row" id="yearlySourceToggle">
-      <div class="toggle-btn active" data-v="all" onclick="setYV('all',this)">All</div>
-      <div class="toggle-btn" data-v="opex" onclick="setYV('opex',this)">OPEX</div>
-      <div class="toggle-btn" data-v="cc-bca" onclick="setYV('cc-bca',this)">CC BCA</div>
-      <div class="toggle-btn" data-v="cc-niaga" onclick="setYV('cc-niaga',this)">CC Niaga</div>
-    </div>
-    <div class="toggle-row" id="yearlyRangeToggle">
-      <div class="toggle-btn active" data-r="3" onclick="setYR(3,this)">3 Thn</div>
-      <div class="toggle-btn" data-r="5" onclick="setYR(5,this)">5 Thn</div>
-      <div class="toggle-btn" data-r="all" onclick="setYR('all',this)">All Time</div>
-    </div>
-    <div id="yearlySummary"></div>
-    <div id="yearlyBarCard"></div>
-    <div id="yearlyDonutCard"></div>
-    <div id="yearlyMonthCard"></div>
-  </div>
-</div>
-
-<!-- CATEGORY -->
-<div class="page" id="page-category">
-  <div class="chart-page-section">
-    <div class="toggle-row" id="catSourceToggle">
-      <div class="toggle-btn active" data-v="all" onclick="setCV('all',this)">All</div>
-      <div class="toggle-btn" data-v="opex" onclick="setCV('opex',this)">OPEX</div>
-      <div class="toggle-btn" data-v="cc-bca" onclick="setCV('cc-bca',this)">CC BCA</div>
-      <div class="toggle-btn" data-v="cc-niaga" onclick="setCV('cc-niaga',this)">CC Niaga</div>
-    </div>
-    <div class="toggle-row" id="catRangeToggle">
-      <div class="toggle-btn active" data-r="3" onclick="setCR(3,this)">3 Bln</div>
-      <div class="toggle-btn" data-r="6" onclick="setCR(6,this)">6 Bln</div>
-      <div class="toggle-btn" data-r="12" onclick="setCR(12,this)">12 Bln</div>
-      <div class="toggle-btn" data-r="ytd" onclick="setCR('ytd',this)">YTD</div>
-    </div>
-    <div id="catRankingCard"></div>
-    <div id="catTrendCard"></div>
+    <div id="yearlySummary" style="display:none"></div>
+    <div id="yearlyBarCard" style="display:none"></div>
+    <div id="yearlyDonutCard" style="display:none"></div>
+    <div id="yearlyMonthCard" style="display:none"></div>
+    <div id="catRankingCard" style="display:none"></div>
+    <div id="catTrendCard" style="display:none"></div>
   </div>
 </div>
 
@@ -427,13 +433,33 @@ function getSheetFromPM(pm){
 }
 
 // ── TABS ──────────────────────────────────────────────────────
+let insightsMode='monthly';
+
 function switchTab(tab,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
   if(tab==='history')renderHistory();
-  if(tab==='monthly'||tab==='yearly'||tab==='category')ensureChartData(tab);
+  if(tab==='insights')ensureChartData(insightsMode);
+}
+
+function setIM(mode,el){
+  insightsMode=mode;
+  document.querySelectorAll('#insightsModeToggle .toggle-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  // Show/hide controls
+  document.getElementById('monthlyControls').style.display=mode==='monthly'?'block':'none';
+  document.getElementById('yearlyControls').style.display=mode==='yearly'?'block':'none';
+  document.getElementById('categoryControls').style.display=mode==='category'?'block':'none';
+  // Show/hide content
+  const monthlyEls=['monthlySummary','monthlyBarCard','monthlyDonutCard'];
+  const yearlyEls=['yearlySummary','yearlyBarCard','yearlyDonutCard','yearlyMonthCard'];
+  const catEls=['catRankingCard','catTrendCard'];
+  monthlyEls.forEach(id=>document.getElementById(id).style.display=mode==='monthly'?'block':'none');
+  yearlyEls.forEach(id=>document.getElementById(id).style.display=mode==='yearly'?'block':'none');
+  catEls.forEach(id=>document.getElementById(id).style.display=mode==='category'?'block':'none');
+  ensureChartData(mode);
 }
 
 // ── AUTOCOMPLETE ──────────────────────────────────────────────
@@ -652,7 +678,7 @@ function getRows(view){
 function renderChartTab(tab){
   if(tab==='monthly')renderMonthly();
   else if(tab==='yearly')renderYearly();
-  else renderCategory();
+  else if(tab==='category')renderCategory();
 }
 
 // ── MONTHLY ───────────────────────────────────────────────────
