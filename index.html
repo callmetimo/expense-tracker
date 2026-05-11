@@ -92,6 +92,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 /* CHART SHARED */
 .chart-page-section{margin-top:16px}
+.insights-sticky{position:sticky;top:var(--header-height,120px);z-index:90;background:var(--bg);padding-top:10px;padding-bottom:4px;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;border-bottom:0.5px solid var(--border)}
 .toggle-row{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
 .toggle-btn{flex:1;min-width:0;padding:7px 3px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--bg3);color:var(--text2);font-size:10px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.2s;white-space:nowrap}
 .toggle-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
@@ -129,18 +130,16 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .detail-date{font-size:10px;color:var(--text3);white-space:nowrap}
 .detail-amt{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap}
 
-/* CATEGORY TAB */
-.cat-ranking-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
-.cat-ranking-item:last-child{border-bottom:none}
-.cat-ranking-item.active{background:var(--bg3);border-radius:var(--radius-sm);padding:8px;margin:0 -8px}
-.cat-rank-num{font-size:11px;color:var(--text3);width:16px;text-align:right;flex-shrink:0}
-.cat-rank-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.cat-rank-name{font-size:13px;font-weight:500;flex:1}
-.cat-rank-bar-wrap{flex:2;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
-.cat-rank-bar{height:100%;border-radius:3px;transition:width 0.4s}
-.cat-rank-amt{font-size:12px;font-weight:500;white-space:nowrap;color:var(--text2)}
-.cat-trend-wrap{margin-top:8px}
-.cat-trend-bar{height:80px}
+/* CATEGORY PILLS */
+.pill-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px}
+.cat-pill{position:relative;border-radius:10px;overflow:hidden;border:0.5px solid var(--border);padding:8px 9px;cursor:pointer;background:var(--bg2);transition:border-color 0.15s}
+.cat-pill.active{border-color:var(--accent)}
+.cat-pill-bar{position:absolute;top:0;left:0;height:100%;border-radius:10px;opacity:0.13}
+.cat-pill-name{font-size:11px;font-weight:600;color:var(--text);position:relative;z-index:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-pill-amt{font-size:10px;color:var(--text2);position:relative;z-index:1;margin-top:2px}
+.cat-trend-card{background:var(--bg2);border-radius:var(--radius);border:0.5px solid rgba(200,240,96,0.25);padding:12px;margin-bottom:12px}
+.cat-trend-header{font-size:10px;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cat-trend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:flex-end;display:none}
@@ -249,6 +248,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <!-- INSIGHTS -->
 <div class="page" id="page-insights">
   <div class="chart-page-section">
+    <div class="insights-sticky">
     <!-- Insights mode toggle -->
     <div class="toggle-row" id="insightsModeToggle">
       <div class="toggle-btn active" data-m="monthly" onclick="setIM('monthly',this)">Monthly</div>
@@ -302,6 +302,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
         <div class="toggle-btn" data-r="ytd" onclick="setCR('ytd',this)">YTD</div>
       </div>
     </div>
+    </div><!-- end insights-sticky -->
 
     <!-- Content areas -->
     <div id="monthlySummary"></div>
@@ -309,8 +310,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     <div id="monthlyDonutCard"></div>
     <div id="yearlySummary" style="display:none"></div>
     <div id="yearlyBarCard" style="display:none"></div>
-    <div id="yearlyDonutCard" style="display:none"></div>
     <div id="yearlyMonthCard" style="display:none"></div>
+    <div id="yearlyDonutCard" style="display:none"></div>
     <div id="catRankingCard" style="display:none"></div>
     <div id="catTrendCard" style="display:none"></div>
   </div>
@@ -823,6 +824,19 @@ function renderYearly(){
   barHTML+='</div></div></div>';
   document.getElementById('yearlyBarCard').innerHTML=barHTML;
 
+  const mbData2=monthBreak[selY]||{},mbKeys2=MO.map(m=>`${m} ${selY}`);
+  const hasData2=mbKeys2.some(k=>mbData2[k]>0);
+  if(hasData2){
+    const mbMax2=Math.max(...mbKeys2.map(k=>mbData2[k]||0),1);
+    let mbHTML2='<div class="chart-card"><div class="chart-card-title">Monthly Breakdown '+selY+'</div><div class="bar-chart-wrap"><div class="bar-chart">';
+    mbKeys2.forEach(k=>{
+      const t=mbData2[k]||0,hpct=mbMax2>0?(t/mbMax2*100):0;
+      mbHTML2+=`<div class="bar-col"><div class="bar-amount">${t>0?fRpShort(t):''}</div><div class="bar-fill" style="height:${Math.max(hpct,2)}%;opacity:0.7"></div><div class="bar-label">${k.split(' ')[0]}</div></div>`;
+    });
+    mbHTML2+='</div></div></div>';
+    document.getElementById('yearlyMonthCard').innerHTML=mbHTML2;
+  } else document.getElementById('yearlyMonthCard').innerHTML='';
+
   const catData=cats[selY]||{},catTotal=Object.values(catData).reduce((a,b)=>a+b,0);
   if(catTotal>0){
     const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
@@ -856,18 +870,6 @@ function renderYearly(){
       </div>`;
   } else document.getElementById('yearlyDonutCard').innerHTML='';
 
-  const mbData=monthBreak[selY]||{},mbKeys=MO.map(m=>`${m} ${selY}`);
-  const hasData=mbKeys.some(k=>mbData[k]>0);
-  if(hasData){
-    const mbMax=Math.max(...mbKeys.map(k=>mbData[k]||0),1);
-    let mbHTML='<div class="chart-card"><div class="chart-card-title">Monthly Breakdown '+selY+'</div><div class="bar-chart-wrap"><div class="bar-chart">';
-    mbKeys.forEach(k=>{
-      const t=mbData[k]||0,hpct=mbMax>0?(t/mbMax*100):0;
-      mbHTML+=`<div class="bar-col"><div class="bar-amount">${t>0?fRpShort(t):''}</div><div class="bar-fill" style="height:${Math.max(hpct,2)}%;opacity:0.7"></div><div class="bar-label">${k.split(' ')[0]}</div></div>`;
-    });
-    mbHTML+='</div></div></div>';
-    document.getElementById('yearlyMonthCard').innerHTML=mbHTML;
-  } else document.getElementById('yearlyMonthCard').innerHTML='';
 }
 function selectYear(y){ySelYear=y;ySelCat=null;renderYearly()}
 function selectYearlyCat(cat){ySelCat=ySelCat===cat?null:cat;renderYearly()}
@@ -888,8 +890,6 @@ function renderCategory(){
   if(!chartData)return;
   const rows=getRows(cView);
   const keys=getCatMonthlyKeys();
-  // catTotals: cat -> total over period
-  // catMonthly: cat -> {monthKey -> total}
   const catTotals={},catMonthly={},catRawTx={};
   rows.forEach(r=>{
     if(!keys.includes(r.monthKey))return;
@@ -900,43 +900,36 @@ function renderCategory(){
     if(!catRawTx[cat])catRawTx[cat]=[];
     catRawTx[cat].push(r);
   });
-
-  const grandTotal=Object.values(catTotals).reduce((a,b)=>a+b,0);
   const sorted=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
   const maxCat=sorted.length?sorted[0][1]:1;
-
-  // Ranking card
-  let rankHTML='<div class="chart-card"><div class="chart-card-title">Category Ranking — tap for trend</div>';
-  sorted.forEach(([cat,total],i)=>{
+  if(!cSelCat&&sorted.length)cSelCat=sorted[0][0];
+  const CAT_SHORT={'Administration':'Admin','Entertainment':'Entertain.','Self Care':'Self Care'};
+  let pillHTML='<div class="pill-grid">';
+  sorted.forEach(([cat,total])=>{
     const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
-    const pct=grandTotal>0?((total/grandTotal)*100).toFixed(0):0;
     const barW=maxCat>0?((total/maxCat)*100).toFixed(0):0;
     const isActive=cSelCat===cat;
-    rankHTML+=`<div class="cat-ranking-item${isActive?' active':''}" onclick="selectCat('${cat.replace(/'/g,"\\'")}')">
-      <div class="cat-rank-num">${i+1}</div>
-      <div class="cat-rank-dot" style="background:${color}"></div>
-      <div class="cat-rank-name">${cat}</div>
-      <div class="cat-rank-bar-wrap"><div class="cat-rank-bar" style="width:${barW}%;background:${color}"></div></div>
-      <div class="cat-rank-amt">${fRpShort(total)}</div>
+    const displayName=CAT_SHORT[cat]||cat;
+    pillHTML+=`<div class="cat-pill${isActive?' active':''}" onclick="selectCat('${cat.replace(/'/g,"\'")}')">
+      <div class="cat-pill-bar" style="width:${barW}%;background:${color}"></div>
+      <div class="cat-pill-name">${displayName}</div>
+      <div class="cat-pill-amt">${fRpShort(total)}</div>
     </div>`;
   });
-  rankHTML+='</div>';
-  document.getElementById('catRankingCard').innerHTML=rankHTML;
-
-  // Trend card for selected category
+  pillHTML+='</div>';
+  document.getElementById('catRankingCard').innerHTML=pillHTML;
   if(cSelCat&&catMonthly[cSelCat]){
     const color=CAT_COLORS[cSelCat]||CAT_COLORS['Other'];
     const mData=catMonthly[cSelCat];
     const mMax=Math.max(...keys.map(k=>mData[k]||0),1);
     const avg=keys.reduce((s,k)=>s+(mData[k]||0),0)/keys.length;
     const txList=(catRawTx[cSelCat]||[]).sort((a,b)=>b.amount-a.amount).slice(0,10);
-
-    let trendHTML=`<div class="chart-card">
-      <div class="chart-card-title" style="display:flex;align-items:center;gap:6px">
-        <div style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0"></div>
-        ${cSelCat} — Monthly Trend
+    let trendHTML=`<div class="cat-trend-card">
+      <div class="cat-trend-header">
+        <div class="cat-trend-dot" style="background:${color}"></div>
+        <span style="color:var(--text);font-size:12px;font-weight:600">${cSelCat}</span>
+        <span style="color:var(--text3);font-size:10px"> · avg ${fRpShort(Math.round(avg))}/mo · total ${fRpShort(catTotals[cSelCat])}</span>
       </div>
-      <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Avg ${fRpShort(Math.round(avg))}/mo · Total ${fRpShort(catTotals[cSelCat])}</div>
       <div class="bar-chart-wrap"><div class="bar-chart">`;
     keys.forEach(k=>{
       const t=mData[k]||0,hpct=mMax>0?(t/mMax*100):0;
@@ -947,10 +940,9 @@ function renderCategory(){
       </div>`;
     });
     trendHTML+=`</div></div>`;
-
     if(txList.length){
       trendHTML+=`<div class="detail-section">
-        <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>Top Transactions</div>
+        <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>Top transactions</div>
         ${txList.map(r=>`<div class="detail-item">
           <div class="detail-name">${r.payee||r.transaction||''}</div>
           <div class="detail-date">${r.monthKey}</div>
@@ -964,30 +956,18 @@ function renderCategory(){
     document.getElementById('catTrendCard').innerHTML='';
   }
 }
-function selectCat(cat){cSelCat=cSelCat===cat?null:cat;renderCategory()}
-
-// ── DONUT SVG ─────────────────────────────────────────────────
-function buildDonutSVG(data,size){
-  const total=Object.values(data).reduce((a,b)=>a+b,0);
-  if(!total)return'';
-  const sorted=Object.entries(data).sort((a,b)=>b[1]-a[1]);
-  const r=size/2-10,cx=size/2,cy=size/2,circ=2*Math.PI*r;
-  let offset=0,paths='';
-  sorted.forEach(([cat,val])=>{
-    const pct=val/total,dash=pct*circ,color=CAT_COLORS[cat]||CAT_COLORS['Other'];
-    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="13" stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
-    offset+=dash;
-  });
-  return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="13"/>
-    ${paths}
-    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="var(--text)" font-size="9" font-weight="600">${fRpShort(total)}</text>
-  </svg>`;
-}
+function selectCat(cat){cSelCat=cat;renderCategory()}
 
 // ── INIT ──────────────────────────────────────────────────────
 initDatePicker();
 updateStatus();
+// Set header height CSS var for sticky filter offset
+function updateHeaderHeight(){
+  const h=document.querySelector('.header');
+  if(h)document.documentElement.style.setProperty('--header-height',h.offsetHeight+'px');
+}
+updateHeaderHeight();
+window.addEventListener('resize',updateHeaderHeight);
 </script>
 </body>
 </html>
