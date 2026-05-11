@@ -105,13 +105,13 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .s-sub{font-size:10px;color:var(--text3);margin-top:2px}
 .chart-loading{text-align:center;padding:40px;color:var(--text3);font-size:13px}
 .bar-chart-wrap{width:100%;overflow-x:auto}
-.bar-chart{display:flex;align-items:flex-end;gap:3px;height:120px;padding-bottom:18px;position:relative;min-width:100%}
+.bar-chart{display:flex;align-items:flex-end;gap:3px;height:140px;padding-bottom:22px;position:relative;min-width:100%}
 .bar-col{flex:1;min-width:20px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;cursor:pointer}
 .bar-fill{width:100%;border-radius:3px 3px 0 0;background:var(--accent-dim);border:0.5px solid var(--accent);transition:all 0.25s;opacity:0.6;min-height:2px}
 .bar-col.selected .bar-fill{background:var(--accent);opacity:1}
 .bar-col:hover .bar-fill{opacity:0.9}
-.bar-label{font-size:8px;color:var(--text3);text-align:center;white-space:nowrap;overflow:hidden;width:100%;position:absolute;bottom:0;left:0}
-.bar-amount{font-size:8px;color:var(--text2);text-align:center;margin-bottom:2px;line-height:1.2}
+.bar-label{font-size:10px;color:var(--text2);text-align:center;white-space:nowrap;overflow:hidden;width:100%;position:absolute;bottom:0;left:0}
+.bar-amount{font-size:10px;color:var(--text);text-align:center;margin-bottom:2px;line-height:1.2;font-weight:500}
 .donut-wrap{display:flex;gap:14px;align-items:center}
 .donut-legend{flex:1;display:flex;flex-direction:column;gap:5px;overflow:hidden}
 .legend-row{display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 4px;border-radius:6px;transition:background 0.15s}
@@ -717,6 +717,11 @@ function renderMonthly(){
   const trendStr=trend!==null?`${trend>0?'+':''}${trend.toFixed(0)}%`:'—';
   const trendColor=trend===null?'var(--text2)':trend>0?'var(--red)':'var(--accent)';
 
+  // Ensure elements are visible (may have been hidden by mode switch)
+  ['monthlySummary','monthlyBarCard','monthlyDonutCard'].forEach(id=>{
+    document.getElementById(id).style.display='block';
+  });
+
   document.getElementById('monthlySummary').innerHTML=`
     <div class="summary-row">
       <div class="summary-card"><div class="s-label">${selKey}</div><div class="s-value">${fRpShort(curTotal)}</div><div class="s-sub">${mView==='all'?'All':mView==='opex'?'OPEX':mView==='cc-bca'?'CC BCA':'CC Niaga'}</div></div>
@@ -806,6 +811,11 @@ function renderYearly(){
   const trend=prevTotal>0?((curTotal-prevTotal)/prevTotal*100):null;
   const trendStr=trend!==null?`${trend>0?'+':''}${trend.toFixed(0)}%`:'—';
   const trendColor=trend===null?'var(--text2)':trend>0?'var(--red)':'var(--accent)';
+
+  // Ensure elements are visible
+  ['yearlySummary','yearlyBarCard','yearlyMonthCard','yearlyDonutCard'].forEach(id=>{
+    document.getElementById(id).style.display='block';
+  });
 
   document.getElementById('yearlySummary').innerHTML=`
     <div class="summary-row">
@@ -905,6 +915,10 @@ function renderCategory(){
   const sorted=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
   const maxCat=sorted.length?sorted[0][1]:1;
   if(!cSelCat&&sorted.length)cSelCat=sorted[0][0];
+  // Ensure elements are visible
+  ['catRankingCard','catTrendCard'].forEach(id=>{
+    document.getElementById(id).style.display='block';
+  });
   const CAT_SHORT={'Administration':'Admin','Entertainment':'Entertain.','Self Care':'Self Care'};
   let pillHTML='<div class="pill-grid">';
   sorted.forEach(([cat,total])=>{
