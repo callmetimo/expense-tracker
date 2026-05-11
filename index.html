@@ -356,8 +356,7 @@
 <div id="toast" class="toast"></div>
 
 <script>
-const SPREADSHEET_ID = '1cSlRQPTNSCvfiumzi3nCXBHJq-d8rIPR63W1D_8N5dI';
-const API_KEY = 'AIzaSyAnBNEgwUWqxJby1Qk1kkzV8yasrTYSHvY';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 
 const opexCategories = ['Auto','Books','Charity','Clothing','Meals','Entertainment','Gifts','Groceries','Health','Home Repair','Household','Medical','Self Care','Transport','Travel','Utilities'];
 const ccCategories = ['Entertainment','Meals','Utilities','Gas','Medical','Groceries','Travel','Administration','Insurance'];
@@ -544,22 +543,26 @@ function getRange(sheet) {
   if (sheet === 'cc-niaga') return 'CC!B:E';
 }
 
-// ── Sheets API (API Key) ──────────────────────────────────────
+// ── Apps Script API ──────────────────────────────────────────
 async function syncSingle(tx) {
   try {
-    const range = getRange(tx.sheet);
-    const row = buildRow(tx);
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&key=${API_KEY}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values: [row] })
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(()=>({}));
-      console.error('Sheets error:', err);
+    const payload = { sheet: tx.sheet, date: isoToSheetDate(tx.date), month: isoToMonth(tx.date), amount: tx.amount };
+    if (tx.sheet === 'opex') {
+      payload.category = tx.category;
+      payload.payee = tx.payee;
+      payload.platform = tx.platform;
+    } else {
+      payload.transaction = tx.transaction;
+      payload.category = tx.category;
     }
-    return res.ok;
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json().catch(() => ({}));
+    if (json.status !== 'ok') console.error('Apps Script error:', json);
+    return json.status === 'ok';
   } catch(e) {
     console.error('Sync error:', e);
     return false;
