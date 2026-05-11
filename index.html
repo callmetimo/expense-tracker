@@ -29,7 +29,7 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 .spinning{animation:spin 1s linear infinite}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .tab-bar{display:flex;background:var(--bg3);border-radius:9px;padding:3px;gap:2px}
-.tab{flex:1;padding:7px 2px;text-align:center;font-size:11px;font-weight:500;border-radius:7px;cursor:pointer;color:var(--text2);transition:all 0.2s;white-space:nowrap}
+.tab{flex:1;padding:6px 2px;text-align:center;font-size:10px;font-weight:500;border-radius:7px;cursor:pointer;color:var(--text2);transition:all 0.2s;white-space:nowrap}
 .tab.active{background:var(--accent);color:#0f0f0f;font-weight:700}
 .status-bar{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:11px;color:var(--text3)}
 .status-dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
@@ -49,20 +49,22 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .amount-input{padding-left:44px !important;font-size:20px !important;font-weight:600}
 .autocomplete-wrapper{position:relative}
 .autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius-sm);z-index:200;max-height:150px;overflow-y:auto;margin-top:3px}
-.autocomplete-item{padding:9px 12px;font-size:14px;cursor:pointer;border-bottom:0.5px solid var(--border)}
+.autocomplete-item{padding:9px 12px;font-size:14px;cursor:pointer;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .autocomplete-item:last-child{border-bottom:none}
 .autocomplete-item:active{background:var(--accent-dim);color:var(--accent)}
+.ac-cat-hint{font-size:10px;color:var(--text3);margin-left:8px;white-space:nowrap}
 .date-input-hidden{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0}
 .date-display{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 12px;font-size:16px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s}
 .date-display svg{opacity:0.35;flex-shrink:0}
 .submit-btn{width:100%;background:var(--accent);color:#0f0f0f;border:none;border-radius:var(--radius);padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity 0.2s,transform 0.1s}
 .submit-btn:active{transform:scale(0.98);opacity:0.9}
-
-/* payment method indicator */
 .pm-indicator{display:none;padding:8px 12px;border-radius:var(--radius-sm);font-size:12px;margin-bottom:12px;font-weight:500}
 .pm-indicator.cc-bca{background:var(--blue-dim);color:var(--blue);border:0.5px solid rgba(96,160,240,0.3);display:block}
 .pm-indicator.cc-niaga{background:var(--red-dim);color:var(--red);border:0.5px solid rgba(255,107,107,0.3);display:block}
 .pm-indicator.opex{background:var(--accent-dim);color:var(--accent);border:0.5px solid rgba(200,240,96,0.3);display:block}
+.cat-suggestion{display:none;margin-top:-8px;margin-bottom:12px;font-size:11px;color:var(--text2)}
+.cat-suggestion.show{display:flex;align-items:center;gap:6px}
+.cat-suggestion-pill{background:var(--accent-dim);color:var(--accent);border:0.5px solid rgba(200,240,96,0.3);padding:3px 10px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:500}
 
 /* HISTORY */
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:10px}
@@ -99,8 +101,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .s-value{font-size:17px;font-weight:600;color:var(--accent)}
 .s-sub{font-size:10px;color:var(--text3);margin-top:2px}
 .chart-loading{text-align:center;padding:40px;color:var(--text3);font-size:13px}
-
-/* BAR CHART */
 .bar-chart-wrap{width:100%;overflow-x:auto}
 .bar-chart{display:flex;align-items:flex-end;gap:3px;height:120px;padding-bottom:18px;position:relative;min-width:100%}
 .bar-col{flex:1;min-width:20px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;cursor:pointer}
@@ -109,8 +109,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .bar-col:hover .bar-fill{opacity:0.9}
 .bar-label{font-size:8px;color:var(--text3);text-align:center;white-space:nowrap;overflow:hidden;width:100%;position:absolute;bottom:0;left:0}
 .bar-amount{font-size:8px;color:var(--text2);text-align:center;margin-bottom:2px;line-height:1.2}
-
-/* DONUT */
 .donut-wrap{display:flex;gap:14px;align-items:center}
 .donut-legend{flex:1;display:flex;flex-direction:column;gap:5px;overflow:hidden}
 .legend-row{display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 4px;border-radius:6px;transition:background 0.15s}
@@ -120,8 +118,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .legend-name{color:var(--text2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}
 .legend-pct{color:var(--text);font-size:10px;font-weight:500;white-space:nowrap}
 .legend-amt{color:var(--text3);font-size:9px;white-space:nowrap}
-
-/* DETAIL SECTION */
 .detail-section{margin-top:10px;border-top:0.5px solid var(--border);padding-top:10px}
 .detail-title{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .detail-title-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
@@ -130,6 +126,19 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .detail-name{font-size:12px;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .detail-date{font-size:10px;color:var(--text3);white-space:nowrap}
 .detail-amt{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap}
+
+/* CATEGORY TAB */
+.cat-ranking-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
+.cat-ranking-item:last-child{border-bottom:none}
+.cat-ranking-item.active{background:var(--bg3);border-radius:var(--radius-sm);padding:8px;margin:0 -8px}
+.cat-rank-num{font-size:11px;color:var(--text3);width:16px;text-align:right;flex-shrink:0}
+.cat-rank-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-rank-name{font-size:13px;font-weight:500;flex:1}
+.cat-rank-bar-wrap{flex:2;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.cat-rank-bar{height:100%;border-radius:3px;transition:width 0.4s}
+.cat-rank-amt{font-size:12px;font-weight:500;white-space:nowrap;color:var(--text2)}
+.cat-trend-wrap{margin-top:8px}
+.cat-trend-bar{height:80px}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:flex-end;display:none}
@@ -162,6 +171,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     <div class="tab" onclick="switchTab('history',this)">Riwayat</div>
     <div class="tab" onclick="switchTab('monthly',this)">Bulanan</div>
     <div class="tab" onclick="switchTab('yearly',this)">Tahunan</div>
+    <div class="tab" onclick="switchTab('category',this)">Kategori</div>
   </div>
   <div class="status-bar">
     <div class="status-dot"></div>
@@ -174,18 +184,17 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <div class="page active" id="page-input">
   <div class="form-section">
     <div class="form-group" style="position:relative">
-      <label class="form-label">Tanggal</label>
+      <label class="form-label">Date</label>
       <input type="date" id="inputDateRaw" class="date-input-hidden">
       <div class="date-display" id="inputDateDisplay" tabindex="0">
         <span id="inputDateText"></span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
     </div>
-
     <div class="form-group">
       <label class="form-label">Payment Method</label>
       <select class="form-input" id="inputPaymentMethod" onchange="onPaymentMethodChange()">
-        <option value="">Pilih payment method...</option>
+        <option value="">Select payment method...</option>
         <option value="BCA">BCA</option>
         <option value="eWallet">eWallet</option>
         <option value="Flazz">Flazz</option>
@@ -193,43 +202,42 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
         <option value="CC Niaga">CC Niaga</option>
       </select>
     </div>
-
     <div class="pm-indicator" id="pmIndicator"></div>
-
     <div class="form-group autocomplete-wrapper">
-      <label class="form-label">Kategori</label>
-      <input type="text" class="form-input" id="inputCategory" placeholder="Ketik atau pilih kategori..." autocomplete="off"
+      <label class="form-label">Transaction</label>
+      <input type="text" class="form-input" id="inputPayee" placeholder="Payee or transaction name..." autocomplete="off"
+        oninput="onTransactionInput()"
+        onfocus="showAC('inputPayee', getAllPayeeSuggestions())">
+      <div class="autocomplete-list" id="ac-inputPayee" style="display:none"></div>
+    </div>
+    <div class="cat-suggestion" id="catSuggestion">
+      <span>Suggested:</span>
+      <span class="cat-suggestion-pill" id="catSuggestionPill" onclick="applyCatSuggestion()"></span>
+    </div>
+    <div class="form-group autocomplete-wrapper">
+      <label class="form-label">Category</label>
+      <input type="text" class="form-input" id="inputCategory" placeholder="Select or type category..." autocomplete="off"
         oninput="showAC('inputCategory', allCategories)"
         onfocus="showAC('inputCategory', allCategories)">
       <div class="autocomplete-list" id="ac-inputCategory" style="display:none"></div>
     </div>
-
-    <div class="form-group autocomplete-wrapper">
-      <label class="form-label">Payee / Tempat</label>
-      <input type="text" class="form-input" id="inputPayee" placeholder="Nama payee atau transaksi..." autocomplete="off"
-        oninput="showAC('inputPayee', getAllPayeeSuggestions())"
-        onfocus="showAC('inputPayee', getAllPayeeSuggestions())">
-      <div class="autocomplete-list" id="ac-inputPayee" style="display:none"></div>
-    </div>
-
     <div class="form-group">
-      <label class="form-label">Nominal</label>
+      <label class="form-label">Amount</label>
       <div class="amount-wrapper">
         <span class="amount-prefix">Rp</span>
         <input type="number" class="form-input amount-input" id="inputAmount" placeholder="0" inputmode="numeric">
       </div>
     </div>
-
-    <button class="submit-btn" onclick="submitTransaction()">Simpan Transaksi</button>
+    <button class="submit-btn" onclick="submitTransaction()">Save Transaction</button>
   </div>
 </div>
 
 <!-- HISTORY -->
 <div class="page" id="page-history">
   <div class="section-header">
-    <div class="section-title">Transaksi Lokal</div>
+    <div class="section-title">Local Transactions</div>
     <select class="filter-select" id="historyFilter" onchange="renderHistory()">
-      <option value="all">Semua</option>
+      <option value="all">All</option>
       <option value="opex">OPEX</option>
       <option value="cc-bca">CC BCA</option>
       <option value="cc-niaga">CC Niaga</option>
@@ -280,15 +288,35 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
+<!-- CATEGORY -->
+<div class="page" id="page-category">
+  <div class="chart-page-section">
+    <div class="toggle-row" id="catSourceToggle">
+      <div class="toggle-btn active" data-v="all" onclick="setCV('all',this)">All</div>
+      <div class="toggle-btn" data-v="opex" onclick="setCV('opex',this)">OPEX</div>
+      <div class="toggle-btn" data-v="cc-bca" onclick="setCV('cc-bca',this)">CC BCA</div>
+      <div class="toggle-btn" data-v="cc-niaga" onclick="setCV('cc-niaga',this)">CC Niaga</div>
+    </div>
+    <div class="toggle-row" id="catRangeToggle">
+      <div class="toggle-btn active" data-r="3" onclick="setCR(3,this)">3 Bln</div>
+      <div class="toggle-btn" data-r="6" onclick="setCR(6,this)">6 Bln</div>
+      <div class="toggle-btn" data-r="12" onclick="setCR(12,this)">12 Bln</div>
+      <div class="toggle-btn" data-r="ytd" onclick="setCR('ytd',this)">YTD</div>
+    </div>
+    <div id="catRankingCard"></div>
+    <div id="catTrendCard"></div>
+  </div>
+</div>
+
 <!-- Edit Modal -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="editModalTitle">Edit Transaksi</div>
+    <div class="modal-title" id="editModalTitle">Edit Transaction</div>
     <div id="editModalBody"></div>
     <div class="modal-actions">
-      <button class="btn-delete" onclick="deleteTransaction()">Hapus</button>
-      <button class="btn-save" onclick="saveEdit()">Simpan</button>
+      <button class="btn-delete" onclick="deleteTransaction()">Delete</button>
+      <button class="btn-save" onclick="saveEdit()">Save</button>
     </div>
   </div>
 </div>
@@ -297,11 +325,9 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <script>
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-const allCategories=['Administration','Auto','Books','Charity','Clothing','Entertainment','Gas','Gifts','Groceries','Health','Home Repair','Household','Insurance','Meals','Medical','Self Care','Transport','Travel','Utilities'];
-const opexPayees=['Azko','Angpau','Apotek','Bengkel','Bensin','Beras','Books','Breakfast','Buah','Cinema','Coffee','Cuci AC','Cuci Mobil','Cukur Rambut','Dinner','Gramedia','Ice Cream','Jahit','Jus','KRL','Laundry','Lunch','Marketplace','Media','Minimarket','MRT','Nitrogen','Ojol','Parkir','Pijat','Pulsa','Rujak','Service','Snack','Supermarket','Tambal Ban','Taxi','TJ','Tokopedia','Tol','Tukang','Uniqlo'];
-
-const CAT_COLORS={'Transport':'#60a0f0','Meals':'#c8f060','Entertainment':'#ff6b6b','Groceries':'#ffaa44','Household':'#a78bfa','Medical':'#34d399','Utilities':'#f472b6','Auto':'#fb923c','Gas':'#fbbf24','Travel':'#22d3ee','Insurance':'#e879f9','Health':'#4ade80','Home Repair':'#f87171','Clothing':'#818cf8','Books':'#6ee7b7','Charity':'#fde68a','Gifts':'#fca5a5','Self Care':'#c4b5fd','Administration':'#93c5fd','Other':'#6b7280','Installment':'#94a3b8','Debt':'#f43f5e','Eating Out':'#fb7185'};
+const allCategories=['Administration','Auto','Books','Clothing','Entertainment','Gas','Gifts','Groceries','Household','Insurance','Meals','Medical','Self Care','Transport','Travel','Utilities'];
+const allPayees=['Azko','Angpau','Apotek','Bengkel','Bensin','Beras','Books','Breakfast','Buah','Cinema','Coffee','Cuci AC','Cuci Mobil','Cukur Rambut','Dinner','Gramedia','Ice Cream','Jahit','Jus','KRL','Laundry','Lunch','Marketplace','Media','Minimarket','MRT','Nitrogen','Ojol','Parkir','Pijat','Pulsa','Rujak','Service','Snack','Supermarket','Tambal Ban','Taxi','TJ','Tokopedia','Tol','Tukang','Uniqlo'];
+const CAT_COLORS={'Transport':'#60a0f0','Meals':'#c8f060','Entertainment':'#ff6b6b','Groceries':'#ffaa44','Household':'#a78bfa','Medical':'#34d399','Utilities':'#f472b6','Auto':'#fb923c','Gas':'#fbbf24','Travel':'#22d3ee','Insurance':'#e879f9','Books':'#6ee7b7','Clothing':'#818cf8','Gifts':'#fca5a5','Self Care':'#c4b5fd','Administration':'#93c5fd','Other':'#6b7280'};
 
 let editingIndex=null;
 let queue=JSON.parse(localStorage.getItem('xpns_queue')||'[]');
@@ -309,6 +335,7 @@ let txHistory=JSON.parse(localStorage.getItem('xpns_history')||'[]');
 let chartData=null,chartLoading=false;
 let mView='all',mRange=3,mSelMonth=null,mSelCat=null;
 let yView='all',yRange=3,ySelYear=null,ySelCat=null;
+let cView='all',cRange=3,cSelCat=null;
 
 // ── DATE ──────────────────────────────────────────────────────
 function todayISO(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
@@ -321,19 +348,76 @@ function initDatePicker(){
   const t=todayISO();raw.value=t;txt.textContent=isoDisp(t);
   disp.addEventListener('click',()=>{try{raw.showPicker()}catch(e){raw.focus();raw.click()}});
   disp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){try{raw.showPicker()}catch(e2){}}});
-  raw.addEventListener('change',()=>{txt.textContent=raw.value?isoDisp(raw.value):'Pilih tanggal...'});
+  raw.addEventListener('change',()=>{txt.textContent=raw.value?isoDisp(raw.value):'Select date...'});
+}
+
+// ── SMART CATEGORY SUGGESTION ────────────────────────────────
+function buildCatMap(){
+  // Build map: transaction name (lowercase) -> most frequent category
+  const freq={};
+  const allRows=[...(chartData?.opex||[]),...(chartData?.ccBca||[]),...(chartData?.ccNiaga||[]),...txHistory];
+  allRows.forEach(r=>{
+    const name=(r.payee||r.transaction||'').toLowerCase().trim();
+    const cat=r.category||r.platform;
+    if(!name||!cat||!allCategories.includes(cat))return;
+    if(!freq[name])freq[name]={};
+    freq[name][cat]=(freq[name][cat]||0)+1;
+  });
+  const map={};
+  Object.entries(freq).forEach(([name,cats])=>{
+    map[name]=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0][0];
+  });
+  return map;
+}
+
+let catMap={};
+function refreshCatMap(){catMap=buildCatMap()}
+
+function getSuggestedCategory(txName){
+  if(!txName)return null;
+  const lower=txName.toLowerCase().trim();
+  // Exact match
+  if(catMap[lower])return catMap[lower];
+  // Partial match — find longest key that is substring of input or vice versa
+  let best=null,bestLen=0;
+  Object.entries(catMap).forEach(([k,v])=>{
+    if(lower.includes(k)||k.includes(lower)){
+      if(k.length>bestLen){bestLen=k.length;best=v}
+    }
+  });
+  return best;
+}
+
+function onTransactionInput(){
+  const val=document.getElementById('inputPayee').value;
+  showAC('inputPayee',getAllPayeeSuggestions());
+  // Smart suggestion
+  const suggested=getSuggestedCategory(val);
+  const sug=document.getElementById('catSuggestion');
+  const pill=document.getElementById('catSuggestionPill');
+  if(suggested&&val.length>=2){
+    pill.textContent=suggested;
+    sug.className='cat-suggestion show';
+  } else {
+    sug.className='cat-suggestion';
+  }
+}
+
+function applyCatSuggestion(){
+  const pill=document.getElementById('catSuggestionPill');
+  document.getElementById('inputCategory').value=pill.textContent;
+  document.getElementById('catSuggestion').className='cat-suggestion';
 }
 
 // ── PAYMENT METHOD ────────────────────────────────────────────
 function onPaymentMethodChange(){
   const pm=document.getElementById('inputPaymentMethod').value;
   const ind=document.getElementById('pmIndicator');
-  if(pm==='CC BCA'){ind.className='pm-indicator cc-bca';ind.textContent='→ Masuk sheet CC BCA'}
-  else if(pm==='CC Niaga'){ind.className='pm-indicator cc-niaga';ind.textContent='→ Masuk sheet CC Niaga'}
-  else if(pm){ind.className='pm-indicator opex';ind.textContent='→ Masuk sheet OPEX'}
-  else{ind.className='pm-indicator'}
+  if(pm==='CC BCA'){ind.className='pm-indicator cc-bca';ind.textContent='→ Sheet CC BCA'}
+  else if(pm==='CC Niaga'){ind.className='pm-indicator cc-niaga';ind.textContent='→ Sheet CC Niaga'}
+  else if(pm){ind.className='pm-indicator opex';ind.textContent='→ Sheet OPEX'}
+  else ind.className='pm-indicator';
 }
-
 function getSheetFromPM(pm){
   if(pm==='CC BCA')return'cc-bca';
   if(pm==='CC Niaga')return'cc-niaga';
@@ -347,7 +431,7 @@ function switchTab(tab,el){
   el.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
   if(tab==='history')renderHistory();
-  if(tab==='monthly'||tab==='yearly')ensureChartData(tab);
+  if(tab==='monthly'||tab==='yearly'||tab==='category')ensureChartData(tab);
 }
 
 // ── AUTOCOMPLETE ──────────────────────────────────────────────
@@ -357,19 +441,37 @@ function showAC(fid,list){
   const v=inp.value.toLowerCase();
   const f=v?list.filter(i=>i.toLowerCase().includes(v)):list;
   if(!f.length){dd.style.display='none';return}
-  dd.innerHTML=f.map(i=>`<div class="autocomplete-item" onmousedown="selectAC('${fid}','${i.replace(/'/g,"\\'")}' )">${i}</div>`).join('');
+  // For payee field, show category hint
+  const isPayee=fid==='inputPayee';
+  dd.innerHTML=f.map(i=>{
+    const hint=isPayee?getSuggestedCategory(i):'';
+    return`<div class="autocomplete-item" onmousedown="selectAC('${fid}','${i.replace(/'/g,"\\'")}' )">
+      <span>${i}</span>
+      ${hint?`<span class="ac-cat-hint">${hint}</span>`:''}
+    </div>`;
+  }).join('');
   dd.style.display='block';
 }
 function selectAC(fid,val){
   const el=document.getElementById(fid);if(el)el.value=val;
   const dd=document.getElementById('ac-'+fid);if(dd)dd.style.display='none';
+  if(fid==='inputPayee'){
+    // Auto-fill category
+    const suggested=getSuggestedCategory(val);
+    if(suggested){
+      document.getElementById('inputCategory').value=suggested;
+      document.getElementById('catSuggestion').className='cat-suggestion';
+    } else {
+      onTransactionInput();
+    }
+  }
 }
 document.addEventListener('click',e=>{
   if(!e.target.closest('.autocomplete-wrapper'))document.querySelectorAll('.autocomplete-list').forEach(d=>d.style.display='none');
 });
 function getAllPayeeSuggestions(){
   const fromHistory=[...new Set(txHistory.map(t=>(t.payee||t.transaction||'')).filter(Boolean))];
-  return[...new Set([...opexPayees,...fromHistory])];
+  return[...new Set([...allPayees,...fromHistory])];
 }
 
 // ── FORMAT ────────────────────────────────────────────────────
@@ -388,27 +490,19 @@ function submitTransaction(){
   const category=document.getElementById('inputCategory').value;
   const payee=document.getElementById('inputPayee').value;
   const amount=document.getElementById('inputAmount').value;
-
-  if(!date||!pm||!category||!payee||!amount){showToast('Semua field wajib diisi','error');return}
-
+  if(!date||!pm||!category||!payee||!amount){showToast('All fields required','error');return}
   const sheet=getSheetFromPM(pm);
   let tx={id:Date.now(),date,sheet,synced:false,category,amount:parseInt(amount)};
-
-  if(sheet==='opex'){
-    tx.payee=payee;
-    tx.platform=pm;
-  } else {
-    tx.transaction=payee;
-  }
-
+  if(sheet==='opex'){tx.payee=payee;tx.platform=pm}
+  else tx.transaction=payee;
   queue.push({...tx});txHistory.unshift({...tx});saveLocal();updateStatus();
+  refreshCatMap();
   syncSingle(tx).then(ok=>{
-    if(ok){queue=queue.filter(q=>q.id!==tx.id);txHistory=txHistory.map(h=>h.id===tx.id?{...h,synced:true}:h);saveLocal();updateStatus();showToast('Tersimpan ke Google Sheets ✓','success')}
-    else showToast('Tersimpan lokal — tap Sync untuk upload','');
+    if(ok){queue=queue.filter(q=>q.id!==tx.id);txHistory=txHistory.map(h=>h.id===tx.id?{...h,synced:true}:h);saveLocal();updateStatus();showToast('Saved to Google Sheets ✓','success')}
+    else showToast('Saved locally — tap Sync to upload','');
   });
   resetForm();
 }
-
 function resetForm(){
   document.getElementById('inputAmount').value='';
   const t=todayISO();
@@ -418,6 +512,7 @@ function resetForm(){
   document.getElementById('inputCategory').value='';
   document.getElementById('inputPayee').value='';
   document.getElementById('pmIndicator').className='pm-indicator';
+  document.getElementById('catSuggestion').className='cat-suggestion';
 }
 
 // ── SYNC ──────────────────────────────────────────────────────
@@ -425,20 +520,19 @@ async function syncSingle(tx){
   try{
     const p={sheet:tx.sheet,date:isoSheetDate(tx.date),month:isoMonthKey(tx.date),monthHeader:isoMonthKey(tx.date),amount:tx.amount,category:tx.category};
     if(tx.sheet==='opex'){p.payee=tx.payee;p.platform=tx.platform}
-    else{p.transaction=tx.transaction}
+    else p.transaction=tx.transaction;
     const res=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(p)});
     const j=await res.json().catch(()=>({}));
-    if(j.status!=='ok')console.error('Script error:',j);
     return j.status==='ok';
-  }catch(e){console.error('Sync error:',e);return false}
+  }catch(e){return false}
 }
 async function syncQueue(){
-  if(!queue.length){showToast('Tidak ada yang perlu di-sync','');return}
+  if(!queue.length){showToast('Nothing to sync','');return}
   const icon=document.getElementById('syncIcon');icon.classList.add('spinning');
   let ok=0;
   for(const tx of[...queue]){const r=await syncSingle(tx);if(r){queue=queue.filter(q=>q.id!==tx.id);txHistory=txHistory.map(h=>h.id===tx.id?{...h,synced:true}:h);ok++}}
   saveLocal();updateStatus();icon.classList.remove('spinning');
-  showToast(ok?`Berhasil sync ${ok} transaksi ✓`:'Sync gagal, coba lagi',ok?'success':'error');
+  showToast(ok?`Synced ${ok} transactions ✓`:'Sync failed, try again',ok?'success':'error');
   renderHistory();
 }
 
@@ -447,7 +541,7 @@ function renderHistory(){
   const filter=document.getElementById('historyFilter').value;
   const list=document.getElementById('historyList');
   const filtered=filter==='all'?txHistory:txHistory.filter(t=>t.sheet===filter);
-  if(!filtered.length){list.innerHTML='<div class="empty-state">Belum ada transaksi</div>';return}
+  if(!filtered.length){list.innerHTML='<div class="empty-state">No transactions yet</div>';return}
   list.innerHTML=filtered.map(tx=>{
     const oi=txHistory.indexOf(tx);
     const cls=tx.sheet==='opex'?'opex':tx.sheet==='cc-bca'?'cc-bca':'cc-niaga';
@@ -470,8 +564,8 @@ function renderHistory(){
 function openEdit(idx){
   editingIndex=idx;const tx=txHistory[idx];
   document.getElementById('editModalTitle').textContent='Edit '+(tx.sheet==='opex'?'OPEX':tx.sheet==='cc-bca'?'CC BCA':'CC Niaga');
-  const pmOptions=['BCA','eWallet','Flazz','CC BCA','CC Niaga'].map(p=>`<option ${(tx.platform===p||tx.sheet==='cc-bca'&&p==='CC BCA'||tx.sheet==='cc-niaga'&&p==='CC Niaga')?'selected':''}>${p}</option>`).join('');
-  let f=`<div class="form-group" style="position:relative"><label class="form-label">Tanggal</label>
+  const pmOptions=['BCA','eWallet','Flazz','CC BCA','CC Niaga'].map(p=>`<option ${(tx.platform===p||(tx.sheet==='cc-bca'&&p==='CC BCA')||(tx.sheet==='cc-niaga'&&p==='CC Niaga'))?'selected':''}>${p}</option>`).join('');
+  let f=`<div class="form-group" style="position:relative"><label class="form-label">Date</label>
     <input type="date" id="edit-date-raw" class="date-input-hidden" value="${tx.date}">
     <div class="date-display" tabindex="0" onclick="triggerEditDate()">
       <span id="edit-date-text">${isoDisp(tx.date)}</span>
@@ -479,13 +573,13 @@ function openEdit(idx){
     </div></div>
   <div class="form-group"><label class="form-label">Payment Method</label>
     <select class="form-input" id="edit-pm">${pmOptions}</select></div>
-  <div class="form-group autocomplete-wrapper"><label class="form-label">Kategori</label>
-    <input type="text" class="form-input" id="edit-category" value="${tx.category||''}" autocomplete="off" oninput="showAC('edit-category',allCategories)" onfocus="showAC('edit-category',allCategories)">
-    <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div></div>
-  <div class="form-group autocomplete-wrapper"><label class="form-label">Payee / Tempat</label>
+  <div class="form-group autocomplete-wrapper"><label class="form-label">Transaction</label>
     <input type="text" class="form-input" id="edit-payee" value="${tx.payee||tx.transaction||''}" autocomplete="off" oninput="showAC('edit-payee',getAllPayeeSuggestions())" onfocus="showAC('edit-payee',getAllPayeeSuggestions())">
     <div class="autocomplete-list" id="ac-edit-payee" style="display:none"></div></div>
-  <div class="form-group"><label class="form-label">Nominal</label>
+  <div class="form-group autocomplete-wrapper"><label class="form-label">Category</label>
+    <input type="text" class="form-input" id="edit-category" value="${tx.category||''}" autocomplete="off" oninput="showAC('edit-category',allCategories)" onfocus="showAC('edit-category',allCategories)">
+    <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div></div>
+  <div class="form-group"><label class="form-label">Amount</label>
     <div class="amount-wrapper"><span class="amount-prefix">Rp</span>
       <input type="number" class="form-input amount-input" id="edit-amount" value="${tx.amount}" inputmode="numeric">
     </div></div>`;
@@ -509,19 +603,19 @@ function saveEdit(){
   else{tx.transaction=payeeVal;delete tx.payee;delete tx.platform}
   tx.synced=false;
   const qi=queue.findIndex(q=>q.id===tx.id);if(qi>-1)queue[qi]={...tx};
-  saveLocal();closeModal();renderHistory();updateStatus();showToast('Perubahan tersimpan','success');
+  saveLocal();closeModal();renderHistory();updateStatus();showToast('Changes saved','success');
 }
 function deleteTransaction(){
-  if(!confirm('Hapus transaksi ini?'))return;
+  if(!confirm('Delete this transaction?'))return;
   const tx=txHistory[editingIndex];txHistory.splice(editingIndex,1);queue=queue.filter(q=>q.id!==tx.id);
-  saveLocal();closeModal();renderHistory();updateStatus();showToast('Transaksi dihapus','');
+  saveLocal();closeModal();renderHistory();updateStatus();showToast('Deleted','');
 }
 function closeModal(){document.getElementById('editModal').classList.remove('open');editingIndex=null}
 document.getElementById('editModal').addEventListener('click',e=>{if(e.target===document.getElementById('editModal'))closeModal()});
 
 // ── LOCAL STORAGE ─────────────────────────────────────────────
 function saveLocal(){localStorage.setItem('xpns_queue',JSON.stringify(queue));localStorage.setItem('xpns_history',JSON.stringify(txHistory))}
-function updateStatus(){document.getElementById('statusText').textContent='Siap';document.getElementById('queueInfo').textContent=queue.length?`· ${queue.length} pending`:''}
+function updateStatus(){document.getElementById('statusText').textContent='Ready';document.getElementById('queueInfo').textContent=queue.length?`· ${queue.length} pending`:''}
 function showToast(msg,type){
   const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');
   setTimeout(()=>t.className='toast',3000);
@@ -532,14 +626,15 @@ async function ensureChartData(tab){
   if(chartData){renderChartTab(tab);return}
   if(chartLoading)return;
   chartLoading=true;
-  const loadHTML='<div class="chart-loading">Memuat data dari Sheets...</div>';
+  const loadHTML='<div class="chart-loading">Loading data...</div>';
   if(tab==='monthly'){document.getElementById('monthlySummary').innerHTML=loadHTML;document.getElementById('monthlyBarCard').innerHTML='';document.getElementById('monthlyDonutCard').innerHTML=''}
-  else{document.getElementById('yearlySummary').innerHTML=loadHTML;document.getElementById('yearlyBarCard').innerHTML='';document.getElementById('yearlyDonutCard').innerHTML='';document.getElementById('yearlyMonthCard').innerHTML=''}
+  else if(tab==='yearly'){document.getElementById('yearlySummary').innerHTML=loadHTML;document.getElementById('yearlyBarCard').innerHTML='';document.getElementById('yearlyDonutCard').innerHTML='';document.getElementById('yearlyMonthCard').innerHTML=''}
+  else{document.getElementById('catRankingCard').innerHTML=loadHTML;document.getElementById('catTrendCard').innerHTML=''}
   try{
     const res=await fetch(APPS_SCRIPT_URL+'?type=all');
     const j=await res.json();
-    if(j.status==='ok'){chartData=j.data;renderChartTab(tab)}
-    else document.getElementById(tab==='monthly'?'monthlySummary':'yearlySummary').innerHTML='<div class="empty-state">Gagal memuat data</div>';
+    if(j.status==='ok'){chartData=j.data;refreshCatMap();renderChartTab(tab)}
+    else document.getElementById(tab==='monthly'?'monthlySummary':tab==='yearly'?'yearlySummary':'catRankingCard').innerHTML='<div class="empty-state">Failed to load data</div>';
   }catch(e){console.error(e)}
   chartLoading=false;
 }
@@ -552,8 +647,11 @@ function getRows(view){
   if(view==='cc-bca')return b;
   return n;
 }
-
-function renderChartTab(tab){if(tab==='monthly')renderMonthly();else renderYearly()}
+function renderChartTab(tab){
+  if(tab==='monthly')renderMonthly();
+  else if(tab==='yearly')renderYearly();
+  else renderCategory();
+}
 
 // ── MONTHLY ───────────────────────────────────────────────────
 function setMV(v,el){mView=v;mSelMonth=null;mSelCat=null;document.querySelectorAll('#monthlySourceToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderMonthly()}
@@ -569,8 +667,7 @@ function getMonthlyKeys(){
 
 function renderMonthly(){
   if(!chartData)return;
-  const rows=getRows(mView);
-  const keys=getMonthlyKeys();
+  const rows=getRows(mView),keys=getMonthlyKeys();
   const totals={},catMap={},rawRows={};
   keys.forEach(k=>{totals[k]=0;catMap[k]={};rawRows[k]={}});
   rows.forEach(r=>{
@@ -580,7 +677,6 @@ function renderMonthly(){
     if(!rawRows[mk][r.category])rawRows[mk][r.category]=[];
     rawRows[mk][r.category].push(r);
   });
-
   const selKey=mSelMonth||keys[keys.length-1];
   if(!mSelMonth)mSelMonth=selKey;
   const maxT=Math.max(...keys.map(k=>totals[k]),1);
@@ -591,15 +687,14 @@ function renderMonthly(){
   const trend=prevTotal>0?((curTotal-prevTotal)/prevTotal*100):null;
   const trendStr=trend!==null?`${trend>0?'+':''}${trend.toFixed(0)}%`:'—';
   const trendColor=trend===null?'var(--text2)':trend>0?'var(--red)':'var(--accent)';
-  const viewLabel=mView==='all'?'All':mView==='opex'?'OPEX':mView==='cc-bca'?'CC BCA':'CC Niaga';
 
   document.getElementById('monthlySummary').innerHTML=`
     <div class="summary-row">
-      <div class="summary-card"><div class="s-label">${selKey}</div><div class="s-value">${fRpShort(curTotal)}</div><div class="s-sub">${viewLabel}</div></div>
-      <div class="summary-card"><div class="s-label">vs Bulan Lalu</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Avg ${fRpShort(Math.round(avgTotal))}/bln</div></div>
+      <div class="summary-card"><div class="s-label">${selKey}</div><div class="s-value">${fRpShort(curTotal)}</div><div class="s-sub">${mView==='all'?'All':mView==='opex'?'OPEX':mView==='cc-bca'?'CC BCA':'CC Niaga'}</div></div>
+      <div class="summary-card"><div class="s-label">vs Last Month</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Avg ${fRpShort(Math.round(avgTotal))}/mo</div></div>
     </div>`;
 
-  let barHTML='<div class="chart-card"><div class="chart-card-title">Total per Bulan</div><div class="bar-chart-wrap"><div class="bar-chart">';
+  let barHTML='<div class="chart-card"><div class="chart-card-title">Monthly Total</div><div class="bar-chart-wrap"><div class="bar-chart">';
   keys.forEach(k=>{
     const t=totals[k]||0,hpct=maxT>0?(t/maxT*100):0,sel=k===selKey?'selected':'';
     barHTML+=`<div class="bar-col ${sel}" onclick="selectMonth('${k}')">
@@ -611,18 +706,11 @@ function renderMonthly(){
   barHTML+='</div></div></div>';
   document.getElementById('monthlyBarCard').innerHTML=barHTML;
 
-  // Donut + detail
-  const catData=catMap[selKey]||{};
-  const total=Object.values(catData).reduce((a,b)=>a+b,0);
-  const selRows=rawRows[selKey]||{};
-
+  const catData=catMap[selKey]||{},total=Object.values(catData).reduce((a,b)=>a+b,0),selRows=rawRows[selKey]||{};
   if(total>0){
     const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
-    const donutSVG=buildDonutSVG(catData,100);
     let legendHTML=sorted.map(([cat,val])=>{
-      const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
-      const pct=((val/total)*100).toFixed(0);
-      const isActive=mSelCat===cat;
+      const color=CAT_COLORS[cat]||CAT_COLORS['Other'],pct=((val/total)*100).toFixed(0),isActive=mSelCat===cat;
       return`<div class="legend-row${isActive?' active':''}" onclick="selectMonthlyCat('${cat.replace(/'/g,"\\'")}')">
         <div class="legend-dot" style="background:${color}"></div>
         <div class="legend-name">${cat}</div>
@@ -630,16 +718,12 @@ function renderMonthly(){
         <div class="legend-amt">${fRpShort(val)}</div>
       </div>`;
     }).join('');
-
     let detailHTML='';
-    if(mSelCat && selRows[mSelCat]){
+    if(mSelCat&&selRows[mSelCat]){
       const color=CAT_COLORS[mSelCat]||CAT_COLORS['Other'];
       const txList=selRows[mSelCat].sort((a,b)=>b.amount-a.amount);
       detailHTML=`<div class="detail-section">
-        <div class="detail-title">
-          <div class="detail-title-dot" style="background:${color}"></div>
-          ${mSelCat} · ${fRp(catData[mSelCat])}
-        </div>
+        <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>${mSelCat} · ${fRp(catData[mSelCat])}</div>
         ${txList.map(r=>`<div class="detail-item">
           <div class="detail-name">${r.payee||r.transaction||''}</div>
           <div class="detail-date">${r.day} ${MO[r.month]}</div>
@@ -647,18 +731,16 @@ function renderMonthly(){
         </div>`).join('')}
       </div>`;
     }
-
     document.getElementById('monthlyDonutCard').innerHTML=`
       <div class="chart-card">
-        <div class="chart-card-title">Breakdown ${selKey} — tap kategori untuk detail</div>
-        <div class="donut-wrap"><div>${donutSVG}</div><div class="donut-legend">${legendHTML}</div></div>
+        <div class="chart-card-title">Breakdown ${selKey} — tap for detail</div>
+        <div class="donut-wrap"><div>${buildDonutSVG(catData,100)}</div><div class="donut-legend">${legendHTML}</div></div>
         ${detailHTML}
       </div>`;
   } else {
-    document.getElementById('monthlyDonutCard').innerHTML=`<div class="chart-card"><div class="chart-card-title">Breakdown ${selKey}</div><div class="empty-state" style="padding:20px">Tidak ada data</div></div>`;
+    document.getElementById('monthlyDonutCard').innerHTML=`<div class="chart-card"><div class="chart-card-title">Breakdown ${selKey}</div><div class="empty-state" style="padding:20px">No data</div></div>`;
   }
 }
-
 function selectMonth(k){mSelMonth=k;mSelCat=null;renderMonthly()}
 function selectMonthlyCat(cat){mSelCat=mSelCat===cat?null:cat;renderMonthly()}
 
@@ -685,7 +767,6 @@ function renderYearly(){
     if(!rawCats[r.year][r.category])rawCats[r.year][r.category]=[];
     rawCats[r.year][r.category].push(r);
   });
-
   const selY=ySelYear||years[years.length-1];
   if(!ySelYear)ySelYear=selY;
   const maxT=Math.max(...years.map(y=>totals[y]||0),1);
@@ -699,10 +780,10 @@ function renderYearly(){
   document.getElementById('yearlySummary').innerHTML=`
     <div class="summary-row">
       <div class="summary-card"><div class="s-label">${selY}</div><div class="s-value">${fRpShort(curTotal)}</div><div class="s-sub">${yView==='all'?'All':yView==='opex'?'OPEX':yView==='cc-bca'?'CC BCA':'CC Niaga'}</div></div>
-      <div class="summary-card"><div class="s-label">vs Tahun Lalu</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Prev: ${fRpShort(prevTotal)}</div></div>
+      <div class="summary-card"><div class="s-label">vs Last Year</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Prev: ${fRpShort(prevTotal)}</div></div>
     </div>`;
 
-  let barHTML='<div class="chart-card"><div class="chart-card-title">Total per Tahun</div><div class="bar-chart-wrap"><div class="bar-chart">';
+  let barHTML='<div class="chart-card"><div class="chart-card-title">Yearly Total</div><div class="bar-chart-wrap"><div class="bar-chart">';
   years.forEach(y=>{
     const t=totals[y]||0,hpct=maxT>0?(t/maxT*100):0,sel=y===selY?'selected':'';
     barHTML+=`<div class="bar-col ${sel}" onclick="selectYear(${y})">
@@ -714,16 +795,11 @@ function renderYearly(){
   barHTML+='</div></div></div>';
   document.getElementById('yearlyBarCard').innerHTML=barHTML;
 
-  // Donut + detail
-  const catData=cats[selY]||{};
-  const catTotal=Object.values(catData).reduce((a,b)=>a+b,0);
+  const catData=cats[selY]||{},catTotal=Object.values(catData).reduce((a,b)=>a+b,0);
   if(catTotal>0){
     const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
-    const donutSVG=buildDonutSVG(catData,100);
     let legendHTML=sorted.map(([cat,val])=>{
-      const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
-      const pct=((val/catTotal)*100).toFixed(0);
-      const isActive=ySelCat===cat;
+      const color=CAT_COLORS[cat]||CAT_COLORS['Other'],pct=((val/catTotal)*100).toFixed(0),isActive=ySelCat===cat;
       return`<div class="legend-row${isActive?' active':''}" onclick="selectYearlyCat('${cat.replace(/'/g,"\\'")}')">
         <div class="legend-dot" style="background:${color}"></div>
         <div class="legend-name">${cat}</div>
@@ -731,16 +807,12 @@ function renderYearly(){
         <div class="legend-amt">${fRpShort(val)}</div>
       </div>`;
     }).join('');
-
     let detailHTML='';
-    if(ySelCat && rawCats[selY][ySelCat]){
+    if(ySelCat&&rawCats[selY][ySelCat]){
       const color=CAT_COLORS[ySelCat]||CAT_COLORS['Other'];
       const txList=rawCats[selY][ySelCat].sort((a,b)=>b.amount-a.amount);
       detailHTML=`<div class="detail-section">
-        <div class="detail-title">
-          <div class="detail-title-dot" style="background:${color}"></div>
-          ${ySelCat} ${selY} · ${fRp(catData[ySelCat])}
-        </div>
+        <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>${ySelCat} ${selY} · ${fRp(catData[ySelCat])}</div>
         ${txList.map(r=>`<div class="detail-item">
           <div class="detail-name">${r.payee||r.transaction||''}</div>
           <div class="detail-date">${r.monthKey}</div>
@@ -748,39 +820,123 @@ function renderYearly(){
         </div>`).join('')}
       </div>`;
     }
-
     document.getElementById('yearlyDonutCard').innerHTML=`
       <div class="chart-card">
-        <div class="chart-card-title">Breakdown Kategori ${selY} — tap untuk detail</div>
-        <div class="donut-wrap"><div>${donutSVG}</div><div class="donut-legend">${legendHTML}</div></div>
+        <div class="chart-card-title">Category Breakdown ${selY} — tap for detail</div>
+        <div class="donut-wrap"><div>${buildDonutSVG(catData,100)}</div><div class="donut-legend">${legendHTML}</div></div>
         ${detailHTML}
       </div>`;
-  } else {
-    document.getElementById('yearlyDonutCard').innerHTML='';
-  }
+  } else document.getElementById('yearlyDonutCard').innerHTML='';
 
-  // Monthly breakdown bar
-  const mbData=monthBreak[selY]||{};
-  const mbKeys=MO.map(m=>`${m} ${selY}`);
+  const mbData=monthBreak[selY]||{},mbKeys=MO.map(m=>`${m} ${selY}`);
   const hasData=mbKeys.some(k=>mbData[k]>0);
   if(hasData){
     const mbMax=Math.max(...mbKeys.map(k=>mbData[k]||0),1);
-    let mbHTML='<div class="chart-card"><div class="chart-card-title">Breakdown per Bulan '+selY+'</div><div class="bar-chart-wrap"><div class="bar-chart">';
+    let mbHTML='<div class="chart-card"><div class="chart-card-title">Monthly Breakdown '+selY+'</div><div class="bar-chart-wrap"><div class="bar-chart">';
     mbKeys.forEach(k=>{
       const t=mbData[k]||0,hpct=mbMax>0?(t/mbMax*100):0;
-      mbHTML+=`<div class="bar-col">
-        <div class="bar-amount">${t>0?fRpShort(t):''}</div>
-        <div class="bar-fill" style="height:${Math.max(hpct,2)}%;opacity:0.7"></div>
-        <div class="bar-label">${k.split(' ')[0]}</div>
-      </div>`;
+      mbHTML+=`<div class="bar-col"><div class="bar-amount">${t>0?fRpShort(t):''}</div><div class="bar-fill" style="height:${Math.max(hpct,2)}%;opacity:0.7"></div><div class="bar-label">${k.split(' ')[0]}</div></div>`;
     });
     mbHTML+='</div></div></div>';
     document.getElementById('yearlyMonthCard').innerHTML=mbHTML;
   } else document.getElementById('yearlyMonthCard').innerHTML='';
 }
-
 function selectYear(y){ySelYear=y;ySelCat=null;renderYearly()}
 function selectYearlyCat(cat){ySelCat=ySelCat===cat?null:cat;renderYearly()}
+
+// ── CATEGORY TAB ──────────────────────────────────────────────
+function setCV(v,el){cView=v;cSelCat=null;document.querySelectorAll('#catSourceToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderCategory()}
+function setCR(r,el){cRange=r;cSelCat=null;document.querySelectorAll('#catRangeToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderCategory()}
+
+function getCatMonthlyKeys(){
+  const now=new Date();
+  if(cRange==='ytd'){const keys=[];for(let m=0;m<=now.getMonth();m++)keys.push(`${MO[m]} ${now.getFullYear()}`);return keys}
+  const n=parseInt(cRange),keys=[];
+  for(let i=n-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);keys.push(`${MO[d.getMonth()]} ${d.getFullYear()}`)}
+  return keys;
+}
+
+function renderCategory(){
+  if(!chartData)return;
+  const rows=getRows(cView);
+  const keys=getCatMonthlyKeys();
+  // catTotals: cat -> total over period
+  // catMonthly: cat -> {monthKey -> total}
+  const catTotals={},catMonthly={},catRawTx={};
+  rows.forEach(r=>{
+    if(!keys.includes(r.monthKey))return;
+    const cat=r.category||'Other';
+    catTotals[cat]=(catTotals[cat]||0)+r.amount;
+    if(!catMonthly[cat])catMonthly[cat]={};
+    catMonthly[cat][r.monthKey]=(catMonthly[cat][r.monthKey]||0)+r.amount;
+    if(!catRawTx[cat])catRawTx[cat]=[];
+    catRawTx[cat].push(r);
+  });
+
+  const grandTotal=Object.values(catTotals).reduce((a,b)=>a+b,0);
+  const sorted=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  const maxCat=sorted.length?sorted[0][1]:1;
+
+  // Ranking card
+  let rankHTML='<div class="chart-card"><div class="chart-card-title">Category Ranking — tap for trend</div>';
+  sorted.forEach(([cat,total],i)=>{
+    const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
+    const pct=grandTotal>0?((total/grandTotal)*100).toFixed(0):0;
+    const barW=maxCat>0?((total/maxCat)*100).toFixed(0):0;
+    const isActive=cSelCat===cat;
+    rankHTML+=`<div class="cat-ranking-item${isActive?' active':''}" onclick="selectCat('${cat.replace(/'/g,"\\'")}')">
+      <div class="cat-rank-num">${i+1}</div>
+      <div class="cat-rank-dot" style="background:${color}"></div>
+      <div class="cat-rank-name">${cat}</div>
+      <div class="cat-rank-bar-wrap"><div class="cat-rank-bar" style="width:${barW}%;background:${color}"></div></div>
+      <div class="cat-rank-amt">${fRpShort(total)}</div>
+    </div>`;
+  });
+  rankHTML+='</div>';
+  document.getElementById('catRankingCard').innerHTML=rankHTML;
+
+  // Trend card for selected category
+  if(cSelCat&&catMonthly[cSelCat]){
+    const color=CAT_COLORS[cSelCat]||CAT_COLORS['Other'];
+    const mData=catMonthly[cSelCat];
+    const mMax=Math.max(...keys.map(k=>mData[k]||0),1);
+    const avg=keys.reduce((s,k)=>s+(mData[k]||0),0)/keys.length;
+    const txList=(catRawTx[cSelCat]||[]).sort((a,b)=>b.amount-a.amount).slice(0,10);
+
+    let trendHTML=`<div class="chart-card">
+      <div class="chart-card-title" style="display:flex;align-items:center;gap:6px">
+        <div style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0"></div>
+        ${cSelCat} — Monthly Trend
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Avg ${fRpShort(Math.round(avg))}/mo · Total ${fRpShort(catTotals[cSelCat])}</div>
+      <div class="bar-chart-wrap"><div class="bar-chart">`;
+    keys.forEach(k=>{
+      const t=mData[k]||0,hpct=mMax>0?(t/mMax*100):0;
+      trendHTML+=`<div class="bar-col">
+        <div class="bar-amount">${t>0?fRpShort(t):''}</div>
+        <div class="bar-fill" style="height:${Math.max(hpct,2)}%;background:${color};border-color:${color}"></div>
+        <div class="bar-label">${k.split(' ')[0]}</div>
+      </div>`;
+    });
+    trendHTML+=`</div></div>`;
+
+    if(txList.length){
+      trendHTML+=`<div class="detail-section">
+        <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>Top Transactions</div>
+        ${txList.map(r=>`<div class="detail-item">
+          <div class="detail-name">${r.payee||r.transaction||''}</div>
+          <div class="detail-date">${r.monthKey}</div>
+          <div class="detail-amt">${fRp(r.amount)}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+    trendHTML+='</div>';
+    document.getElementById('catTrendCard').innerHTML=trendHTML;
+  } else {
+    document.getElementById('catTrendCard').innerHTML='';
+  }
+}
+function selectCat(cat){cSelCat=cSelCat===cat?null:cat;renderCategory()}
 
 // ── DONUT SVG ─────────────────────────────────────────────────
 function buildDonutSVG(data,size){
