@@ -974,6 +974,25 @@ function renderCategory(){
 }
 function selectCat(cat){cSelCat=cat;renderCategory()}
 
+// ── DONUT SVG ─────────────────────────────────────────────────
+function buildDonutSVG(data, size){
+  const total=Object.values(data).reduce((a,b)=>a+b,0);
+  if(!total)return'';
+  const sorted=Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  const r=size/2-10,cx=size/2,cy=size/2,circ=2*Math.PI*r;
+  let offset=0,paths='';
+  sorted.forEach(([cat,val])=>{
+    const pct=val/total,dash=pct*circ,color=CAT_COLORS[cat]||CAT_COLORS['Other'];
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="13" stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset+=dash;
+  });
+  return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="13"/>
+    ${paths}
+    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="var(--text)" font-size="9" font-weight="600">${fRpShort(total)}</text>
+  </svg>`;
+}
+
 // ── INIT ──────────────────────────────────────────────────────
 initDatePicker();
 updateStatus();
