@@ -19,7 +19,6 @@
     --text3: #666;
     --accent: #c8f060;
     --accent-dim: rgba(200,240,96,0.12);
-    --accent-dark: #8fb52a;
     --red: #ff6b6b;
     --red-dim: rgba(255,107,107,0.12);
     --blue: #60a0f0;
@@ -48,22 +47,20 @@
   .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
   .app-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
   .app-title span { color: var(--accent); }
-  .auth-btn {
+  .sync-btn {
     background: var(--bg3);
-    border: 0.5px solid var(--border2);
-    color: var(--text);
+    border: 0.5px solid var(--border);
+    color: var(--text2);
     padding: 8px 14px;
     border-radius: 20px;
     font-size: 13px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex; align-items: center; gap: 6px;
   }
-  .auth-btn.signed-in { border-color: var(--accent); color: var(--accent); }
-  .auth-btn svg { width: 14px; height: 14px; }
+  .sync-btn svg { width: 14px; height: 14px; }
+  .spinning { animation: spin 1s linear infinite; }
+  @keyframes spin { from{transform:rotate(0deg)}to{transform:rotate(360deg)} }
 
-  /* Tab switcher */
   .tab-bar {
     display: flex;
     background: var(--bg3);
@@ -71,23 +68,19 @@
     padding: 3px;
   }
   .tab {
-    flex: 1;
-    padding: 8px;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 500;
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--text2);
-    transition: all 0.2s;
+    flex: 1; padding: 8px; text-align: center;
+    font-size: 13px; font-weight: 500; border-radius: 8px;
+    cursor: pointer; color: var(--text2); transition: all 0.2s;
   }
   .tab.active { background: var(--accent); color: #0f0f0f; font-weight: 600; }
 
-  /* Page sections */
+  .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--text3); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); }
+  .status-dot.online { background: var(--accent); }
+
   .page { display: none; padding: 0 20px; }
   .page.active { display: block; }
 
-  /* Form */
   .form-section { margin-top: 20px; }
   .form-group { margin-bottom: 14px; }
   .form-label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
@@ -100,130 +93,91 @@
     padding: 12px 14px;
     font-size: 16px;
     font-family: inherit;
-    appearance: none;
-    -webkit-appearance: none;
+    appearance: none; -webkit-appearance: none;
     outline: none;
     transition: border-color 0.2s;
   }
   .form-input:focus { border-color: var(--accent); }
   .form-input::placeholder { color: var(--text3); }
-  select.form-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+  select.form-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+  }
 
-  /* Amount input */
   .amount-wrapper { position: relative; }
   .amount-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 16px; }
   .amount-input { padding-left: 50px !important; font-size: 20px !important; font-weight: 600; }
 
-  /* Autocomplete */
   .autocomplete-wrapper { position: relative; }
   .autocomplete-list {
-    position: absolute;
-    top: 100%;
-    left: 0; right: 0;
-    background: var(--bg2);
-    border: 0.5px solid var(--border2);
-    border-radius: var(--radius-sm);
-    z-index: 200;
-    max-height: 180px;
-    overflow-y: auto;
-    margin-top: 4px;
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--bg2); border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm); z-index: 200;
+    max-height: 180px; overflow-y: auto; margin-top: 4px;
   }
   .autocomplete-item {
-    padding: 10px 14px;
-    font-size: 15px;
-    cursor: pointer;
+    padding: 10px 14px; font-size: 15px; cursor: pointer;
     border-bottom: 0.5px solid var(--border);
   }
   .autocomplete-item:last-child { border-bottom: none; }
-  .autocomplete-item:active, .autocomplete-item.highlighted { background: var(--accent-dim); color: var(--accent); }
+  .autocomplete-item:active { background: var(--accent-dim); color: var(--accent); }
 
-  /* Sheet toggle */
   .sheet-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
   .sheet-btn {
-    flex: 1;
-    padding: 10px;
-    border-radius: var(--radius-sm);
-    border: 0.5px solid var(--border);
-    background: var(--bg3);
-    color: var(--text2);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
+    flex: 1; padding: 10px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border); background: var(--bg3);
+    color: var(--text2); font-size: 13px; font-weight: 500;
+    cursor: pointer; text-align: center; transition: all 0.2s;
   }
   .sheet-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
-  /* Submit button */
+  .date-display {
+    width: 100%; background: var(--bg3); border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    padding: 12px 14px; font-size: 16px; font-family: inherit;
+    cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+    transition: border-color 0.2s;
+  }
+  .date-display:focus { border-color: var(--accent); outline: none; }
+  .date-display svg { opacity: 0.4; flex-shrink: 0; }
+
   .submit-btn {
-    width: 100%;
-    background: var(--accent);
-    color: #0f0f0f;
-    border: none;
-    border-radius: var(--radius);
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 8px;
+    width: 100%; background: var(--accent); color: #0f0f0f;
+    border: none; border-radius: var(--radius);
+    padding: 16px; font-size: 16px; font-weight: 700;
+    cursor: pointer; margin-top: 8px;
     transition: opacity 0.2s, transform 0.1s;
-    letter-spacing: 0.2px;
   }
   .submit-btn:active { transform: scale(0.98); opacity: 0.9; }
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* Toast */
   .toast {
-    position: fixed;
-    bottom: 100px;
-    left: 50%;
+    position: fixed; bottom: 100px; left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: var(--bg2);
-    border: 0.5px solid var(--border2);
-    color: var(--text);
-    padding: 12px 20px;
-    border-radius: 30px;
-    font-size: 14px;
-    opacity: 0;
-    transition: all 0.3s;
-    z-index: 1000;
-    white-space: nowrap;
+    background: var(--bg2); border: 0.5px solid var(--border2);
+    color: var(--text); padding: 12px 20px; border-radius: 30px;
+    font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 1000; white-space: nowrap;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: var(--accent); color: var(--accent); }
   .toast.error { border-color: var(--red); color: var(--red); }
 
-  /* History list */
   .history-header { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; margin-bottom: 12px; }
   .history-title { font-size: 13px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
   .history-filter {
-    background: var(--bg3);
-    border: 0.5px solid var(--border);
-    color: var(--text2);
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
+    background: var(--bg3); border: 0.5px solid var(--border);
+    color: var(--text2); padding: 5px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
   }
+
   .tx-item {
-    background: var(--bg2);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: border-color 0.2s;
+    background: var(--bg2); border: 0.5px solid var(--border);
+    border-radius: var(--radius); padding: 14px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
   }
-  .tx-item:active { border-color: var(--border2); }
   .tx-icon {
-    width: 40px; height: 40px;
-    border-radius: 10px;
+    width: 40px; height: 40px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
+    font-size: 18px; flex-shrink: 0;
   }
   .tx-icon.opex { background: var(--accent-dim); }
   .tx-icon.cc-bca { background: var(--blue-dim); }
@@ -235,102 +189,44 @@
   .tx-amount.opex { color: var(--accent); }
   .tx-amount.cc-bca { color: var(--blue); }
   .tx-amount.cc-niaga { color: var(--red); }
-  .badge {
-    display: inline-block;
-    font-size: 11px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-weight: 500;
-    margin-left: 4px;
-  }
+
+  .badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 500; margin-left: 4px; }
   .badge-opex { background: var(--accent-dim); color: var(--accent); }
   .badge-bca { background: var(--blue-dim); color: var(--blue); }
   .badge-niaga { background: var(--red-dim); color: var(--red); }
+  .badge-pending { background: rgba(255,165,0,0.15); color: orange; }
 
-  /* Edit modal */
   .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 500;
-    display: flex;
-    align-items: flex-end;
-    display: none;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 500; align-items: flex-end; display: none;
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: var(--bg2);
-    border-radius: 20px 20px 0 0;
-    padding: 20px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
+    background: var(--bg2); border-radius: 20px 20px 0 0;
+    padding: 20px; width: 100%; max-height: 85vh; overflow-y: auto;
     border-top: 0.5px solid var(--border2);
   }
   .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 16px; }
   .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
   .modal-actions { display: flex; gap: 8px; margin-top: 12px; }
   .btn-delete {
-    flex: 1;
-    padding: 14px;
-    border-radius: var(--radius);
-    border: 0.5px solid var(--red);
-    background: var(--red-dim);
-    color: var(--red);
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
+    flex: 1; padding: 14px; border-radius: var(--radius);
+    border: 0.5px solid var(--red); background: var(--red-dim);
+    color: var(--red); font-size: 15px; font-weight: 600; cursor: pointer;
   }
   .btn-save {
-    flex: 2;
-    padding: 14px;
-    border-radius: var(--radius);
-    border: none;
-    background: var(--accent);
-    color: #0f0f0f;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
+    flex: 2; padding: 14px; border-radius: var(--radius);
+    border: none; background: var(--accent); color: #0f0f0f;
+    font-size: 15px; font-weight: 700; cursor: pointer;
   }
 
-  /* Offline queue badge */
-  .queue-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(255,165,0,0.15);
-    color: orange;
-    border: 0.5px solid rgba(255,165,0,0.3);
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    margin-left: 8px;
-  }
-
-  /* Empty state */
   .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
 
-  /* Sync button */
-  .sync-btn {
-    background: var(--bg3);
-    border: 0.5px solid var(--border);
-    color: var(--text2);
-    padding: 7px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 5px;
+  /* Date picker hidden input trick */
+  .date-input-hidden {
+    position: absolute; opacity: 0; pointer-events: none;
+    width: 1px; height: 1px; top: 0; left: 0;
   }
-  .sync-btn svg { width: 14px; height: 14px; }
-  .spinning { animation: spin 1s linear infinite; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-  /* Status bar */
-  .status-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--text3); }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); }
-  .status-dot.online { background: var(--accent); }
-
-  /* Loading overlay */
-  .loading { display: none; text-align: center; padding: 40px; color: var(--text2); font-size: 14px; }
 </style>
 </head>
 <body>
@@ -338,24 +234,18 @@
 <div class="header">
   <div class="header-top">
     <div class="app-title">xpns<span>.</span></div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <button class="sync-btn" id="syncBtn" onclick="syncQueue()" title="Sync pending">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
-        Sync
-      </button>
-      <button class="auth-btn" id="authBtn" onclick="handleAuth()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        <span id="authLabel">Login</span>
-      </button>
-    </div>
+    <button class="sync-btn" id="syncBtn" onclick="syncQueue()">
+      <svg id="syncIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
+      Sync
+    </button>
   </div>
   <div class="tab-bar">
-    <div class="tab active" onclick="switchTab('input')">Input</div>
-    <div class="tab" onclick="switchTab('history')">Riwayat</div>
+    <div class="tab active" onclick="switchTab('input', this)">Input</div>
+    <div class="tab" onclick="switchTab('history', this)">Riwayat</div>
   </div>
   <div class="status-bar">
     <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Belum login</span>
+    <span id="statusText">Siap</span>
     <span id="queueInfo"></span>
   </div>
 </div>
@@ -369,11 +259,12 @@
       <div class="sheet-btn" data-sheet="cc-niaga" onclick="switchSheet('cc-niaga')">🔴 CC Niaga</div>
     </div>
 
-    <div class="form-group">
+    <!-- Date field -->
+    <div class="form-group" style="position:relative;">
       <label class="form-label">Tanggal</label>
-      <input type="date" class="form-input" id="inputDate" style="opacity:0;position:absolute;pointer-events:none;">
-      <div class="form-input" id="inputDateDisplay" onclick="document.getElementById('inputDate').showPicker()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
-        <span id="inputDateText">Pilih tanggal...</span>
+      <input type="date" id="inputDateRaw" class="date-input-hidden">
+      <div class="date-display" id="inputDateDisplay" tabindex="0">
+        <span id="inputDateText"></span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
     </div>
@@ -382,12 +273,16 @@
     <div id="fields-opex">
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Kategori</label>
-        <input type="text" class="form-input" id="opex-category" placeholder="Pilih kategori..." autocomplete="off" oninput="showAC('opex-category', opexCategories)" onfocus="showAC('opex-category', opexCategories)">
+        <input type="text" class="form-input" id="opex-category" placeholder="Ketik atau pilih kategori..." autocomplete="off"
+          oninput="showAC('opex-category', opexCategories)"
+          onfocus="showAC('opex-category', opexCategories)">
         <div class="autocomplete-list" id="ac-opex-category" style="display:none"></div>
       </div>
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Payee / Tempat</label>
-        <input type="text" class="form-input" id="opex-payee" placeholder="Nama payee..." autocomplete="off" oninput="showAC('opex-payee', getPayeeSuggestions('opex'))" onfocus="showAC('opex-payee', getPayeeSuggestions('opex'))">
+        <input type="text" class="form-input" id="opex-payee" placeholder="Nama payee..." autocomplete="off"
+          oninput="showAC('opex-payee', getPayeeSuggestions('opex'))"
+          onfocus="showAC('opex-payee', getPayeeSuggestions('opex'))">
         <div class="autocomplete-list" id="ac-opex-payee" style="display:none"></div>
       </div>
       <div class="form-group">
@@ -405,12 +300,16 @@
     <div id="fields-cc" style="display:none">
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Transaction</label>
-        <input type="text" class="form-input" id="cc-transaction" placeholder="Nama transaksi..." autocomplete="off" oninput="showAC('cc-transaction', getPayeeSuggestions('cc'))" onfocus="showAC('cc-transaction', getPayeeSuggestions('cc'))">
+        <input type="text" class="form-input" id="cc-transaction" placeholder="Nama transaksi..." autocomplete="off"
+          oninput="showAC('cc-transaction', getPayeeSuggestions('cc'))"
+          onfocus="showAC('cc-transaction', getPayeeSuggestions('cc'))">
         <div class="autocomplete-list" id="ac-cc-transaction" style="display:none"></div>
       </div>
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Kategori</label>
-        <input type="text" class="form-input" id="cc-category" placeholder="Pilih kategori..." autocomplete="off" oninput="showAC('cc-category', ccCategories)" onfocus="showAC('cc-category', ccCategories)">
+        <input type="text" class="form-input" id="cc-category" placeholder="Ketik atau pilih kategori..." autocomplete="off"
+          oninput="showAC('cc-category', ccCategories)"
+          onfocus="showAC('cc-category', ccCategories)">
         <div class="autocomplete-list" id="ac-cc-category" style="display:none"></div>
       </div>
     </div>
@@ -423,7 +322,7 @@
       </div>
     </div>
 
-    <button class="submit-btn" id="submitBtn" onclick="submitTransaction()">Simpan Transaksi</button>
+    <button class="submit-btn" onclick="submitTransaction()">Simpan Transaksi</button>
   </div>
 </div>
 
@@ -458,43 +357,76 @@
 
 <script>
 const SPREADSHEET_ID = '1cSlRQPTNSCvfiumzi3nCXBHJq-d8rIPR63W1D_8N5dI';
-const CLIENT_ID = '108173053804-tnpritpf7k8k8o2ndjdr8f7t15nek5gg.apps.googleusercontent.com';
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+const API_KEY = 'AIzaSyAnBNEgwUWqxJby1Qk1kkzV8yasrTYSHvY';
 
 const opexCategories = ['Auto','Books','Charity','Clothing','Meals','Entertainment','Gifts','Groceries','Health','Home Repair','Household','Medical','Self Care','Transport','Travel','Utilities'];
 const ccCategories = ['Entertainment','Meals','Utilities','Gas','Medical','Groceries','Travel','Administration','Insurance'];
 const opexPayees = ['Azko','Angpau','Apotek','Bengkel','Bensin','Beras','Books','Breakfast','Buah','Cinema','Coffee','Cuci AC','Cuci Mobil','Cukur Rambut','Dinner','Gramedia','Ice Cream','Jahit','Jus','KRL','Laundry','Lunch','Marketplace','Media','Minimarket','MRT','Nitrogen','Ojol','Parkir','Pijat','Pulsa','Rujak','Service','Snack','Supermarket','Tambal Ban','Taxi','TJ','Tokopedia','Tol','Tukang','Uniqlo'];
 
 let currentSheet = 'opex';
-let tokenClient = null;
-let accessToken = null;
 let editingIndex = null;
-
-// Local storage queue
 let queue = JSON.parse(localStorage.getItem('xpns_queue') || '[]');
-let history = JSON.parse(localStorage.getItem('xpns_history') || '[]');
+let txHistory = JSON.parse(localStorage.getItem('xpns_history') || '[]');
 
-// Get today's date
-function getTodayDate() {
+// ── Date helpers ──────────────────────────────────────────────
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function getTodayISO() {
   const d = new Date();
-  return d.toISOString().split('T')[0];
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
 }
-document.getElementById('inputDate').value = getTodayDate();
-document.getElementById('inputDateText').textContent = formatDate(getTodayDate());
-document.getElementById('inputDate').addEventListener('change', function() {
-  document.getElementById('inputDateText').textContent = this.value ? formatDate(this.value) : 'Pilih tanggal...';
-});
 
-// Tab switch
-function switchTab(tab) {
+function isoToDisplay(iso) {
+  if (!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${parseInt(d)} ${MONTHS[parseInt(m)-1]} ${y}`;
+}
+
+function isoToSheetDate(iso) {
+  const [,m,d] = iso.split('-');
+  return `${parseInt(d)} ${MONTHS[parseInt(m)-1]}`;
+}
+
+function isoToMonth(iso) {
+  const [y,m] = iso.split('-');
+  return `${MONTHS[parseInt(m)-1]} ${y}`;
+}
+
+// ── Date picker setup ─────────────────────────────────────────
+function initDatePicker() {
+  const raw = document.getElementById('inputDateRaw');
+  const display = document.getElementById('inputDateDisplay');
+  const text = document.getElementById('inputDateText');
+
+  const today = getTodayISO();
+  raw.value = today;
+  text.textContent = isoToDisplay(today);
+
+  display.addEventListener('click', () => {
+    try { raw.showPicker(); } catch(e) { raw.focus(); raw.click(); }
+  });
+  display.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      try { raw.showPicker(); } catch(e2) { raw.focus(); }
+    }
+  });
+  raw.addEventListener('change', () => {
+    text.textContent = raw.value ? isoToDisplay(raw.value) : 'Pilih tanggal...';
+  });
+}
+
+// ── Tabs & sheets ─────────────────────────────────────────────
+function switchTab(tab, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
+  el.classList.add('active');
   document.getElementById('page-' + tab).classList.add('active');
   if (tab === 'history') renderHistory();
 }
 
-// Sheet switch
 function switchSheet(sheet) {
   currentSheet = sheet;
   document.querySelectorAll('.sheet-btn').forEach(b => b.classList.remove('active'));
@@ -503,89 +435,52 @@ function switchSheet(sheet) {
   document.getElementById('fields-cc').style.display = sheet !== 'opex' ? 'block' : 'none';
 }
 
-// Autocomplete
+// ── Autocomplete ──────────────────────────────────────────────
 function showAC(fieldId, list) {
   const input = document.getElementById(fieldId);
   const dropdown = document.getElementById('ac-' + fieldId);
+  if (!dropdown) return;
   const val = input.value.toLowerCase();
   const filtered = val ? list.filter(i => i.toLowerCase().includes(val)) : list;
   if (!filtered.length) { dropdown.style.display = 'none'; return; }
   dropdown.innerHTML = filtered.map(i =>
-    `<div class="autocomplete-item" onmousedown="selectAC('${fieldId}', '${i.replace(/'/g,"\\'")}' )">${i}</div>`
+    `<div class="autocomplete-item" onmousedown="selectAC('${fieldId}','${i.replace(/'/g,"\\'")}')">${i}</div>`
   ).join('');
   dropdown.style.display = 'block';
 }
 
 function selectAC(fieldId, val) {
-  document.getElementById(fieldId).value = val;
-  document.getElementById('ac-' + fieldId).style.display = 'none';
+  const el = document.getElementById(fieldId);
+  if (el) el.value = val;
+  const dd = document.getElementById('ac-' + fieldId);
+  if (dd) dd.style.display = 'none';
 }
 
 document.addEventListener('click', e => {
-  if (!e.target.closest('.autocomplete-wrapper')) {
+  if (!e.target.closest('.autocomplete-wrapper'))
     document.querySelectorAll('.autocomplete-list').forEach(d => d.style.display = 'none');
-  }
 });
 
-// Get payee suggestions from history + preset
 function getPayeeSuggestions(type) {
   const fromHistory = [...new Set(
-    history.filter(t => type === 'cc' ? t.sheet !== 'opex' : t.sheet === 'opex')
-           .map(t => t.sheet === 'opex' ? t.payee : t.transaction)
-           .filter(Boolean)
+    txHistory
+      .filter(t => type === 'cc' ? t.sheet !== 'opex' : t.sheet === 'opex')
+      .map(t => t.sheet === 'opex' ? t.payee : t.transaction)
+      .filter(Boolean)
   )];
   if (type === 'opex') return [...new Set([...opexPayees, ...fromHistory])];
   return fromHistory;
 }
 
-// Format amount
-function formatRp(num) {
-  return 'Rp' + Number(num).toLocaleString('id-ID');
+// ── Format ────────────────────────────────────────────────────
+function formatRp(n) {
+  return 'Rp' + Number(n).toLocaleString('id-ID');
 }
 
-// Format date for display: "11 May 2026"
-function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const [y, m, d] = dateStr.split('-');
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
-}
-
-function updateDateDisplay(inputId, displayId) {
-  const val = document.getElementById(inputId).value;
-  const displayEl = document.getElementById(displayId);
-  if (val && displayEl) {
-    displayEl.querySelector('span').textContent = formatDate(val);
-  }
-}
-
-// Wire up date input change
-document.addEventListener('DOMContentLoaded', () => {
-  const inp = document.getElementById('inputDate');
-  if (inp) {
-    inp.addEventListener('change', () => updateDateDisplay('inputDate', 'inputDateDisplay'));
-  }
-});
-
-// Format date for sheets (e.g. "11 May")
-function formatDateForSheet(dateStr) {
-  const [y, m, d] = dateStr.split('-');
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${parseInt(d)} ${months[parseInt(m)-1]}`;
-}
-
-// Get month string
-function getMonth(dateStr) {
-  const [y, m] = dateStr.split('-');
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${months[parseInt(m)-1]} ${y}`;
-}
-
-// Submit transaction
+// ── Submit ────────────────────────────────────────────────────
 function submitTransaction() {
-  const date = document.getElementById('inputDate').value;
+  const date = document.getElementById('inputDateRaw').value;
   const amount = document.getElementById('inputAmount').value;
-
   if (!date || !amount) { showToast('Tanggal dan nominal wajib diisi', 'error'); return; }
 
   let tx = { id: Date.now(), date, sheet: currentSheet, synced: false };
@@ -595,206 +490,159 @@ function submitTransaction() {
     const payee = document.getElementById('opex-payee').value;
     const platform = document.getElementById('opex-platform').value;
     if (!category || !payee || !platform) { showToast('Semua field wajib diisi', 'error'); return; }
-    tx = { ...tx, category, payee, platform, amount: parseInt(amount) };
+    Object.assign(tx, { category, payee, platform, amount: parseInt(amount) });
   } else {
     const transaction = document.getElementById('cc-transaction').value;
     const category = document.getElementById('cc-category').value;
     if (!transaction || !category) { showToast('Semua field wajib diisi', 'error'); return; }
-    tx = { ...tx, transaction, category, amount: parseInt(amount) };
+    Object.assign(tx, { transaction, category, amount: parseInt(amount) });
   }
 
-  // Add to queue and history
-  queue.push({ ...tx });
-  history.unshift({ ...tx });
+  queue.push({...tx});
+  txHistory.unshift({...tx});
   saveLocal();
   updateStatus();
 
-  // Try immediate sync
-  if (accessToken) {
-    syncSingle(tx).then(ok => {
-      if (ok) {
-        queue = queue.filter(q => q.id !== tx.id);
-        history = history.map(h => h.id === tx.id ? { ...h, synced: true } : h);
-        saveLocal();
-        updateStatus();
-        showToast('Tersimpan ke Google Sheets ✓', 'success');
-      } else {
-        showToast('Tersimpan lokal, sync pending', '');
-      }
-    });
-  } else {
-    showToast('Tersimpan lokal (login dulu untuk sync)', '');
-  }
+  syncSingle(tx).then(ok => {
+    if (ok) {
+      queue = queue.filter(q => q.id !== tx.id);
+      txHistory = txHistory.map(h => h.id === tx.id ? {...h, synced: true} : h);
+      saveLocal();
+      updateStatus();
+      showToast('Tersimpan ke Google Sheets ✓', 'success');
+    } else {
+      showToast('Tersimpan lokal — tap Sync untuk upload', '');
+    }
+  });
 
   resetForm();
 }
 
 function resetForm() {
   document.getElementById('inputAmount').value = '';
-  document.getElementById('inputDate').value = getTodayDate();
-  document.getElementById('inputDateText').textContent = formatDate(getTodayDate());
-  if (currentSheet === 'opex') {
-    document.getElementById('opex-category').value = '';
-    document.getElementById('opex-payee').value = '';
-    document.getElementById('opex-platform').value = '';
-  } else {
-    document.getElementById('cc-transaction').value = '';
-    document.getElementById('cc-category').value = '';
-  }
+  const today = getTodayISO();
+  document.getElementById('inputDateRaw').value = today;
+  document.getElementById('inputDateText').textContent = isoToDisplay(today);
+  ['opex-category','opex-payee','cc-transaction','cc-category'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('opex-platform').value = '';
 }
 
-// Build row for sheets
+// ── Build sheet row ───────────────────────────────────────────
 function buildRow(tx) {
-  const dateDisplay = formatDateForSheet(tx.date);
-  const month = getMonth(tx.date);
-
-  if (tx.sheet === 'opex') {
-    return [dateDisplay, month, tx.category, tx.payee, tx.platform, tx.amount];
-  } else {
-    return [dateDisplay, tx.transaction, tx.category, tx.amount];
-  }
+  const d = isoToSheetDate(tx.date);
+  const m = isoToMonth(tx.date);
+  if (tx.sheet === 'opex') return [d, m, tx.category, tx.payee, tx.platform, tx.amount];
+  return [d, tx.transaction, tx.category, tx.amount];
 }
 
-// Get sheet range
 function getRange(sheet) {
-  if (sheet === 'opex') return `Opex!A:F`;
-  if (sheet === 'cc-bca') return `CC!H:K`;
-  if (sheet === 'cc-niaga') return `CC!B:E`;
+  if (sheet === 'opex')     return 'Opex!A:F';
+  if (sheet === 'cc-bca')   return 'CC!H:K';
+  if (sheet === 'cc-niaga') return 'CC!B:E';
 }
 
-// Sync single transaction
+// ── Sheets API (API Key) ──────────────────────────────────────
 async function syncSingle(tx) {
   try {
     const range = getRange(tx.sheet);
     const row = buildRow(tx);
-
-    const res = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
-      {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ values: [row] })
-      }
-    );
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&key=${API_KEY}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values: [row] })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      console.error('Sheets error:', err);
+    }
     return res.ok;
-  } catch (e) {
+  } catch(e) {
+    console.error('Sync error:', e);
     return false;
   }
 }
 
-// Sync all pending
 async function syncQueue() {
-  if (!accessToken) { handleAuth(); return; }
   if (!queue.length) { showToast('Tidak ada yang perlu di-sync', ''); return; }
-
-  const btn = document.getElementById('syncBtn');
-  btn.querySelector('svg').classList.add('spinning');
-
+  const icon = document.getElementById('syncIcon');
+  icon.classList.add('spinning');
   let success = 0;
   for (const tx of [...queue]) {
     const ok = await syncSingle(tx);
     if (ok) {
       queue = queue.filter(q => q.id !== tx.id);
-      history = history.map(h => h.id === tx.id ? { ...h, synced: true } : h);
+      txHistory = txHistory.map(h => h.id === tx.id ? {...h, synced: true} : h);
       success++;
     }
   }
-
   saveLocal();
   updateStatus();
-  btn.querySelector('svg').classList.remove('spinning');
-  showToast(`Berhasil sync ${success} transaksi`, 'success');
+  icon.classList.remove('spinning');
+  showToast(success ? `Berhasil sync ${success} transaksi ✓` : 'Sync gagal, coba lagi', success ? 'success' : 'error');
   renderHistory();
 }
 
-// Auth
-function handleAuth() {
-  if (accessToken) {
-    accessToken = null;
-    localStorage.removeItem('xpns_token');
-    document.getElementById('authLabel').textContent = 'Login';
-    document.getElementById('authBtn').classList.remove('signed-in');
-    updateStatus();
-    return;
-  }
-  if (tokenClient) {
-    tokenClient.requestAccessToken({ prompt: '' });
-  } else {
-    showToast('Google API belum dimuat', 'error');
-  }
-}
-
-function initGoogleAuth() {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
-    callback: (response) => {
-      if (response.access_token) {
-        accessToken = response.access_token;
-        localStorage.setItem('xpns_token', accessToken);
-        document.getElementById('authLabel').textContent = 'Logout';
-        document.getElementById('authBtn').classList.add('signed-in');
-        updateStatus();
-        showToast('Login berhasil!', 'success');
-        if (queue.length) syncQueue();
-      }
-    }
-  });
-}
-
-// History render
+// ── History ───────────────────────────────────────────────────
 function renderHistory() {
   const filter = document.getElementById('historyFilter').value;
   const list = document.getElementById('historyList');
-  const filtered = filter === 'all' ? history : history.filter(t => t.sheet === filter);
-
+  const filtered = filter === 'all' ? txHistory : txHistory.filter(t => t.sheet === filter);
   if (!filtered.length) {
     list.innerHTML = '<div class="empty-state">Belum ada transaksi tersimpan</div>';
     return;
   }
-
-  list.innerHTML = filtered.map((tx, i) => {
-    const origIdx = history.indexOf(tx);
+  list.innerHTML = filtered.map(tx => {
+    const origIdx = txHistory.indexOf(tx);
     const icon = tx.sheet === 'opex' ? '💳' : tx.sheet === 'cc-bca' ? '🔵' : '🔴';
-    const amtClass = tx.sheet === 'opex' ? 'opex' : tx.sheet === 'cc-bca' ? 'cc-bca' : 'cc-niaga';
-    const badge = tx.sheet === 'opex' ? `<span class="badge badge-opex">OPEX</span>` :
-                  tx.sheet === 'cc-bca' ? `<span class="badge badge-bca">CC BCA</span>` :
-                  `<span class="badge badge-niaga">CC Niaga</span>`;
+    const cls = tx.sheet === 'opex' ? 'opex' : tx.sheet === 'cc-bca' ? 'cc-bca' : 'cc-niaga';
+    const badgeCls = tx.sheet === 'opex' ? 'badge-opex' : tx.sheet === 'cc-bca' ? 'badge-bca' : 'badge-niaga';
+    const badgeLabel = tx.sheet === 'opex' ? 'OPEX' : tx.sheet === 'cc-bca' ? 'CC BCA' : 'CC Niaga';
     const payeeName = tx.sheet === 'opex' ? tx.payee : tx.transaction;
-    const syncDot = tx.synced ? '✓' : '⏳';
+    const syncBadge = tx.synced ? '' : '<span class="badge badge-pending">pending</span>';
     return `<div class="tx-item" onclick="openEdit(${origIdx})">
-      <div class="tx-icon ${amtClass}">${icon}</div>
+      <div class="tx-icon ${cls}">${icon}</div>
       <div class="tx-info">
-        <div class="tx-payee">${payeeName} ${badge}</div>
-        <div class="tx-meta">${formatDate(tx.date)} · ${tx.category} · ${syncDot}</div>
+        <div class="tx-payee">${payeeName}<span class="badge ${badgeCls}">${badgeLabel}</span>${syncBadge}</div>
+        <div class="tx-meta">${isoToDisplay(tx.date)} · ${tx.category}</div>
       </div>
-      <div class="tx-amount ${amtClass}">${formatRp(tx.amount)}</div>
+      <div class="tx-amount ${cls}">${formatRp(tx.amount)}</div>
     </div>`;
   }).join('');
 }
 
-// Edit modal
+// ── Edit modal ────────────────────────────────────────────────
 function openEdit(idx) {
   editingIndex = idx;
-  const tx = history[idx];
-  document.getElementById('editModalTitle').textContent = 'Edit ' + (tx.sheet === 'opex' ? 'OPEX' : tx.sheet.toUpperCase());
+  const tx = txHistory[idx];
+  document.getElementById('editModalTitle').textContent =
+    'Edit ' + (tx.sheet === 'opex' ? 'OPEX' : tx.sheet === 'cc-bca' ? 'CC BCA' : 'CC Niaga');
 
   let fields = `
-    <div class="form-group">
+    <div class="form-group" style="position:relative;">
       <label class="form-label">Tanggal</label>
-      <input type="date" class="form-input" id="edit-date" value="${tx.date}">
+      <input type="date" id="edit-date-raw" class="date-input-hidden" value="${tx.date}">
+      <div class="date-display" id="edit-date-display" tabindex="0" onclick="triggerEditDate()">
+        <span id="edit-date-text">${isoToDisplay(tx.date)}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
     </div>`;
 
   if (tx.sheet === 'opex') {
     fields += `
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Kategori</label>
-        <input type="text" class="form-input" id="edit-category" value="${tx.category || ''}" autocomplete="off" oninput="showAC('edit-category', opexCategories)" onfocus="showAC('edit-category', opexCategories)">
+        <input type="text" class="form-input" id="edit-category" value="${tx.category||''}" autocomplete="off"
+          oninput="showAC('edit-category',opexCategories)" onfocus="showAC('edit-category',opexCategories)">
         <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div>
       </div>
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Payee</label>
-        <input type="text" class="form-input" id="edit-payee" value="${tx.payee || ''}" autocomplete="off" oninput="showAC('edit-payee', opexPayees)" onfocus="showAC('edit-payee', opexPayees)">
+        <input type="text" class="form-input" id="edit-payee" value="${tx.payee||''}" autocomplete="off"
+          oninput="showAC('edit-payee',opexPayees)" onfocus="showAC('edit-payee',opexPayees)">
         <div class="autocomplete-list" id="ac-edit-payee" style="display:none"></div>
       </div>
       <div class="form-group">
@@ -809,12 +657,13 @@ function openEdit(idx) {
     fields += `
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Transaction</label>
-        <input type="text" class="form-input" id="edit-transaction" value="${tx.transaction || ''}" autocomplete="off">
+        <input type="text" class="form-input" id="edit-transaction" value="${tx.transaction||''}" autocomplete="off">
         <div class="autocomplete-list" id="ac-edit-transaction" style="display:none"></div>
       </div>
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Kategori</label>
-        <input type="text" class="form-input" id="edit-category" value="${tx.category || ''}" autocomplete="off" oninput="showAC('edit-category', ccCategories)" onfocus="showAC('edit-category', ccCategories)">
+        <input type="text" class="form-input" id="edit-category" value="${tx.category||''}" autocomplete="off"
+          oninput="showAC('edit-category',ccCategories)" onfocus="showAC('edit-category',ccCategories)">
         <div class="autocomplete-list" id="ac-edit-category" style="display:none"></div>
       </div>`;
   }
@@ -829,14 +678,28 @@ function openEdit(idx) {
     </div>`;
 
   document.getElementById('editModalBody').innerHTML = fields;
+
+  // Wire edit date picker after render
+  const editRaw = document.getElementById('edit-date-raw');
+  if (editRaw) {
+    editRaw.addEventListener('change', () => {
+      document.getElementById('edit-date-text').textContent = isoToDisplay(editRaw.value);
+    });
+  }
+
   document.getElementById('editModal').classList.add('open');
 }
 
-function saveEdit() {
-  const tx = history[editingIndex];
-  const date = document.getElementById('edit-date').value;
-  const amount = parseInt(document.getElementById('edit-amount').value);
+function triggerEditDate() {
+  const raw = document.getElementById('edit-date-raw');
+  if (raw) { try { raw.showPicker(); } catch(e) { raw.focus(); raw.click(); } }
+}
 
+function saveEdit() {
+  const tx = txHistory[editingIndex];
+  const dateRaw = document.getElementById('edit-date-raw');
+  tx.date = dateRaw ? dateRaw.value : tx.date;
+  tx.amount = parseInt(document.getElementById('edit-amount').value);
   if (tx.sheet === 'opex') {
     tx.category = document.getElementById('edit-category').value;
     tx.payee = document.getElementById('edit-payee').value;
@@ -845,21 +708,21 @@ function saveEdit() {
     tx.transaction = document.getElementById('edit-transaction').value;
     tx.category = document.getElementById('edit-category').value;
   }
-
-  tx.date = date;
-  tx.amount = amount;
-  tx.synced = false; // Mark for re-sync if needed
-
+  tx.synced = false;
+  // Update in queue if pending
+  const qi = queue.findIndex(q => q.id === tx.id);
+  if (qi > -1) queue[qi] = {...tx};
   saveLocal();
   closeModal();
   renderHistory();
+  updateStatus();
   showToast('Perubahan tersimpan', 'success');
 }
 
 function deleteTransaction() {
-  if (!confirm('Hapus transaksi ini?')) return;
-  const tx = history[editingIndex];
-  history.splice(editingIndex, 1);
+  if (!confirm('Hapus transaksi ini dari riwayat lokal?')) return;
+  const tx = txHistory[editingIndex];
+  txHistory.splice(editingIndex, 1);
   queue = queue.filter(q => q.id !== tx.id);
   saveLocal();
   closeModal();
@@ -872,35 +735,26 @@ function closeModal() {
   document.getElementById('editModal').classList.remove('open');
   editingIndex = null;
 }
-
 document.getElementById('editModal').addEventListener('click', e => {
   if (e.target === document.getElementById('editModal')) closeModal();
 });
 
-// Local storage
+// ── Local storage ─────────────────────────────────────────────
 function saveLocal() {
   localStorage.setItem('xpns_queue', JSON.stringify(queue));
-  localStorage.setItem('xpns_history', JSON.stringify(history));
+  localStorage.setItem('xpns_history', JSON.stringify(txHistory));
 }
 
-// Update status
 function updateStatus() {
   const dot = document.getElementById('statusDot');
   const text = document.getElementById('statusText');
   const qInfo = document.getElementById('queueInfo');
-
-  if (accessToken) {
-    dot.classList.add('online');
-    text.textContent = 'Terhubung ke Sheets';
-  } else {
-    dot.classList.remove('online');
-    text.textContent = 'Belum login';
-  }
-
+  dot.classList.add('online');
+  text.textContent = 'Siap';
   qInfo.textContent = queue.length ? `· ${queue.length} pending` : '';
 }
 
-// Toast
+// ── Toast ─────────────────────────────────────────────────────
 function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -908,14 +762,9 @@ function showToast(msg, type) {
   setTimeout(() => t.className = 'toast', 3000);
 }
 
-// Init
-window.onload = function() {
-  const script = document.createElement('script');
-  script.src = 'https://accounts.google.com/gsi/client';
-  script.onload = initGoogleAuth;
-  document.head.appendChild(script);
-  updateStatus();
-};
+// ── Init ──────────────────────────────────────────────────────
+initDatePicker();
+updateStatus();
 </script>
 </body>
 </html>
