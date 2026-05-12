@@ -415,6 +415,14 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
         <input type="text" id="nwStarNav" class="form-input" placeholder="e.g. 2208,95" inputmode="decimal" onchange="saveAndRenderNW()">
       </div>
       <div class="form-group">
+        <label class="form-label">USD/IDR</label>
+        <input type="text" id="nwUSDIDR" class="form-input" placeholder="e.g. 16500" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CHF/IDR</label>
+        <input type="text" id="nwCHFIDR" class="form-input" placeholder="e.g. 19500" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
         <label class="form-label">QQQ (USD)</label>
         <input type="text" id="nwQQQ" class="form-input" placeholder="e.g. 450.00" inputmode="decimal" onchange="saveAndRenderNW()">
       </div>
@@ -472,7 +480,14 @@ const STOCK_TYPE = {'Star Stable Income Fund':'Reksa Dana','USDIDR':'Forex','CHF
   'QQQ':'US Stock','JNJ':'US Stock','VYM':'US Stock','AAPL':'US Stock'};
 
 // ── LOCAL DATA (historical) ───────────────────────────────────
-const HIST = {opex:[], invest:[], txCat:{}, txPm:{}, stockType:{}};
+const HIST = {opex:[], invest:[], txCat:{}, txPm:{}, stockType:{}, cashBalance:0};
+let histLoaded = false;
+let histLoadCallbacks = [];
+
+function onHistLoaded(cb) {
+  if (histLoaded) { cb(); return; }
+  histLoadCallbacks.push(cb);
+}
 
 // ── STATE ─────────────────────────────────────────────────────
 let inputMode = 'expense';
@@ -490,14 +505,16 @@ function parsePrice(str) {
   return parseFloat(String(str).replace(',', '.')) || 0;
 }
 function loadPriceInputs() {
-  const map = {nwStarNav:'StarStable', nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
+  const map = {nwStarNav:'StarStable', nwUSDIDR:'USDIDR', nwCHFIDR:'CHFIDR',
+               nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
   Object.entries(map).forEach(([fid, key]) => {
     const el = document.getElementById(fid);
     if (el && stockPrices[key]) el.value = stockPrices[key];
   });
 }
 function savePriceInputs() {
-  const map = {nwStarNav:'StarStable', nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
+  const map = {nwStarNav:'StarStable', nwUSDIDR:'USDIDR', nwCHFIDR:'CHFIDR',
+               nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
   Object.entries(map).forEach(([fid, key]) => {
     stockPrices[key] = document.getElementById(fid)?.value || '';
   });
@@ -624,24 +641,47 @@ document.addEventListener('click',e=>{
 });
 
 // ── TX SMART SUGGESTIONS ──────────────────────────────────────
+function getAllTxList() {
+  return [...new Set([
+    ...Object.keys(HIST.txCat||{}),
+    ...txHistory.map(r=>r.tx||r.payee||'').filter(Boolean)
+  ])];
+}
 function onTxInput() {
   const val = document.getElementById('inputTx').value;
-  const allTx = [...new Set([
-    ...Object.keys(HIST.txCat||{}),
-    ...txHistory.map(r=>r.tx||r.payee||'').filter(Boolean)
-  ])];
-  showAC('inputTx', allTx);
+  showAC('inputTx', getAllTxList());
   updateSmartSuggestions(val);
+  autoFillIfExactMatch(val);
 }
 function onTxFocus() {
-  const allTx = [...new Set([
-    ...Object.keys(HIST.txCat||{}),
-    ...txHistory.map(r=>r.tx||r.payee||'').filter(Boolean)
-  ])];
-  showAC('inputTx', allTx);
+  showAC('inputTx', getAllTxList());
 }
 function onTxSelect(val) {
   updateSmartSuggestions(val);
+  autoFillIfExactMatch(val);
+}
+function autoFillIfExactMatch(txName) {
+  const txLow = txName.toLowerCase().trim();
+  const txCat = HIST.txCat || {};
+  const txPm  = HIST.txPm  || {};
+  // Find exact match (case-insensitive)
+  const catKey = Object.keys(txCat).find(k => k.toLowerCase() === txLow);
+  const pmKey  = Object.keys(txPm).find(k => k.toLowerCase() === txLow);
+  // Auto-fill only on exact match, use top suggestion
+  if (catKey && txCat[catKey].length > 0) {
+    const topCat = txCat[catKey][0];
+    document.getElementById('inputCat').value = topCat;
+    document.querySelectorAll('#catPills .smart-pill').forEach(p => {
+      p.classList.toggle('selected', p.dataset.cat === topCat);
+    });
+  }
+  if (pmKey && txPm[pmKey].length > 0) {
+    const topPm = txPm[pmKey][0];
+    document.getElementById('inputPm').value = topPm;
+    document.querySelectorAll('#pmPills .smart-pill').forEach(p => {
+      p.classList.toggle('selected', p.dataset.pm === topPm);
+    });
+  }
 }
 
 function updateSmartSuggestions(txName) {
@@ -718,9 +758,17 @@ function switchTab(tab, el) {
   if(tab==='insights'){
     ['monthlySummary','monthlyBarCard','monthlyDonutCard'].forEach(id=>{document.getElementById(id).style.display='block'});
     ['yearlySummary','yearlyBarCard','yearlyMonthCard','yearlyDonutCard','catRankingCard','catTrendCard'].forEach(id=>{document.getElementById(id).style.display='none'});
-    renderChartTab(insightsMode);
+    if(!histLoaded) {
+      document.getElementById('monthlySummary').innerHTML='<div class="chart-loading">Loading data…</div>';
+      onHistLoaded(()=>renderChartTab(insightsMode));
+    } else {
+      renderChartTab(insightsMode);
+    }
   }
-  if(tab==='networth')initNetWorth();
+  if(tab==='networth'){
+    if(!histLoaded) onHistLoaded(()=>initNetWorth());
+    else initNetWorth();
+  }
 }
 
 // ── SUBMIT OPEX ───────────────────────────────────────────────
@@ -1297,8 +1345,11 @@ async function fetchFxRates(){
 
 async function renderNetWorth(){
   await fetchFxRates();
-  const usdRate = fxRates.USD || 16500;
-  const chfRate = fxRates.CHF || 19000;
+  // Use manual input if provided, else fall back to auto-fetch
+  const manualUSD = parsePrice(stockPrices['USDIDR']);
+  const manualCHF = parsePrice(stockPrices['CHFIDR']);
+  const usdRate = manualUSD > 0 ? manualUSD : (fxRates.USD || 16500);
+  const chfRate = manualCHF > 0 ? manualCHF : (fxRates.CHF || 19000);
 
   // Current prices from inputs
   const navStar = parsePrice(stockPrices['StarStable']);
@@ -1500,6 +1551,52 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
   document.getElementById('nwContent').innerHTML = html;
 }
 
+// ── INIT ──────────────────────────────────────────────────────
+function updateHeaderHeight(){
+  const h=document.querySelector('.header');
+  if(h)document.documentElement.style.setProperty('--header-height',h.offsetHeight+'px');
+}
+
+initDatePicker('inputDateRaw','inputDateDisplay','inputDateText');
+initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
+updateStatus();
+updateHeaderHeight();
+window.addEventListener('resize',updateHeaderHeight);
+
+async function loadHistData() {
+  try {
+    const res = await fetch('data.json?v=' + APP_BUILD);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    Object.assign(HIST, d);
+    // Cache txCat+txPm in localStorage for instant autocomplete
+    localStorage.setItem('nota_txCat', JSON.stringify(d.txCat||{}));
+    localStorage.setItem('nota_txPm',  JSON.stringify(d.txPm||{}));
+    histLoaded = true;
+    histLoadCallbacks.forEach(cb => cb());
+    histLoadCallbacks = [];
+  } catch(e) {
+    console.warn('data.json load failed:', e.message);
+    // Try loading from localStorage cache
+    const cachedCat = localStorage.getItem('nota_txCat');
+    const cachedPm  = localStorage.getItem('nota_txPm');
+    if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
+    if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
+    histLoaded = true;
+    histLoadCallbacks.forEach(cb => cb());
+    histLoadCallbacks = [];
+  }
+}
+
+// Pre-load txCat+txPm from cache immediately (for autocomplete on first tap)
+(function() {
+  const cachedCat = localStorage.getItem('nota_txCat');
+  const cachedPm  = localStorage.getItem('nota_txPm');
+  if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
+  if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
+})();
+
+loadHistData();
 </script>
 </body>
 </html>
