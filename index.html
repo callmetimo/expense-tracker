@@ -1558,7 +1558,55 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
 
   document.getElementById('nwContent').innerHTML = html;
 }
+// ── INIT ──────────────────────────────────────────────────────
+function updateHeaderHeight(){
+  const h=document.querySelector('.header');
+  if(h)document.documentElement.style.setProperty('--header-height',h.offsetHeight+'px');
+}
 
+initDatePicker('inputDateRaw','inputDateDisplay','inputDateText');
+initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
+updateStatus();
+updateHeaderHeight();
+window.addEventListener('resize',updateHeaderHeight);
+
+async function loadHistData() {
+  try {
+    const res = await fetch('data.json?v=' + APP_BUILD);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    Object.assign(HIST, d);
+    localStorage.setItem('nota_txCat', JSON.stringify(d.txCat||{}));
+    localStorage.setItem('nota_txPm',  JSON.stringify(d.txPm||{}));
+    if (d.currentPrices) {
+      const cp = d.currentPrices;
+      const keys = ['StarStable','AAPL','JNJ','VYM','QQQ','CHFIDR','USDIDR'];
+      keys.forEach(k => { if (!stockPrices[k]) stockPrices[k] = String(cp[k] || ''); });
+      localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
+    }
+    histLoaded = true;
+    histLoadCallbacks.forEach(cb => cb());
+    histLoadCallbacks = [];
+  } catch(e) {
+    console.warn('data.json load failed:', e.message);
+    const cachedCat = localStorage.getItem('nota_txCat');
+    const cachedPm  = localStorage.getItem('nota_txPm');
+    if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
+    if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
+    histLoaded = true;
+    histLoadCallbacks.forEach(cb => cb());
+    histLoadCallbacks = [];
+  }
+}
+
+(function() {
+  const cachedCat = localStorage.getItem('nota_txCat');
+  const cachedPm  = localStorage.getItem('nota_txPm');
+  if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
+  if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
+})();
+
+loadHistData();
 </script>
 </body>
 </html>
