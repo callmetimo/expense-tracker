@@ -155,6 +155,135 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .toast.success{border-color:var(--accent);color:var(--accent)}
 .toast.error{border-color:var(--red);color:var(--red)}
 .empty-state{text-align:center;padding:36px 20px;color:var(--text3);font-size:13px}
+
+/* ── DESKTOP LAYOUT (≥768px) ─────────────────────────────── */
+@media(min-width:768px){
+  body{max-width:100%;padding-bottom:0;display:flex;flex-direction:column;min-height:100vh}
+
+  /* Hide mobile header */
+  .header{display:none}
+
+  /* Sidebar */
+  .sidebar-desktop{
+    position:fixed;top:0;left:0;bottom:0;width:220px;
+    background:#111;border-right:0.5px solid var(--border);
+    display:flex;flex-direction:column;z-index:200;
+    padding:28px 0 20px;
+  }
+  .sidebar-logo{
+    padding:0 24px 28px;font-size:20px;font-weight:700;
+    color:var(--accent);letter-spacing:0.3px;display:flex;align-items:center;gap:10px;
+  }
+  .sidebar-logo svg{width:22px;height:22px;flex-shrink:0}
+  .sidebar-nav-item{
+    padding:11px 24px;font-size:14px;font-weight:500;
+    cursor:pointer;color:var(--text2);
+    display:flex;align-items:center;gap:12px;
+    border-left:2px solid transparent;transition:all 0.15s;
+  }
+  .sidebar-nav-item svg{width:17px;height:17px;flex-shrink:0;opacity:0.6}
+  .sidebar-nav-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-dim)}
+  .sidebar-nav-item:hover:not(.active){color:var(--text);background:var(--bg3)}
+  .sidebar-sync-btn{
+    margin:auto 16px 0;
+    background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);
+    padding:9px 14px;border-radius:10px;font-size:13px;cursor:pointer;
+    display:flex;align-items:center;gap:7px;width:calc(100% - 32px);
+  }
+  .sidebar-sync-btn svg{width:14px;height:14px}
+
+  /* Main content area */
+  .desktop-main{
+    margin-left:220px;padding:36px 40px;
+    flex:1;min-height:100vh;
+  }
+  .desktop-page-title{
+    font-size:24px;font-weight:700;letter-spacing:-0.4px;
+    margin-bottom:24px;
+  }
+  .desktop-page-title span{color:var(--accent)}
+
+  /* Pages in desktop mode */
+  .page{display:none;padding:0}
+  .page.active{display:block}
+
+  /* Input — two column */
+  .desktop-input-grid{
+    display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start;
+  }
+  .desktop-form-card{
+    background:var(--bg2);border:0.5px solid var(--border);
+    border-radius:var(--radius);padding:22px;
+  }
+  .desktop-recent-card{
+    background:var(--bg2);border:0.5px solid var(--border);
+    border-radius:var(--radius);padding:22px;
+  }
+  .desktop-section-label{
+    font-size:11px;color:var(--text2);text-transform:uppercase;
+    letter-spacing:0.5px;margin-bottom:14px;
+  }
+  .desktop-recent-row{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 0;border-bottom:0.5px solid var(--border);
+  }
+  .desktop-recent-row:last-child{border-bottom:none}
+  .desktop-recent-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .desktop-recent-info{flex:1;min-width:0}
+  .desktop-recent-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .desktop-recent-meta{font-size:11px;color:var(--text2);margin-top:1px}
+  .desktop-recent-amt{font-size:13px;font-weight:600;white-space:nowrap}
+
+  /* History — table */
+  .desktop-history-table-wrap{
+    background:var(--bg2);border:0.5px solid var(--border);
+    border-radius:var(--radius);overflow:hidden;
+  }
+  .desktop-table-header{
+    display:grid;
+    grid-template-columns:1fr 140px 110px 90px 110px;
+    padding:10px 18px;
+    border-bottom:0.5px solid var(--border);
+    font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;
+  }
+  .desktop-table-header span:last-child{text-align:right}
+  .desktop-table-row{
+    display:grid;
+    grid-template-columns:1fr 140px 110px 90px 110px;
+    padding:12px 18px;
+    border-bottom:0.5px solid var(--border);
+    font-size:13px;align-items:center;cursor:pointer;
+    transition:background 0.1s;
+  }
+  .desktop-table-row:last-child{border-bottom:none}
+  .desktop-table-row:hover{background:var(--bg3)}
+  .desktop-table-row span:last-child{text-align:right;font-weight:500}
+  .desktop-table-row span:nth-child(2){color:var(--text2)}
+  .desktop-table-row span:nth-child(3){color:var(--text2)}
+
+  /* Insights — sticky filter row */
+  .desktop-insights-sticky{
+    position:sticky;top:0;z-index:90;
+    background:var(--bg);padding-bottom:16px;margin-bottom:4px;
+  }
+  .desktop-insights-content{display:flex;flex-direction:column;gap:14px}
+
+  /* Insights — bar + donut side by side */
+  .desktop-chart-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:14px}
+  .desktop-chart-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px}
+
+  /* Insights summary cards */
+  .desktop-summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+
+  /* Category pill grid — 4 cols on desktop */
+  .pill-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+  /* Hide insights-sticky on desktop (replaced by desktop-insights-sticky) */
+  .insights-sticky{position:static;padding:0;margin:0;border-bottom:none;background:transparent}
+
+  /* Bar chart taller on desktop */
+  .bar-chart{height:160px;padding-bottom:24px}
+}
 </style>
 </head>
 <body>
@@ -178,6 +307,165 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     <span id="queueInfo"></span>
   </div>
 </div>
+
+<!-- DESKTOP SIDEBAR -->
+<div class="sidebar-desktop" id="desktopSidebar" style="display:none">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"/><rect x="6" y="9" width="3" height="6" rx="1" fill="currentColor" opacity="0.4"/><line x1="12" y1="9" x2="17" y2="9"/><line x1="12" y1="12" x2="17" y2="12"/><line x1="12" y1="15" x2="15" y2="15"/></svg>
+    Nota
+  </div>
+  <div class="sidebar-nav-item active" id="snav-input" onclick="switchTabDesktop('input')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Input
+  </div>
+  <div class="sidebar-nav-item" id="snav-history" onclick="switchTabDesktop('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    History
+  </div>
+  <div class="sidebar-nav-item" id="snav-insights" onclick="switchTabDesktop('insights')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Insights
+  </div>
+  <button class="sidebar-sync-btn" onclick="syncQueue()">
+    <svg id="syncIconDesktop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
+    Sync
+    <span id="deskQueueInfo" style="margin-left:auto;font-size:11px;color:orange"></span>
+  </button>
+</div>
+
+<!-- DESKTOP MAIN WRAPPER -->
+<div class="desktop-main" id="desktopMain" style="display:none">
+
+  <!-- Desktop Input Page -->
+  <div id="desktop-page-input" class="desktop-dpage">
+    <div class="desktop-page-title">Input <span>transaction</span></div>
+    <div class="desktop-input-grid">
+      <div class="desktop-form-card">
+        <div class="desktop-section-label">New transaction</div>
+        <div class="form-group" style="position:relative">
+          <label class="form-label">Date</label>
+          <input type="date" id="inputDateRawD" class="date-input-hidden">
+          <div class="date-display" id="inputDateDisplayD" tabindex="0">
+            <span id="inputDateTextD"></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <select class="form-input" id="inputPaymentMethodD" onchange="onPaymentMethodChangeD()">
+            <option value="">Select payment method...</option>
+            <option value="BCA">BCA</option>
+            <option value="eWallet">eWallet</option>
+            <option value="Flazz">Flazz</option>
+            <option value="CC BCA">CC BCA</option>
+            <option value="CC Niaga">CC Niaga</option>
+          </select>
+        </div>
+        <div class="pm-indicator" id="pmIndicatorD"></div>
+        <div class="form-group autocomplete-wrapper">
+          <label class="form-label">Transaction</label>
+          <input type="text" class="form-input" id="inputPayeeD" placeholder="Payee or transaction name..." autocomplete="off"
+            oninput="onTransactionInputD()" onfocus="showAC('inputPayeeD', getAllPayeeSuggestions())">
+          <div class="autocomplete-list" id="ac-inputPayeeD" style="display:none"></div>
+        </div>
+        <div class="cat-suggestion" id="catSuggestionD">
+          <span>Suggested:</span>
+          <span class="cat-suggestion-pill" id="catSuggestionPillD" onclick="applyCatSuggestionD()"></span>
+        </div>
+        <div class="form-group autocomplete-wrapper">
+          <label class="form-label">Category</label>
+          <input type="text" class="form-input" id="inputCategoryD" placeholder="Select or type category..." autocomplete="off"
+            oninput="showAC('inputCategoryD', allCategories)" onfocus="showAC('inputCategoryD', allCategories)">
+          <div class="autocomplete-list" id="ac-inputCategoryD" style="display:none"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <div class="amount-wrapper">
+            <span class="amount-prefix">Rp</span>
+            <input type="number" class="form-input amount-input" id="inputAmountD" placeholder="0" inputmode="numeric">
+          </div>
+        </div>
+        <button class="submit-btn" onclick="submitTransactionD()">Save Transaction</button>
+      </div>
+      <div class="desktop-recent-card">
+        <div class="desktop-section-label">Recent transactions</div>
+        <div id="desktopRecentList"><div class="empty-state" style="padding:20px 0">No transactions yet</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop History Page -->
+  <div id="desktop-page-history" class="desktop-dpage" style="display:none">
+    <div class="desktop-page-title">History</div>
+    <div style="display:flex;gap:6px;margin-bottom:16px" id="deskHistoryFilterRow">
+      <div class="toggle-btn active" onclick="setDeskHistFilter('all',this)">All</div>
+      <div class="toggle-btn" onclick="setDeskHistFilter('opex',this)">OPEX</div>
+      <div class="toggle-btn" onclick="setDeskHistFilter('cc-bca',this)">CC BCA</div>
+      <div class="toggle-btn" onclick="setDeskHistFilter('cc-niaga',this)">CC Niaga</div>
+    </div>
+    <div class="desktop-history-table-wrap">
+      <div class="desktop-table-header">
+        <span>Transaction</span><span>Category</span><span>Date</span><span>Sheet</span><span>Amount</span>
+      </div>
+      <div id="desktopHistoryTable"></div>
+    </div>
+  </div>
+
+  <!-- Desktop Insights Page -->
+  <div id="desktop-page-insights" class="desktop-dpage" style="display:none">
+    <div class="desktop-page-title">Insights</div>
+    <div class="desktop-insights-sticky">
+      <div class="toggle-row" id="insightsModeToggleD">
+        <div class="toggle-btn active" data-m="monthly" onclick="setIMD('monthly',this)">Monthly</div>
+        <div class="toggle-btn" data-m="yearly" onclick="setIMD('yearly',this)">Yearly</div>
+        <div class="toggle-btn" data-m="category" onclick="setIMD('category',this)">Category</div>
+      </div>
+      <div id="monthlyControlsD">
+        <div class="toggle-row" id="monthlySourceToggleD">
+          <div class="toggle-btn active" data-v="all" onclick="setMVD('all',this)">All</div>
+          <div class="toggle-btn" data-v="opex" onclick="setMVD('opex',this)">OPEX</div>
+          <div class="toggle-btn" data-v="cc-bca" onclick="setMVD('cc-bca',this)">CC BCA</div>
+          <div class="toggle-btn" data-v="cc-niaga" onclick="setMVD('cc-niaga',this)">CC Niaga</div>
+        </div>
+        <div class="toggle-row" id="monthlyRangeToggleD">
+          <div class="toggle-btn active" data-r="3" onclick="setMRD(3,this)">3 Mo</div>
+          <div class="toggle-btn" data-r="6" onclick="setMRD(6,this)">6 Mo</div>
+          <div class="toggle-btn" data-r="12" onclick="setMRD(12,this)">12 Mo</div>
+          <div class="toggle-btn" data-r="ytd" onclick="setMRD('ytd',this)">YTD</div>
+        </div>
+      </div>
+      <div id="yearlyControlsD" style="display:none">
+        <div class="toggle-row" id="yearlySourceToggleD">
+          <div class="toggle-btn active" data-v="all" onclick="setYVD('all',this)">All</div>
+          <div class="toggle-btn" data-v="opex" onclick="setYVD('opex',this)">OPEX</div>
+          <div class="toggle-btn" data-v="cc-bca" onclick="setYVD('cc-bca',this)">CC BCA</div>
+          <div class="toggle-btn" data-v="cc-niaga" onclick="setYVD('cc-niaga',this)">CC Niaga</div>
+        </div>
+        <div class="toggle-row" id="yearlyRangeToggleD">
+          <div class="toggle-btn active" data-r="3" onclick="setYRD(3,this)">3 Yr</div>
+          <div class="toggle-btn" data-r="5" onclick="setYRD(5,this)">5 Yr</div>
+          <div class="toggle-btn" data-r="all" onclick="setYRD('all',this)">All Time</div>
+        </div>
+      </div>
+      <div id="categoryControlsD" style="display:none">
+        <div class="toggle-row" id="catSourceToggleD">
+          <div class="toggle-btn active" data-v="all" onclick="setCVD('all',this)">All</div>
+          <div class="toggle-btn" data-v="opex" onclick="setCVD('opex',this)">OPEX</div>
+          <div class="toggle-btn" data-v="cc-bca" onclick="setCVD('cc-bca',this)">CC BCA</div>
+          <div class="toggle-btn" data-v="cc-niaga" onclick="setCVD('cc-niaga',this)">CC Niaga</div>
+        </div>
+        <div class="toggle-row" id="catRangeToggleD">
+          <div class="toggle-btn active" data-r="3" onclick="setCRD(3,this)">3 Mo</div>
+          <div class="toggle-btn" data-r="6" onclick="setCRD(6,this)">6 Mo</div>
+          <div class="toggle-btn" data-r="12" onclick="setCRD(12,this)">12 Mo</div>
+          <div class="toggle-btn" data-r="ytd" onclick="setCRD('ytd',this)">YTD</div>
+        </div>
+      </div>
+    </div>
+    <div id="desktopInsightsContent"></div>
+  </div>
+
+</div><!-- end desktop-main -->
 
 <!-- INPUT -->
 <div class="page active" id="page-input">
@@ -993,6 +1281,468 @@ function buildDonutSVG(data, size){
   </svg>`;
 }
 
+
+// ── DESKTOP DETECTION & INIT ──────────────────────────────────
+function isDesktop(){return window.innerWidth>=768}
+
+function initLayout(){
+  if(isDesktop()){
+    document.getElementById('desktopSidebar').style.display='flex';
+    document.getElementById('desktopMain').style.display='block';
+    initDesktopDatePicker();
+    renderDesktopRecent();
+    renderDesktopHistoryTable();
+  } else {
+    document.getElementById('desktopSidebar').style.display='none';
+    document.getElementById('desktopMain').style.display='none';
+  }
+}
+
+window.addEventListener('resize', ()=>{
+  initLayout();
+  updateHeaderHeight();
+});
+
+// ── DESKTOP NAVIGATION ────────────────────────────────────────
+let currentDesktopPage='input';
+let deskHistFilter='all';
+let dMView='all',dMRange=3,dMSelMonth=null,dMSelCat=null;
+let dYView='all',dYRange=3,dYSelYear=null,dYSelCat=null;
+let dCView='all',dCRange=3,dCSelCat=null;
+let insightsModeD='monthly';
+
+function switchTabDesktop(tab){
+  currentDesktopPage=tab;
+  ['input','history','insights'].forEach(p=>{
+    document.getElementById('desktop-page-'+p).style.display=p===tab?'block':'none';
+    const nav=document.getElementById('snav-'+p);
+    if(nav) nav.className='sidebar-nav-item'+(p===tab?' active':'');
+  });
+  if(tab==='history') renderDesktopHistoryTable();
+  if(tab==='insights') ensureChartDataDesktop(insightsModeD);
+}
+
+// ── DESKTOP INPUT ─────────────────────────────────────────────
+function initDesktopDatePicker(){
+  const raw=document.getElementById('inputDateRawD');
+  const disp=document.getElementById('inputDateDisplayD');
+  const txt=document.getElementById('inputDateTextD');
+  if(!raw)return;
+  const t=todayISO();raw.value=t;txt.textContent=isoDisp(t);
+  disp.addEventListener('click',()=>{try{raw.showPicker()}catch(e){raw.focus();raw.click()}});
+  raw.addEventListener('change',()=>{txt.textContent=raw.value?isoDisp(raw.value):'Select date...'});
+}
+
+function onPaymentMethodChangeD(){
+  const pm=document.getElementById('inputPaymentMethodD').value;
+  const ind=document.getElementById('pmIndicatorD');
+  if(pm==='CC BCA'){ind.className='pm-indicator cc-bca';ind.textContent='→ Sheet CC BCA'}
+  else if(pm==='CC Niaga'){ind.className='pm-indicator cc-niaga';ind.textContent='→ Sheet CC Niaga'}
+  else if(pm){ind.className='pm-indicator opex';ind.textContent='→ Sheet OPEX'}
+  else ind.className='pm-indicator';
+}
+
+function onTransactionInputD(){
+  const val=document.getElementById('inputPayeeD').value;
+  showAC('inputPayeeD',getAllPayeeSuggestions());
+  const suggested=getSuggestedCategory(val);
+  const sug=document.getElementById('catSuggestionD');
+  const pill=document.getElementById('catSuggestionPillD');
+  if(suggested&&val.length>=2){pill.textContent=suggested;sug.className='cat-suggestion show'}
+  else sug.className='cat-suggestion';
+}
+
+function applyCatSuggestionD(){
+  document.getElementById('inputCategoryD').value=document.getElementById('catSuggestionPillD').textContent;
+  document.getElementById('catSuggestionD').className='cat-suggestion';
+}
+
+function submitTransactionD(){
+  const date=document.getElementById('inputDateRawD').value;
+  const pm=document.getElementById('inputPaymentMethodD').value;
+  const category=document.getElementById('inputCategoryD').value;
+  const payee=document.getElementById('inputPayeeD').value;
+  const amount=document.getElementById('inputAmountD').value;
+  if(!date||!pm||!category||!payee||!amount){showToast('All fields required','error');return}
+  const sheet=getSheetFromPM(pm);
+  let tx={id:Date.now(),date,sheet,synced:false,category,amount:parseInt(amount)};
+  if(sheet==='opex'){tx.payee=payee;tx.platform=pm}else tx.transaction=payee;
+  queue.push({...tx});txHistory.unshift({...tx});saveLocal();updateStatus();updateDesktopStatus();
+  refreshCatMap();
+  syncSingle(tx).then(ok=>{
+    if(ok){queue=queue.filter(q=>q.id!==tx.id);txHistory=txHistory.map(h=>h.id===tx.id?{...h,synced:true}:h);saveLocal();updateStatus();updateDesktopStatus();showToast('Saved to Google Sheets ✓','success')}
+    else showToast('Saved locally — tap Sync to upload','');
+  });
+  // Reset desktop form
+  const t=todayISO();
+  document.getElementById('inputDateRawD').value=t;
+  document.getElementById('inputDateTextD').textContent=isoDisp(t);
+  document.getElementById('inputPaymentMethodD').value='';
+  document.getElementById('inputCategoryD').value='';
+  document.getElementById('inputPayeeD').value='';
+  document.getElementById('inputAmountD').value='';
+  document.getElementById('pmIndicatorD').className='pm-indicator';
+  document.getElementById('catSuggestionD').className='cat-suggestion';
+  renderDesktopRecent();
+  renderDesktopHistoryTable();
+}
+
+function updateDesktopStatus(){
+  const qi=document.getElementById('deskQueueInfo');
+  if(qi)qi.textContent=queue.length?`${queue.length} pending`:'';
+  const si=document.getElementById('syncIconDesktop');
+  if(si)si.className=queue.length?'spinning':'';
+}
+
+// ── DESKTOP RECENT TRANSACTIONS ───────────────────────────────
+function renderDesktopRecent(){
+  const el=document.getElementById('desktopRecentList');
+  if(!el)return;
+  const recent=txHistory.slice(0,8);
+  if(!recent.length){el.innerHTML='<div class="empty-state" style="padding:20px 0">No transactions yet</div>';return}
+  const sheetColor={'opex':'var(--accent)','cc-bca':'var(--blue)','cc-niaga':'var(--red)'};
+  el.innerHTML=recent.map((tx,i)=>{
+    const pn=tx.payee||tx.transaction||'';
+    const color=sheetColor[tx.sheet]||'var(--text2)';
+    const bl=tx.sheet==='opex'?'OPEX':tx.sheet==='cc-bca'?'CC BCA':'CC Niaga';
+    return`<div class="desktop-recent-row" onclick="openEdit(${txHistory.indexOf(tx)})">
+      <div class="desktop-recent-dot" style="background:${color}"></div>
+      <div class="desktop-recent-info">
+        <div class="desktop-recent-name">${pn}</div>
+        <div class="desktop-recent-meta">${tx.category} · ${bl}</div>
+      </div>
+      <div class="desktop-recent-amt" style="color:${color}">${fRp(tx.amount)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── DESKTOP HISTORY TABLE ─────────────────────────────────────
+function setDeskHistFilter(f,el){
+  deskHistFilter=f;
+  document.querySelectorAll('#deskHistoryFilterRow .toggle-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderDesktopHistoryTable();
+}
+
+function renderDesktopHistoryTable(){
+  const el=document.getElementById('desktopHistoryTable');
+  if(!el)return;
+  const filtered=deskHistFilter==='all'?txHistory:txHistory.filter(t=>t.sheet===deskHistFilter);
+  if(!filtered.length){el.innerHTML='<div class="empty-state" style="padding:20px">No transactions</div>';return}
+  const sheetColor={'opex':'var(--accent)','cc-bca':'var(--blue)','cc-niaga':'var(--red)'};
+  const sheetBg={'opex':'var(--accent-dim)','cc-bca':'var(--blue-dim)','cc-niaga':'var(--red-dim)'};
+  const sheetLabel={'opex':'OPEX','cc-bca':'CC BCA','cc-niaga':'CC Niaga'};
+  el.innerHTML=filtered.map(tx=>{
+    const pn=tx.payee||tx.transaction||'';
+    const color=sheetColor[tx.sheet];
+    const bg=sheetBg[tx.sheet];
+    const label=sheetLabel[tx.sheet];
+    const syncDot=tx.synced?'':`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:orange;margin-left:6px;vertical-align:middle"></span>`;
+    return`<div class="desktop-table-row" onclick="openEdit(${txHistory.indexOf(tx)})">
+      <span>${pn}${syncDot}</span>
+      <span>${tx.category}</span>
+      <span>${isoDisp(tx.date)}</span>
+      <span><span style="background:${bg};color:${color};padding:2px 8px;border-radius:4px;font-size:10px;font-weight:500">${label}</span></span>
+      <span style="color:${color}">${fRp(tx.amount)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── DESKTOP INSIGHTS ──────────────────────────────────────────
+async function ensureChartDataDesktop(mode){
+  if(chartData){renderDesktopInsights(mode);return}
+  if(chartLoading)return;
+  chartLoading=true;
+  document.getElementById('desktopInsightsContent').innerHTML='<div class="chart-loading">Loading data...</div>';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?type=all');
+    const j=await res.json();
+    if(j.status==='ok'){chartData=j.data;refreshCatMap();renderDesktopInsights(mode)}
+    else document.getElementById('desktopInsightsContent').innerHTML='<div class="empty-state">Failed to load data</div>';
+  }catch(e){console.error(e)}
+  chartLoading=false;
+}
+
+function setIMD(mode,el){
+  insightsModeD=mode;
+  document.querySelectorAll('#insightsModeToggleD .toggle-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  ['monthly','yearly','category'].forEach(m=>{
+    document.getElementById(m+'ControlsD').style.display=m===mode?'block':'none';
+  });
+  renderDesktopInsights(mode);
+}
+function setMVD(v,el){dMView=v;dMSelMonth=null;dMSelCat=null;document.querySelectorAll('#monthlySourceToggleD .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderDesktopInsights('monthly')}
+function setMRD(r,el){dMRange=r;dMSelMonth=null;dMSelCat=null;document.querySelectorAll('#monthlyRangeToggleD .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderDesktopInsights('monthly')}
+function setYVD(v,el){dYView=v;dYSelYear=null;dYSelCat=null;document.querySelectorAll('#yearlySourceToggleD .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderDesktopInsights('yearly')}
+function setYRD(r,el){dYRange=r;dYSelYear=null;dYSelCat=null;document.querySelectorAll('#yearlyRangeToggleD .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderDesktopInsights('yearly')}
+function setCVD(v,el){dCView=v;dCSelCat=null;document.querySelectorAll('#catSourceToggleD .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderDesktopInsights('category')}
+function setCRD(r,el){dCRange=r;dCSelCat=null;document.querySelectorAll('#catRangeToggleD .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderDesktopInsights('category')}
+
+function getRowsD(view){
+  if(!chartData)return[];
+  const o=chartData.opex||[],b=chartData.ccBca||[],n=chartData.ccNiaga||[];
+  if(view==='all')return[...o,...b,...n];
+  if(view==='opex')return o;
+  if(view==='cc-bca')return b;
+  return n;
+}
+
+function getMonthlyKeysD(){
+  const now=new Date();
+  if(dMRange==='ytd'){const keys=[];for(let m=0;m<=now.getMonth();m++)keys.push(`${MO[m]} ${now.getFullYear()}`);return keys}
+  const n=parseInt(dMRange),keys=[];
+  for(let i=n-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);keys.push(`${MO[d.getMonth()]} ${d.getFullYear()}`)}
+  return keys;
+}
+
+function getYearlyKeysD(){
+  const rows=getRowsD(dYView),nowY=new Date().getFullYear();
+  if(dYRange==='all'){const ys=[...new Set(rows.map(r=>r.year).filter(Boolean))].sort();return ys.length?ys:[nowY]}
+  const n=parseInt(dYRange),ys=[];for(let i=n-1;i>=0;i--)ys.push(nowY-i);return ys;
+}
+
+function getCatKeysD(){
+  const now=new Date();
+  if(dCRange==='ytd'){const keys=[];for(let m=0;m<=now.getMonth();m++)keys.push(`${MO[m]} ${now.getFullYear()}`);return keys}
+  const n=parseInt(dCRange),keys=[];
+  for(let i=n-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);keys.push(`${MO[d.getMonth()]} ${d.getFullYear()}`)}
+  return keys;
+}
+
+function renderDesktopInsights(mode){
+  if(!chartData)return;
+  const el=document.getElementById('desktopInsightsContent');
+  if(!el)return;
+
+  if(mode==='monthly'){
+    const rows=getRowsD(dMView),keys=getMonthlyKeysD();
+    const totals={},catMap={},rawRows={};
+    keys.forEach(k=>{totals[k]=0;catMap[k]={};rawRows[k]={}});
+    rows.forEach(r=>{
+      const mk=r.monthKey;if(totals[mk]===undefined)return;
+      totals[mk]=(totals[mk]||0)+r.amount;
+      catMap[mk][r.category]=(catMap[mk][r.category]||0)+r.amount;
+      if(!rawRows[mk][r.category])rawRows[mk][r.category]=[];
+      rawRows[mk][r.category].push(r);
+    });
+    const selKey=dMSelMonth||keys[keys.length-1];
+    if(!dMSelMonth)dMSelMonth=selKey;
+    const maxT=Math.max(...keys.map(k=>totals[k]),1);
+    const curTotal=totals[selKey]||0;
+    const prevKey=keys[keys.indexOf(selKey)-1];
+    const prevTotal=prevKey?totals[prevKey]:0;
+    const avgTotal=keys.slice(0,-1).reduce((s,k)=>s+(totals[k]||0),0)/Math.max(keys.length-1,1);
+    const trend=prevTotal>0?((curTotal-prevTotal)/prevTotal*100):null;
+    const trendStr=trend!==null?`${trend>0?'+':''}${trend.toFixed(0)}%`:'—';
+    const trendColor=trend===null?'var(--text2)':trend>0?'var(--red)':'var(--accent)';
+
+    const catData=catMap[selKey]||{},total=Object.values(catData).reduce((a,b)=>a+b,0),selRows=rawRows[selKey]||{};
+    const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
+    if(!dMSelCat||!catData[dMSelCat])dMSelCat=sorted.length?sorted[0][0]:null;
+
+    // Bar chart HTML
+    let barCols='';
+    keys.forEach(k=>{
+      const t=totals[k]||0,hpct=maxT>0?(t/maxT*100):0,sel=k===selKey?'selected':'';
+      barCols+=`<div class="bar-col ${sel}" onclick="deskSelectMonth('${k}')">
+        <div class="bar-amount">${t>0?fRpShort(t):''}</div>
+        <div class="bar-fill" style="height:${Math.max(hpct,2)}%"></div>
+        <div class="bar-label">${k.split(' ')[0]}</div>
+      </div>`;
+    });
+
+    // Donut + legend
+    let legendHTML='',detailHTML='';
+    if(total>0){
+      legendHTML=sorted.map(([cat,val])=>{
+        const color=CAT_COLORS[cat]||CAT_COLORS['Other'],pct=((val/total)*100).toFixed(0),isActive=dMSelCat===cat;
+        return`<div class="legend-row${isActive?' active':''}" onclick="deskSelectMonthlyCat('${cat.replace(/'/g,"\'")}')">
+          <div class="legend-dot" style="background:${color}"></div>
+          <div class="legend-name">${cat}</div>
+          <div class="legend-pct">${pct}%</div>
+          <div class="legend-amt">${fRpShort(val)}</div>
+        </div>`;
+      }).join('');
+      if(dMSelCat&&selRows[dMSelCat]){
+        const color=CAT_COLORS[dMSelCat]||CAT_COLORS['Other'];
+        const txList=[...selRows[dMSelCat]].sort((a,b)=>b.amount-a.amount);
+        detailHTML=`<div class="detail-section">
+          <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>${dMSelCat} · ${fRp(catData[dMSelCat])}</div>
+          ${txList.map(r=>`<div class="detail-item">
+            <div class="detail-name">${r.payee||r.transaction||''}</div>
+            <div class="detail-date">${r.day} ${MO[r.month]}</div>
+            <div class="detail-amt">${fRp(r.amount)}</div>
+          </div>`).join('')}
+        </div>`;
+      }
+    }
+
+    el.innerHTML=`
+      <div class="desktop-summary-row">
+        <div class="summary-card"><div class="s-label">${selKey}</div><div class="s-value">${fRpShort(curTotal)}</div><div class="s-sub">${dMView==='all'?'All':dMView==='opex'?'OPEX':dMView==='cc-bca'?'CC BCA':'CC Niaga'}</div></div>
+        <div class="summary-card"><div class="s-label">vs Last Month</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Avg ${fRpShort(Math.round(avgTotal))}/mo</div></div>
+        <div class="summary-card"><div class="s-label">This month</div><div class="s-value">${sorted.length?sorted[0][0]:'—'}</div><div class="s-sub">${sorted.length?'top category':''}</div></div>
+      </div>
+      <div class="desktop-chart-row">
+        <div class="chart-card">
+          <div class="chart-card-title">Monthly Total — tap month for breakdown</div>
+          <div class="bar-chart-wrap"><div class="bar-chart">${barCols}</div></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Breakdown ${selKey} — tap category for transactions</div>
+          ${total>0?`<div class="donut-wrap"><div>${buildDonutSVG(catData,110)}</div><div class="donut-legend">${legendHTML}</div></div>${detailHTML}`:'<div class="empty-state" style="padding:20px">No data</div>'}
+        </div>
+      </div>`;
+
+  } else if(mode==='yearly'){
+    const rows=getRowsD(dYView),years=getYearlyKeysD();
+    const totals={},cats={},monthBreak={},rawCats={};
+    years.forEach(y=>{totals[y]=0;cats[y]={};monthBreak[y]={};rawCats[y]={}});
+    rows.forEach(r=>{
+      if(!years.includes(r.year))return;
+      totals[r.year]=(totals[r.year]||0)+r.amount;
+      cats[r.year][r.category]=(cats[r.year][r.category]||0)+r.amount;
+      monthBreak[r.year][r.monthKey]=(monthBreak[r.year][r.monthKey]||0)+r.amount;
+      if(!rawCats[r.year][r.category])rawCats[r.year][r.category]=[];
+      rawCats[r.year][r.category].push(r);
+    });
+    const selY=dYSelYear||years[years.length-1];
+    if(!dYSelYear)dYSelYear=selY;
+    const maxT=Math.max(...years.map(y=>totals[y]||0),1);
+    const curTotal=totals[selY]||0;
+    const prevY=years[years.indexOf(selY)-1];
+    const prevTotal=prevY?totals[prevY]:0;
+    const trend=prevTotal>0?((curTotal-prevTotal)/prevTotal*100):null;
+    const trendStr=trend!==null?`${trend>0?'+':''}${trend.toFixed(0)}%`:'—';
+    const trendColor=trend===null?'var(--text2)':trend>0?'var(--red)':'var(--accent)';
+
+    let barCols='';
+    years.forEach(y=>{
+      const t=totals[y]||0,hpct=maxT>0?(t/maxT*100):0,sel=y===selY?'selected':'';
+      barCols+=`<div class="bar-col ${sel}" onclick="deskSelectYear(${y})">
+        <div class="bar-amount">${fRpShort(t)}</div>
+        <div class="bar-fill" style="height:${Math.max(hpct,2)}%"></div>
+        <div class="bar-label">${y}</div>
+      </div>`;
+    });
+
+    // Monthly breakdown bar
+    const mbData=monthBreak[selY]||{},mbKeys=MO.map(m=>`${m} ${selY}`);
+    const mbMax=Math.max(...mbKeys.map(k=>mbData[k]||0),1);
+    let mbCols=mbKeys.map(k=>{
+      const t=mbData[k]||0,hpct=mbMax>0?(t/mbMax*100):0;
+      return`<div class="bar-col"><div class="bar-amount">${t>0?fRpShort(t):''}</div><div class="bar-fill" style="height:${Math.max(hpct,2)}%;opacity:0.7"></div><div class="bar-label">${k.split(' ')[0]}</div></div>`;
+    }).join('');
+
+    const catData=cats[selY]||{},catTotal=Object.values(catData).reduce((a,b)=>a+b,0);
+    const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
+    if(!dYSelCat||!catData[dYSelCat])dYSelCat=sorted.length?sorted[0][0]:null;
+    let legendHTML='',detailHTML='';
+    if(catTotal>0){
+      legendHTML=sorted.map(([cat,val])=>{
+        const color=CAT_COLORS[cat]||CAT_COLORS['Other'],pct=((val/catTotal)*100).toFixed(0),isActive=dYSelCat===cat;
+        return`<div class="legend-row${isActive?' active':''}" onclick="deskSelectYearlyCat('${cat.replace(/'/g,"\'")}')">
+          <div class="legend-dot" style="background:${color}"></div>
+          <div class="legend-name">${cat}</div>
+          <div class="legend-pct">${pct}%</div>
+          <div class="legend-amt">${fRpShort(val)}</div>
+        </div>`;
+      }).join('');
+      if(dYSelCat&&rawCats[selY][dYSelCat]){
+        const color=CAT_COLORS[dYSelCat]||CAT_COLORS['Other'];
+        const txList=[...rawCats[selY][dYSelCat]].sort((a,b)=>b.amount-a.amount);
+        detailHTML=`<div class="detail-section">
+          <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>${dYSelCat} ${selY} · ${fRp(catData[dYSelCat])}</div>
+          ${txList.map(r=>`<div class="detail-item">
+            <div class="detail-name">${r.payee||r.transaction||''}</div>
+            <div class="detail-date">${r.monthKey}</div>
+            <div class="detail-amt">${fRp(r.amount)}</div>
+          </div>`).join('')}
+        </div>`;
+      }
+    }
+
+    el.innerHTML=`
+      <div class="desktop-summary-row">
+        <div class="summary-card"><div class="s-label">${selY}</div><div class="s-value">${fRpShort(curTotal)}</div><div class="s-sub">${dYView==='all'?'All':dYView==='opex'?'OPEX':dYView==='cc-bca'?'CC BCA':'CC Niaga'}</div></div>
+        <div class="summary-card"><div class="s-label">vs Last Year</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Prev: ${fRpShort(prevTotal)}</div></div>
+        <div class="summary-card"><div class="s-label">Top Category</div><div class="s-value">${sorted.length?sorted[0][0]:'—'}</div><div class="s-sub">${sorted.length?fRpShort(sorted[0][1]):''}</div></div>
+      </div>
+      <div class="desktop-chart-row">
+        <div class="chart-card">
+          <div class="chart-card-title">Yearly Total — tap year for breakdown</div>
+          <div class="bar-chart-wrap"><div class="bar-chart">${barCols}</div></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Monthly Breakdown ${selY}</div>
+          <div class="bar-chart-wrap"><div class="bar-chart">${mbCols}</div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Category Breakdown ${selY} — tap for transactions</div>
+        ${catTotal>0?`<div class="donut-wrap"><div>${buildDonutSVG(catData,110)}</div><div class="donut-legend">${legendHTML}</div></div>${detailHTML}`:'<div class="empty-state" style="padding:20px">No data</div>'}
+      </div>`;
+
+  } else {
+    // Category mode
+    const rows=getRowsD(dCView),keys=getCatKeysD();
+    const catTotals={},catMonthly={},catRawTx={};
+    rows.forEach(r=>{
+      if(!keys.includes(r.monthKey))return;
+      const cat=r.category||'Other';
+      catTotals[cat]=(catTotals[cat]||0)+r.amount;
+      if(!catMonthly[cat])catMonthly[cat]={};
+      catMonthly[cat][r.monthKey]=(catMonthly[cat][r.monthKey]||0)+r.amount;
+      if(!catRawTx[cat])catRawTx[cat]=[];
+      catRawTx[cat].push(r);
+    });
+    const sorted=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+    const maxCat=sorted.length?sorted[0][1]:1;
+    if(!dCSelCat&&sorted.length)dCSelCat=sorted[0][0];
+
+    let pillHTML='<div class="pill-grid">';
+    sorted.forEach(([cat,total])=>{
+      const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
+      const barW=maxCat>0?((total/maxCat)*100).toFixed(0):0;
+      const isActive=dCSelCat===cat;
+      const CAT_SHORT={'Administration':'Admin','Entertainment':'Entertain.'};
+      const displayName=CAT_SHORT[cat]||cat;
+      pillHTML+=`<div class="cat-pill${isActive?' active':''}" onclick="deskSelectCat('${cat.replace(/'/g,"\'")}')">
+        <div class="cat-pill-bar" style="width:${barW}%;background:${color}"></div>
+        <div class="cat-pill-name">${displayName}</div>
+        <div class="cat-pill-amt">${fRpShort(total)}</div>
+      </div>`;
+    });
+    pillHTML+='</div>';
+
+    let trendHTML='';
+    if(dCSelCat&&catMonthly[dCSelCat]){
+      const color=CAT_COLORS[dCSelCat]||CAT_COLORS['Other'];
+      const mData=catMonthly[dCSelCat];
+      const mMax=Math.max(...keys.map(k=>mData[k]||0),1);
+      const avg=keys.reduce((s,k)=>s+(mData[k]||0),0)/keys.length;
+      const txList=(catRawTx[dCSelCat]||[]).sort((a,b)=>b.amount-a.amount).slice(0,10);
+      let barCols=keys.map(k=>{
+        const t=mData[k]||0,hpct=mMax>0?(t/mMax*100):0;
+        return`<div class="bar-col"><div class="bar-amount">${t>0?fRpShort(t):''}</div><div class="bar-fill" style="height:${Math.max(hpct,2)}%;background:${color};border-color:${color}"></div><div class="bar-label">${k.split(' ')[0]}</div></div>`;
+      }).join('');
+      trendHTML=`<div class="cat-trend-card">
+        <div class="cat-trend-header"><div class="cat-trend-dot" style="background:${color}"></div><span style="color:var(--text);font-size:12px;font-weight:600">${dCSelCat}</span><span style="color:var(--text3);font-size:10px"> · avg ${fRpShort(Math.round(avg))}/mo · total ${fRpShort(catTotals[dCSelCat])}</span></div>
+        <div class="bar-chart-wrap"><div class="bar-chart">${barCols}</div></div>
+        ${txList.length?`<div class="detail-section"><div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>Top transactions</div>${txList.map(r=>`<div class="detail-item"><div class="detail-name">${r.payee||r.transaction||''}</div><div class="detail-date">${r.monthKey}</div><div class="detail-amt">${fRp(r.amount)}</div></div>`).join('')}</div>`:''}
+      </div>`;
+    }
+    el.innerHTML=pillHTML+trendHTML;
+  }
+}
+
+function deskSelectMonth(k){dMSelMonth=k;dMSelCat=null;renderDesktopInsights('monthly')}
+function deskSelectMonthlyCat(cat){dMSelCat=cat;renderDesktopInsights('monthly')}
+function deskSelectYear(y){dYSelYear=y;dYSelCat=null;renderDesktopInsights('yearly')}
+function deskSelectYearlyCat(cat){dYSelCat=cat;renderDesktopInsights('yearly')}
+function deskSelectCat(cat){dCSelCat=cat;renderDesktopInsights('category')}
+
 // ── INIT ──────────────────────────────────────────────────────
 initDatePicker();
 updateStatus();
@@ -1003,6 +1753,7 @@ function updateHeaderHeight(){
 }
 updateHeaderHeight();
 window.addEventListener('resize',updateHeaderHeight);
+initLayout();
 </script>
 </body>
 </html>
