@@ -14,7 +14,7 @@
 :root{
   --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--bg4:#2e2e2e;
   --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
-  --text:#f0f0f0;--text2:#888;--text3:#555;
+  --text:#f0f0f0;--text2:#999;--text3:#777;
   --accent:#c8f060;--accent-dim:rgba(200,240,96,0.11);
   --red:#ff6b6b;--red-dim:rgba(255,107,107,0.11);
   --blue:#60a0f0;--blue-dim:rgba(96,160,240,0.11);
@@ -29,7 +29,7 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .app-title{font-size:22px;font-weight:700;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px}
 .app-title span{color:var(--accent)}
-.app-version{font-size:10px;color:var(--text3);font-weight:400;margin-left:2px}
+.app-version{font-size:10px;color:var(--text2);font-weight:400;margin-left:2px}
 .sync-btn{background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);padding:7px 12px;border-radius:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px}
 .sync-btn svg{width:12px;height:12px}
 .spinning{animation:spin 1s linear infinite}
@@ -37,7 +37,7 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 .tab-bar{display:flex;background:var(--bg3);border-radius:9px;padding:3px;gap:2px}
 .tab{flex:1;padding:6px 2px;text-align:center;font-size:10px;font-weight:500;border-radius:7px;cursor:pointer;color:var(--text2);transition:all 0.2s;white-space:nowrap}
 .tab.active{background:var(--accent);color:#0f0f0f;font-weight:700}
-.status-bar{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:11px;color:var(--text3)}
+.status-bar{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:11px;color:var(--text2)}
 .status-dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
 .page{display:none;padding:0 20px}
 .page.active{display:block}
@@ -58,7 +58,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .autocomplete-item{padding:9px 12px;font-size:14px;cursor:pointer;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .autocomplete-item:last-child{border-bottom:none}
 .autocomplete-item:active{background:var(--accent-dim);color:var(--accent)}
-.ac-hint{font-size:10px;color:var(--text3)}
+.ac-hint{font-size:10px;color:var(--text2)}
 .date-input-hidden{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0}
 .date-display{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 12px;font-size:16px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s}
 .date-display svg{opacity:0.35;flex-shrink:0}
@@ -81,7 +81,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .smart-pill:hover,.smart-pill.selected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
 .smart-pill.pm{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
 .smart-pill.pm.selected{background:var(--blue);color:#0f0f0f}
-.smart-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;margin-top:2px;display:block}
+.smart-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;margin-top:2px;display:block}
 
 /* Action toggle for Invest */
 .action-toggle{display:flex;gap:6px;margin-bottom:12px}
@@ -125,7 +125,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .s-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
 .s-value{font-size:18px;font-weight:700;color:var(--accent)}
 .s-sub{font-size:11px;color:var(--text2);margin-top:3px}
-.chart-loading{text-align:center;padding:40px;color:var(--text3);font-size:13px}
+.chart-loading{text-align:center;padding:40px;color:var(--text2);font-size:13px}
 
 /* BAR CHART */
 .bar-chart-wrap{width:100%;overflow-x:auto}
@@ -146,7 +146,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .legend-name{color:var(--text2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
 .legend-pct{color:var(--text);font-size:11px;font-weight:600;white-space:nowrap}
-.legend-amt{color:var(--text2);font-size:10px;white-space:nowrap}
+.legend-amt{color:var(--text2);font-size:11px;white-space:nowrap}
 
 /* DETAIL */
 .detail-section{margin-top:10px;border-top:0.5px solid var(--border);padding-top:10px}
@@ -177,7 +177,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .nw-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px}
 .nw-card-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
 .nw-card-value{font-size:17px;font-weight:700}
-.nw-card-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.nw-card-sub{font-size:10px;color:var(--text2);margin-top:2px}
 .holding-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px}
 .holding-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .holding-name{font-size:14px;font-weight:600}
@@ -202,7 +202,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.success{border-color:var(--accent);color:var(--accent)}
 .toast.error{border-color:var(--red);color:var(--red)}
-.empty-state{text-align:center;padding:36px 20px;color:var(--text3);font-size:13px}
+.empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
 </style>
 </head>
 <body>
@@ -410,7 +410,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     </div>
     <div id="nwPriceInputs" style="display:none">
       <div class="chart-card-title" style="margin-top:14px;margin-bottom:8px">Current Prices</div>
-      <div id="nwLastUpdated" style="font-size:10px;color:var(--text3);margin-bottom:10px"></div>
+      <div id="nwLastUpdated" style="font-size:11px;color:var(--text2);margin-bottom:10px"></div>
       <div class="form-group">
         <label class="form-label">Star Stable NAV (Rp/unit) — <a href="https://star-am.com/en/star-product/star-stable-income-fund/" target="_blank" style="color:var(--accent)">star-am.com</a></label>
         <input type="text" id="nwStarNav" class="form-input" placeholder="e.g. 2208,95" inputmode="decimal" onchange="saveAndRenderNW()">
@@ -1454,10 +1454,10 @@ function renderHoldings(holdings, usdRate, chfRate){
           <span>Cost basis <strong>${fRpS(Math.round(h.costBasis))}</strong></span>
           ${hasValue
             ? `<span>Value <strong style="color:${color}">${fRpS(Math.round(h.currentValue))}</strong></span>`
-            : `<span style="color:var(--text3)">Enter price above</span>`}
+            : `<span style="color:var(--text2)">Enter price above</span>`}
         </div>
         <div class="holding-details" style="margin-top:3px">
-          <span style="color:var(--text3)">${avgStr}</span>
+          <span style="color:var(--text2)">${avgStr}</span>
           ${pnl!==null ? `<span style="color:${pnl>=0?'var(--green)':'var(--red)'}">
             ${pnl>=0?'+':''}${fRpS(Math.round(pnl))} (${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%)
           </span>` : ''}
@@ -1489,39 +1489,43 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
   const totalInvestValue = holdings.reduce((s,h)=>s+h.currentValue, 0);
   const hasValue = totalInvestValue > 0;
   const totalNetWorth = (hasValue ? totalInvestValue : totalInvestCost) + cashBalance;
-  const totalCost     = totalInvestCost + cashBalance;
   const pnl    = hasValue ? totalInvestValue - totalInvestCost : null;
   const pnlPct = pnl !== null && totalInvestCost > 0 ? (pnl/totalInvestCost*100) : null;
 
+  // Format full rupiah number
+  function fRpFull(n){ return 'Rp ' + Math.round(n).toLocaleString('id-ID'); }
+
+  // Date label
+  const lu = HIST.currentPrices?.lastUpdated || '';
+
   let html = `
-    <div class="nw-summary">
-      <div class="nw-card">
-        <div class="nw-card-label">Total Net Worth</div>
-        <div class="nw-card-value" style="color:var(--accent)">${fRpS(Math.round(totalNetWorth))}</div>
-        <div class="nw-card-sub">Invest + Cash</div>
+    <div class="chart-card" style="margin-bottom:10px">
+      <div class="chart-card-title">Total net worth</div>
+      <div style="font-size:28px;font-weight:700;color:var(--accent);letter-spacing:-0.5px;margin:4px 0 6px">${fRpFull(totalNetWorth)}</div>
+      <div style="font-size:12px;color:var(--text2)">Invest + cash${lu?' · as of '+lu:''}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px">
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Invested</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text);margin:3px 0 2px">${fRpS(Math.round(totalInvestCost))}</div>
+        <div style="font-size:11px;color:var(--text2)">cost basis</div>
       </div>
-      <div class="nw-card">
-        <div class="nw-card-label">Unrealized P&L</div>
-        <div class="nw-card-value" style="color:${pnl===null?'var(--text2)':pnl>=0?'var(--green)':'var(--red)'}">
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Unrealized</div>
+        <div style="font-size:14px;font-weight:600;color:${pnl===null?'var(--text2)':pnl>=0?'var(--green)':'var(--red)'};margin:3px 0 2px">
           ${pnl===null?'—':(pnl>=0?'+':'')+fRpS(Math.round(pnl))}
         </div>
-        <div class="nw-card-sub">${pnlPct!==null?(pnlPct>=0?'+':'')+pnlPct.toFixed(1)+'%':''}</div>
+        <div style="font-size:11px;color:var(--text2)">${pnlPct!==null?(pnlPct>=0?'+':'')+pnlPct.toFixed(1)+'%':'—'}</div>
       </div>
-    </div>
-    <div class="nw-summary">
-      <div class="nw-card">
-        <div class="nw-card-label">Investments (Cost)</div>
-        <div class="nw-card-value" style="color:var(--text)">${fRpS(Math.round(totalInvestCost))}</div>
-        <div class="nw-card-sub">Total deployed</div>
-      </div>
-      <div class="nw-card">
-        <div class="nw-card-label">Cash Balance</div>
-        <div class="nw-card-value" style="color:var(--green)">${fRpS(Math.round(cashBalance))}</div>
-        <div class="nw-card-sub">From Opex</div>
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Cash</div>
+        <div style="font-size:14px;font-weight:600;color:var(--blue);margin:3px 0 2px">${fRpS(Math.round(cashBalance))}</div>
+        <div style="font-size:11px;color:var(--text2)">from Opex</div>
       </div>
     </div>`;
 
-  // Allocation by type — include Cash
+  // Allocation by type
   const byType = {'Cash': {cost: cashBalance, value: cashBalance}};
   holdings.forEach(h=>{
     const t = h.type;
@@ -1529,15 +1533,14 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
     byType[t].cost  += h.costBasis;
     byType[t].value += h.currentValue;
   });
-
   const typeColor = {'Reksa Dana':'var(--green)','Forex':'var(--blue)','US Stock':'var(--accent)','Cash':'var(--text2)'};
   const grandTotal = Object.values(byType).reduce((s,d)=>s+d.cost, 0);
 
-  html += `<div class="chart-card"><div class="chart-card-title">Allocation by type</div>`;
+  html += `<div class="chart-card" style="margin-bottom:10px"><div class="chart-card-title">Allocation by type</div>`;
   Object.entries(byType)
     .sort((a,b)=>b[1].cost - a[1].cost)
     .forEach(([type, data])=>{
-      const pct = grandTotal > 0 ? ((data.cost/grandTotal)*100) : 0;
+      const pct = grandTotal > 0 ? (data.cost/grandTotal*100) : 0;
       const color = typeColor[type]||'var(--text2)';
       html += `<div style="margin-bottom:10px">
         <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -1549,68 +1552,13 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
         </div>
       </div>`;
     });
-  html += `<div style="font-size:10px;color:var(--text3);margin-top:8px">
+  html += `<div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text2)">
     FX rates: USD/IDR ${Math.round(usdRate).toLocaleString('id-ID')} · CHF/IDR ${Math.round(chfRate).toLocaleString('id-ID')}
   </div></div>`;
 
   document.getElementById('nwContent').innerHTML = html;
 }
 
-// ── INIT ──────────────────────────────────────────────────────
-function updateHeaderHeight(){
-  const h=document.querySelector('.header');
-  if(h)document.documentElement.style.setProperty('--header-height',h.offsetHeight+'px');
-}
-
-initDatePicker('inputDateRaw','inputDateDisplay','inputDateText');
-initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
-updateStatus();
-updateHeaderHeight();
-window.addEventListener('resize',updateHeaderHeight);
-
-async function loadHistData() {
-  try {
-    const res = await fetch('data.json?v=' + APP_BUILD);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const d = await res.json();
-    Object.assign(HIST, d);
-    // Cache txCat+txPm in localStorage for instant autocomplete
-    localStorage.setItem('nota_txCat', JSON.stringify(d.txCat||{}));
-    localStorage.setItem('nota_txPm',  JSON.stringify(d.txPm||{}));
-    // Pre-fill stockPrices from data.json if user hasn't overridden
-    if (d.currentPrices) {
-      const cp = d.currentPrices;
-      const keys = ['StarStable','AAPL','JNJ','VYM','QQQ','CHFIDR','USDIDR'];
-      keys.forEach(k => {
-        if (!stockPrices[k]) stockPrices[k] = String(cp[k] || '');
-      });
-      localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
-    }
-    histLoaded = true;
-    histLoadCallbacks.forEach(cb => cb());
-    histLoadCallbacks = [];
-  } catch(e) {
-    console.warn('data.json load failed:', e.message);
-    // Try loading from localStorage cache
-    const cachedCat = localStorage.getItem('nota_txCat');
-    const cachedPm  = localStorage.getItem('nota_txPm');
-    if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
-    if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
-    histLoaded = true;
-    histLoadCallbacks.forEach(cb => cb());
-    histLoadCallbacks = [];
-  }
-}
-
-// Pre-load txCat+txPm from cache immediately (for autocomplete on first tap)
-(function() {
-  const cachedCat = localStorage.getItem('nota_txCat');
-  const cachedPm  = localStorage.getItem('nota_txPm');
-  if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
-  if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
-})();
-
-loadHistData();
 </script>
 </body>
 </html>
