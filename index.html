@@ -408,12 +408,29 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div class="nw-mode-btn active" data-nw="holdings" onclick="setNWMode('holdings',this)">Holdings</div>
       <div class="nw-mode-btn" data-nw="overview" onclick="setNWMode('overview',this)">Overview</div>
     </div>
-    <div id="nwStarNavRow" class="nw-update-row" style="display:none">
-      <div class="nw-update-label">Star Stable NAV (Rp/unit)</div>
-      <button class="nw-update-btn" onclick="document.getElementById('nwStarNav').focus()">Update</button>
+    <div id="nwPriceInputs" style="display:none">
+      <div class="chart-card-title" style="margin-top:14px;margin-bottom:8px">Current Prices</div>
+      <div class="form-group">
+        <label class="form-label">Star Stable NAV (Rp/unit) — <a href="https://star-am.com/en/star-product/star-stable-income-fund/" target="_blank" style="color:var(--accent)">star-am.com</a></label>
+        <input type="text" id="nwStarNav" class="form-input" placeholder="e.g. 2208,95" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">QQQ (USD)</label>
+        <input type="text" id="nwQQQ" class="form-input" placeholder="e.g. 450.00" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">JNJ (USD)</label>
+        <input type="text" id="nwJNJ" class="form-input" placeholder="e.g. 155.00" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">VYM (USD)</label>
+        <input type="text" id="nwVYM" class="form-input" placeholder="e.g. 130.00" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">AAPL (USD)</label>
+        <input type="text" id="nwAAPL" class="form-input" placeholder="e.g. 200.00" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
     </div>
-    <input type="number" id="nwStarNav" class="star-nav-input" placeholder="Enter latest NAV from star-am.com"
-      inputmode="numeric" onchange="renderNetWorth()">
     <div id="nwContent"><div class="chart-loading">Loading...</div></div>
   </div>
 </div>
@@ -466,7 +483,27 @@ let txHistory = JSON.parse(localStorage.getItem('nota_history_v2') || '[]');
 let investHistory = JSON.parse(localStorage.getItem('nota_invest_v2') || '[]');
 let fxRates = JSON.parse(localStorage.getItem('nota_fx') || '{}');
 let fxLastFetch = parseInt(localStorage.getItem('nota_fx_ts') || '0');
-let starNav = parseFloat(localStorage.getItem('nota_star_nav') || '0');
+let stockPrices = JSON.parse(localStorage.getItem('nota_prices') || '{}');
+
+function parsePrice(str) {
+  if (!str) return 0;
+  return parseFloat(String(str).replace(',', '.')) || 0;
+}
+function loadPriceInputs() {
+  const map = {nwStarNav:'StarStable', nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
+  Object.entries(map).forEach(([fid, key]) => {
+    const el = document.getElementById(fid);
+    if (el && stockPrices[key]) el.value = stockPrices[key];
+  });
+}
+function savePriceInputs() {
+  const map = {nwStarNav:'StarStable', nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
+  Object.entries(map).forEach(([fid, key]) => {
+    stockPrices[key] = document.getElementById(fid)?.value || '';
+  });
+  localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
+}
+function saveAndRenderNW() { savePriceInputs(); renderNetWorth(); }
 let insightsMode = 'monthly';
 let nwMode = 'holdings';
 let mView='all', mRange=3, mSelMonth=null, mSelCat=null;
@@ -615,13 +652,14 @@ function updateSmartSuggestions(txName) {
                  Object.keys(txCat).find(k=>txLow.includes(k.toLowerCase())||k.toLowerCase().includes(txLow));
   const pmKey  = Object.keys(txPm).find(k=>k.toLowerCase()===txLow) ||
                  Object.keys(txPm).find(k=>txLow.includes(k.toLowerCase())||k.toLowerCase().includes(txLow));
+  // Fallback to all categories/PMs if no history match
+  const sugCats = catKey ? txCat[catKey] : allCategories;
+  const sugPms  = pmKey  ? txPm[pmKey]   : allPMs;
   const catContainer = document.getElementById('catPills');
-  const sugCats = catKey ? txCat[catKey] : [];
   catContainer.innerHTML = sugCats.map(c=>
     `<div class="smart-pill" data-cat="${c}" onclick="selectSmartCat(this.dataset.cat)">${c}</div>`
   ).join('');
   const pmContainer = document.getElementById('pmPills');
-  const sugPms = pmKey ? txPm[pmKey] : [];
   pmContainer.innerHTML = sugPms.map(p=>
     `<div class="smart-pill pm" data-pm="${p}" onclick="selectSmartPm(this.dataset.pm)">${p}</div>`
   ).join('');
@@ -682,7 +720,7 @@ function switchTab(tab, el) {
     ['yearlySummary','yearlyBarCard','yearlyMonthCard','yearlyDonutCard','catRankingCard','catTrendCard'].forEach(id=>{document.getElementById(id).style.display='none'});
     renderChartTab(insightsMode);
   }
-  if(tab==='networth')renderNetWorth();
+  if(tab==='networth')initNetWorth();
 }
 
 // ── SUBMIT OPEX ───────────────────────────────────────────────
@@ -1225,6 +1263,11 @@ function setNWMode(mode,el){
   el.classList.add('active');
   renderNetWorth();
 }
+function initNetWorth() {
+  document.getElementById('nwPriceInputs').style.display = 'block';
+  loadPriceInputs();
+  renderNetWorth();
+}
 
 async function fetchFxRates(){
   const now=Date.now();
@@ -1253,187 +1296,210 @@ async function fetchFxRates(){
 }
 
 async function renderNetWorth(){
-  document.getElementById('nwStarNavRow').style.display='block';
-  const navInput = document.getElementById('nwStarNav');
-  if(starNav&&!navInput.value) navInput.value=starNav;
-  const currentNav = parseFloat(navInput.value)||starNav||0;
-  if(currentNav) { starNav=currentNav; localStorage.setItem('nota_star_nav',String(currentNav)); }
-
   await fetchFxRates();
-  const usdRate = fxRates.USD||16500;
-  const chfRate = fxRates.CHF||19000;
+  const usdRate = fxRates.USD || 16500;
+  const chfRate = fxRates.CHF || 19000;
 
-  // Calculate net holdings from all invest rows
+  // Current prices from inputs
+  const navStar = parsePrice(stockPrices['StarStable']);
+  const priceQQQ  = parsePrice(stockPrices['QQQ']);
+  const priceJNJ  = parsePrice(stockPrices['JNJ']);
+  const priceVYM  = parsePrice(stockPrices['VYM']);
+  const priceAAPL = parsePrice(stockPrices['AAPL']);
+
+  // Net holdings from all invest rows
   const allInvest = getAllInvestRows();
-  const buyLots={}, sellLots={}, avgCost={}, totalCostIdr={};
+  const buyLots={}, sellLots={}, buyTotalIdr={};
   allInvest.forEach(r=>{
     const s=r.stock;
-    if(!buyLots[s]){buyLots[s]=0;sellLots[s]=0;totalCostIdr[s]=0;}
+    if(!buyLots[s]){buyLots[s]=0;sellLots[s]=0;buyTotalIdr[s]=0;}
     if(r.action==='Buy'){
-      buyLots[s]+=r.lot;
-      totalCostIdr[s]+=r.totalIdr||0;
+      buyLots[s]  += r.lot;
+      buyTotalIdr[s] += r.totalIdr||0;
     } else {
-      sellLots[s]+=r.lot;
+      sellLots[s] += r.lot;
     }
-  });
-  Object.keys(buyLots).forEach(s=>{
-    avgCost[s] = buyLots[s]>0 ? totalCostIdr[s]/buyLots[s] : 0;
   });
 
   const holdings = Object.keys(buyLots).map(stock=>{
-    const net = buyLots[stock] - (sellLots[stock]||0);
-    if(net<=0)return null;
+    const netLot = buyLots[stock] - (sellLots[stock]||0);
+    if(netLot <= 0) return null;
     const type = STOCK_TYPE[stock]||'';
-    const costBasis = avgCost[stock]*net;
+    // Cost basis = proportional to remaining lots
+    const buyRatio = buyLots[stock] > 0 ? netLot / buyLots[stock] : 0;
+    const costBasis = buyTotalIdr[stock] * buyRatio;
+    const avgCostPerUnit = buyLots[stock] > 0 ? buyTotalIdr[stock] / buyLots[stock] : 0;
+
+    // Current value
     let currentValue = 0;
-    if(stock==='Star Stable Income Fund') currentValue = net*currentNav;
-    else if(stock==='USDIDR') currentValue = net*usdRate;
-    else if(stock==='CHFIDR') currentValue = net*chfRate;
-    else currentValue = 0; // US stocks need manual or API
-    return {stock,type,net,costBasis,currentValue,avgCost:avgCost[stock]};
+    if (stock==='Star Stable Income Fund') currentValue = navStar > 0 ? netLot * navStar : 0;
+    else if (stock==='USDIDR') currentValue = netLot * usdRate;
+    else if (stock==='CHFIDR') currentValue = netLot * chfRate;
+    else if (stock==='QQQ')  currentValue = priceQQQ  > 0 ? netLot * priceQQQ  * usdRate : 0;
+    else if (stock==='JNJ')  currentValue = priceJNJ  > 0 ? netLot * priceJNJ  * usdRate : 0;
+    else if (stock==='VYM')  currentValue = priceVYM  > 0 ? netLot * priceVYM  * usdRate : 0;
+    else if (stock==='AAPL') currentValue = priceAAPL > 0 ? netLot * priceAAPL * usdRate : 0;
+
+    return {stock, type, netLot, costBasis, currentValue, avgCostPerUnit};
   }).filter(Boolean);
 
-  const totalCost = holdings.reduce((s,h)=>s+h.costBasis,0);
-  const totalValue = holdings.reduce((s,h)=>s+h.currentValue,0);
+  // Cash balance from last opex row
+  // Get cash balance: stored separately in data.json or calculated
+  const opexRows = HIST.opex || [];
+  const cashBal = HIST.cashBalance || 0;
+  const lastBalance = cashBal;
 
   if(nwMode==='holdings'){
-    renderHoldings(holdings, usdRate, chfRate, totalCost, totalValue);
+    renderHoldings(holdings, usdRate, chfRate);
   } else {
-    renderOverview(holdings, usdRate, chfRate, totalCost, totalValue);
+    renderOverview(holdings, usdRate, chfRate, lastBalance);
   }
 }
 
-function renderHoldings(holdings, usdRate, chfRate, totalCost, totalValue){
+function renderHoldings(holdings, usdRate, chfRate){
   const groups = {
     'Reksa Dana': holdings.filter(h=>h.type==='Reksa Dana'),
-    'Forex': holdings.filter(h=>h.type==='Forex'),
-    'US Stock': holdings.filter(h=>h.type==='US Stock'),
+    'Forex':      holdings.filter(h=>h.type==='Forex'),
+    'US Stock':   holdings.filter(h=>h.type==='US Stock'),
   };
+  const colorMap = {'Reksa Dana':'var(--green)','Forex':'var(--blue)','US Stock':'var(--accent)'};
+  const bgMap    = {'Reksa Dana':'var(--green-dim)','Forex':'var(--blue-dim)','US Stock':'var(--accent-dim)'};
 
   let html = '';
   Object.entries(groups).forEach(([type, items])=>{
-    if(!items.length)return;
-    html += `<div class="chart-card-title" style="margin-top:14px;margin-bottom:8px">${type}</div>`;
+    if(!items.length) return;
+    const color = colorMap[type], bg = bgMap[type];
+    let groupCost=0, groupValue=0;
+    html += `<div class="chart-card-title" style="margin-top:14px;margin-bottom:8px;color:${color}">${type}</div>`;
     items.forEach(h=>{
-      const color = type==='Reksa Dana'?'var(--green)':type==='Forex'?'var(--blue)':'var(--accent)';
-      const badgeBg = type==='Reksa Dana'?'var(--green-dim)':type==='Forex'?'var(--blue-dim)':'var(--accent-dim)';
-      const hasValue = h.currentValue>0;
-      const pnl = hasValue?h.currentValue-h.costBasis:null;
-      const pnlPct = pnl&&h.costBasis>0?(pnl/h.costBasis*100):null;
-      const isUSD = h.type==='US Stock'||h.stock==='USDIDR';
-      const isCHF = h.stock==='CHFIDR';
+      groupCost  += h.costBasis;
+      groupValue += h.currentValue;
+      const hasValue = h.currentValue > 0;
+      const pnl    = hasValue ? h.currentValue - h.costBasis : null;
+      const pnlPct = pnl !== null && h.costBasis > 0 ? (pnl/h.costBasis*100) : null;
 
-      // Format lot
-      const lotStr = h.type==='US Stock'?`${h.net} shares`:
-                     h.stock==='USDIDR'?`${h.net.toFixed(2)} USD`:
-                     h.stock==='CHFIDR'?`${h.net} CHF`:
-                     `${h.net.toLocaleString('id-ID')} units`;
+      // Lot display
+      const lotStr = h.type==='US Stock' ? `${h.netLot} shares` :
+                     h.stock==='USDIDR'  ? `${h.netLot.toFixed(2)} USD` :
+                     h.stock==='CHFIDR'  ? `${h.netLot} CHF` :
+                     `${h.netLot.toLocaleString('id-ID')} units`;
 
-      html+=`<div class="holding-item">
+      // Avg cost display
+      const avgStr = h.type==='US Stock'
+        ? `Avg $${(h.avgCostPerUnit/usdRate).toFixed(2)}`
+        : `Avg ${fRpS(Math.round(h.avgCostPerUnit))}/unit`;
+
+      html += `<div class="holding-item">
         <div class="holding-header">
           <div class="holding-name" style="color:${color}">${h.stock}</div>
-          <span class="holding-badge" style="background:${badgeBg};color:${color}">${h.type}</span>
+          <span class="holding-badge" style="background:${bg};color:${color}">${lotStr}</span>
         </div>
         <div class="holding-details">
-          <span>${lotStr}</span>
-          <span>Avg cost ${fRpS(Math.round(h.avgCost))}</span>
-        </div>
-        <div class="holding-details" style="margin-top:4px">
           <span>Cost basis <strong>${fRpS(Math.round(h.costBasis))}</strong></span>
-          ${hasValue?`<span>Value <strong style="color:${color}">${fRpS(Math.round(h.currentValue))}</strong></span>`:'<span style="color:var(--text3)">Update price to see value</span>'}
+          ${hasValue
+            ? `<span>Value <strong style="color:${color}">${fRpS(Math.round(h.currentValue))}</strong></span>`
+            : `<span style="color:var(--text3)">Enter price above</span>`}
         </div>
-        ${pnl!==null?`<div class="holding-pnl" style="color:${pnl>=0?'var(--green)':'var(--red)'}">
-          ${pnl>=0?'+':''}${fRpS(Math.round(pnl))} (${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%)
-        </div>`:''}
+        <div class="holding-details" style="margin-top:3px">
+          <span style="color:var(--text3)">${avgStr}</span>
+          ${pnl!==null ? `<span style="color:${pnl>=0?'var(--green)':'var(--red)'}">
+            ${pnl>=0?'+':''}${fRpS(Math.round(pnl))} (${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%)
+          </span>` : ''}
+        </div>
       </div>`;
     });
+    // Group total
+    if(items.length > 1 || type==='US Stock'){
+      const gPnl = groupValue > 0 ? groupValue - groupCost : null;
+      html += `<div class="holding-item" style="border-color:${color};background:${bg}">
+        <div class="holding-header">
+          <div style="font-size:12px;font-weight:600;color:${color}">Total ${type}</div>
+          <div style="font-size:12px;font-weight:700;color:${color}">${fRpS(Math.round(groupCost))}</div>
+        </div>
+        ${gPnl!==null ? `<div class="holding-details">
+          <span>Est. value <strong style="color:${color}">${fRpS(Math.round(groupValue))}</strong></span>
+          <span style="color:${gPnl>=0?'var(--green)':'var(--red)'}">
+            ${gPnl>=0?'+':''}${fRpS(Math.round(gPnl))}
+          </span>
+        </div>` : ''}
+      </div>`;
+    }
   });
-
-  document.getElementById('nwContent').innerHTML=html||'<div class="empty-state">No holdings found</div>';
+  document.getElementById('nwContent').innerHTML = html || '<div class="empty-state">No holdings found</div>';
 }
 
-function renderOverview(holdings, usdRate, chfRate, totalCost, totalValue){
-  const hasValue = totalValue>0;
-  const pnl = hasValue?totalValue-totalCost:null;
-  const pnlPct = pnl&&totalCost>0?(pnl/totalCost*100):null;
+function renderOverview(holdings, usdRate, chfRate, cashBalance){
+  const totalInvestCost  = holdings.reduce((s,h)=>s+h.costBasis, 0);
+  const totalInvestValue = holdings.reduce((s,h)=>s+h.currentValue, 0);
+  const hasValue = totalInvestValue > 0;
+  const totalNetWorth = (hasValue ? totalInvestValue : totalInvestCost) + cashBalance;
+  const totalCost     = totalInvestCost + cashBalance;
+  const pnl    = hasValue ? totalInvestValue - totalInvestCost : null;
+  const pnlPct = pnl !== null && totalInvestCost > 0 ? (pnl/totalInvestCost*100) : null;
 
   let html = `
     <div class="nw-summary">
       <div class="nw-card">
-        <div class="nw-card-label">Total Cost Basis</div>
-        <div class="nw-card-value" style="color:var(--accent)">${fRpS(Math.round(totalCost))}</div>
-        <div class="nw-card-sub">All investments</div>
+        <div class="nw-card-label">Total Net Worth</div>
+        <div class="nw-card-value" style="color:var(--accent)">${fRpS(Math.round(totalNetWorth))}</div>
+        <div class="nw-card-sub">Invest + Cash</div>
       </div>
       <div class="nw-card">
-        <div class="nw-card-label">Est. Value</div>
-        <div class="nw-card-value" style="color:var(--green)">${hasValue?fRpS(Math.round(totalValue)):'—'}</div>
-        <div class="nw-card-sub">${fxRates.USD?`USD/IDR ${Math.round(fxRates.USD).toLocaleString('id-ID')} · CHF/IDR ${Math.round(fxRates.CHF||0).toLocaleString('id-ID')}`:'Live rates'}</div>
+        <div class="nw-card-label">Unrealized P&L</div>
+        <div class="nw-card-value" style="color:${pnl===null?'var(--text2)':pnl>=0?'var(--green)':'var(--red)'}">
+          ${pnl===null?'—':(pnl>=0?'+':'')+fRpS(Math.round(pnl))}
+        </div>
+        <div class="nw-card-sub">${pnlPct!==null?(pnlPct>=0?'+':'')+pnlPct.toFixed(1)+'%':''}</div>
+      </div>
+    </div>
+    <div class="nw-summary">
+      <div class="nw-card">
+        <div class="nw-card-label">Investments (Cost)</div>
+        <div class="nw-card-value" style="color:var(--text)">${fRpS(Math.round(totalInvestCost))}</div>
+        <div class="nw-card-sub">Total deployed</div>
+      </div>
+      <div class="nw-card">
+        <div class="nw-card-label">Cash Balance</div>
+        <div class="nw-card-value" style="color:var(--green)">${fRpS(Math.round(cashBalance))}</div>
+        <div class="nw-card-sub">From Opex</div>
       </div>
     </div>`;
 
-  if(pnl!==null){
-    html+=`<div class="nw-card" style="margin-bottom:12px">
-      <div class="nw-card-label">Unrealized P&L</div>
-      <div class="nw-card-value" style="color:${pnl>=0?'var(--green)':'var(--red)'}">
-        ${pnl>=0?'+':''}${fRpS(Math.round(pnl))} (${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%)
-      </div>
-    </div>`;
-  }
-
-  // Breakdown by type
-  const byType = {};
+  // Allocation by type — include Cash
+  const byType = {'Cash': {cost: cashBalance, value: cashBalance}};
   holdings.forEach(h=>{
-    const t=h.type;
-    if(!byType[t])byType[t]={cost:0,value:0};
-    byType[t].cost+=h.costBasis;
-    byType[t].value+=h.currentValue;
+    const t = h.type;
+    if(!byType[t]) byType[t] = {cost:0, value:0};
+    byType[t].cost  += h.costBasis;
+    byType[t].value += h.currentValue;
   });
 
-  html+=`<div class="chart-card"><div class="chart-card-title">Allocation by type</div>`;
-  const colorMap={'Reksa Dana':'var(--green)','Forex':'var(--blue)','US Stock':'var(--accent)'};
-  Object.entries(byType).forEach(([type,data])=>{
-    const pct=totalCost>0?((data.cost/totalCost)*100).toFixed(0):0;
-    const barW=totalCost>0?((data.cost/totalCost)*100).toFixed(0):0;
-    const color=colorMap[type]||'var(--text2)';
-    html+=`<div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <span style="font-size:12px;font-weight:500;color:${color}">${type}</span>
-        <span style="font-size:12px;color:var(--text2)">${pct}% · ${fRpS(Math.round(data.cost))}</span>
-      </div>
-      <div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
-        <div style="height:100%;width:${barW}%;background:${color};border-radius:3px"></div>
-      </div>
-    </div>`;
-  });
-  html+='</div>';
+  const typeColor = {'Reksa Dana':'var(--green)','Forex':'var(--blue)','US Stock':'var(--accent)','Cash':'var(--text2)'};
+  const grandTotal = Object.values(byType).reduce((s,d)=>s+d.cost, 0);
 
-  document.getElementById('nwContent').innerHTML=html;
+  html += `<div class="chart-card"><div class="chart-card-title">Allocation by type</div>`;
+  Object.entries(byType)
+    .sort((a,b)=>b[1].cost - a[1].cost)
+    .forEach(([type, data])=>{
+      const pct = grandTotal > 0 ? ((data.cost/grandTotal)*100) : 0;
+      const color = typeColor[type]||'var(--text2)';
+      html += `<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:12px;font-weight:500;color:${color}">${type}</span>
+          <span style="font-size:12px;color:var(--text2)">${pct.toFixed(0)}% · ${fRpS(Math.round(data.cost))}</span>
+        </div>
+        <div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${pct.toFixed(0)}%;background:${color};border-radius:3px"></div>
+        </div>
+      </div>`;
+    });
+  html += `<div style="font-size:10px;color:var(--text3);margin-top:8px">
+    FX rates: USD/IDR ${Math.round(usdRate).toLocaleString('id-ID')} · CHF/IDR ${Math.round(chfRate).toLocaleString('id-ID')}
+  </div></div>`;
+
+  document.getElementById('nwContent').innerHTML = html;
 }
 
-// ── INIT ──────────────────────────────────────────────────────
-function updateHeaderHeight(){
-  const h=document.querySelector('.header');
-  if(h)document.documentElement.style.setProperty('--header-height',h.offsetHeight+'px');
-}
-
-initDatePicker('inputDateRaw','inputDateDisplay','inputDateText');
-initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
-updateStatus();
-updateHeaderHeight();
-window.addEventListener('resize',updateHeaderHeight);
-
-// Load historical data from data.json
-async function loadHistData() {
-  try {
-    const res = await fetch('data.json?v=' + APP_BUILD);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const d = await res.json();
-    Object.assign(HIST, d);
-  } catch(e) {
-    console.warn('data.json load failed:', e.message);
-  }
-}
-loadHistData();
 </script>
 </body>
 </html>
