@@ -223,7 +223,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">Nota<span>.</span><span class="app-version">v2.2</span></div>
+    <div class="app-title">Nota<span>.</span><span class="app-version">v2.2.1</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -436,36 +436,42 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div class="nw-mode-btn active" data-nw="holdings" onclick="setNWMode('holdings',this)">Holdings</div>
       <div class="nw-mode-btn" data-nw="overview" onclick="setNWMode('overview',this)">Overview</div>
     </div>
-    <div id="nwPriceInputs" style="display:none">
-      <div class="chart-card-title" style="margin-top:14px;margin-bottom:8px">Current Prices</div>
-      <div id="nwLastUpdated" style="font-size:11px;color:var(--text2);margin-bottom:10px"></div>
+    <div id="nwPriceInputs">
+      <div class="chart-card-title" style="margin-top:0;margin-bottom:12px">Current Prices</div>
+      <div id="nwLastUpdated" style="font-size:11px;color:var(--text2);margin-bottom:12px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">USD/IDR</label>
+          <input type="text" id="nwUSDIDR" class="form-input" placeholder="e.g. 16500" inputmode="decimal" onchange="saveAndRenderNW()">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">CHF/IDR</label>
+          <input type="text" id="nwCHFIDR" class="form-input" placeholder="e.g. 19500" inputmode="decimal" onchange="saveAndRenderNW()">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">QQQ (USD)</label>
+          <input type="text" id="nwQQQ" class="form-input" placeholder="e.g. 450.00" inputmode="decimal" onchange="saveAndRenderNW()">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">JNJ (USD)</label>
+          <input type="text" id="nwJNJ" class="form-input" placeholder="e.g. 155.00" inputmode="decimal" onchange="saveAndRenderNW()">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">VYM (USD)</label>
+          <input type="text" id="nwVYM" class="form-input" placeholder="e.g. 130.00" inputmode="decimal" onchange="saveAndRenderNW()">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">AAPL (USD)</label>
+          <input type="text" id="nwAAPL" class="form-input" placeholder="e.g. 200.00" inputmode="decimal" onchange="saveAndRenderNW()">
+        </div>
+      </div>
       <div class="form-group">
         <label class="form-label">Star Stable NAV (Rp/unit) — <a href="https://star-am.com/en/star-product/star-stable-income-fund/" target="_blank" style="color:var(--accent)">star-am.com</a></label>
         <input type="text" id="nwStarNav" class="form-input" placeholder="e.g. 2208,95" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">USD/IDR</label>
-        <input type="text" id="nwUSDIDR" class="form-input" placeholder="e.g. 16500" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">CHF/IDR</label>
-        <input type="text" id="nwCHFIDR" class="form-input" placeholder="e.g. 19500" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">QQQ (USD)</label>
-        <input type="text" id="nwQQQ" class="form-input" placeholder="e.g. 450.00" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">JNJ (USD)</label>
-        <input type="text" id="nwJNJ" class="form-input" placeholder="e.g. 155.00" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">VYM (USD)</label>
-        <input type="text" id="nwVYM" class="form-input" placeholder="e.g. 130.00" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">AAPL (USD)</label>
-        <input type="text" id="nwAAPL" class="form-input" placeholder="e.g. 200.00" inputmode="decimal" onchange="saveAndRenderNW()">
       </div>
     </div>
     <div id="nwContent"><div class="chart-loading">Loading...</div></div>
@@ -487,7 +493,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <div id="toast" class="toast"></div>
 
 <script>
-const APP_VERSION = 'v2.1';
+const APP_VERSION = 'v2.2.1';
 const APP_BUILD = '2026-05-13';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1342,6 +1348,7 @@ function setNWMode(mode,el){
   nwMode=mode;
   document.querySelectorAll('.nw-mode-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
+  document.getElementById('nwPriceInputs').style.display = mode==='holdings' ? 'block' : 'none';
   renderNetWorth();
 }
 function initNetWorth() {
