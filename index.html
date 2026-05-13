@@ -206,6 +206,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .nw-update-label{font-size:11px;color:var(--text2);flex:1}
 .nw-update-btn{background:var(--bg3);border:0.5px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer}
 .star-nav-input{font-size:14px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--bg3);border:0.5px solid var(--border);color:var(--text);width:100%;margin-bottom:8px;font-family:inherit}
+#nwPriceInputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#nwPriceInputs > .chart-card-title{grid-column:1/-1}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:flex-end;display:none}
@@ -1471,6 +1473,8 @@ function setNWMode(mode,el){
   nwMode=mode;
   document.querySelectorAll('.nw-mode-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
+  // Show price inputs only in Holdings mode
+  document.getElementById('nwPriceInputs').style.display = (mode === 'holdings') ? 'block' : 'none';
   renderNetWorth();
 }
 function initNetWorth() {
@@ -2118,7 +2122,7 @@ function calBuildMonthHTML(year, month, today) {
 
 function calGetCurrentWeekHTML(year, month, today) {
   // Only render the current week row (Mon–Sun containing today)
-  const { txByDay } = calGetMonthData(year, month, today);
+  const { txByDay } = calGetMonthData(year, month);
   const todayD = today.getDate();
   const todayDow = (today.getDay() + 6) % 7; // Mon=0..Sun=6
 
