@@ -2396,7 +2396,11 @@ function calReinit() {
   initCalendar();
 }
 
-loadHistData();
+// Load data, then initialize calendar
+(async () => {
+  await loadHistData();
+  if (!calInited) initCalendar();
+})();
 </script>
 </body>
 </html>
