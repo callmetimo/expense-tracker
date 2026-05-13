@@ -30,15 +30,13 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 .app-title{font-size:22px;font-weight:700;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px}
 .app-title span{color:var(--accent)}
 .app-version{font-size:10px;color:var(--text2);font-weight:400;margin-left:2px}
-.sync-btn{background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);padding:7px 12px;border-radius:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px}
-.sync-btn svg{width:12px;height:12px}
-.spinning{animation:spin 1s linear infinite}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.search-icon-btn{background:none;border:none;color:var(--text2);padding:7px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
+.search-icon-btn svg{width:18px;height:18px}
+.search-icon-btn:active{color:var(--accent)}
 .tab-bar{display:flex;background:var(--bg3);border-radius:9px;padding:3px;gap:2px}
 .tab{flex:1;padding:6px 2px;text-align:center;font-size:10px;font-weight:500;border-radius:7px;cursor:pointer;color:var(--text2);transition:all 0.2s;white-space:nowrap}
 .tab.active{background:var(--accent);color:#0f0f0f;font-weight:700}
-.status-bar{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:11px;color:var(--text2)}
-.status-dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+
 .page{display:none;padding:0 20px}
 .page.active{display:block}
 
@@ -111,6 +109,21 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .badge-income{background:var(--green-dim);color:var(--green)}
 .badge-invest{background:var(--blue-dim);color:var(--blue)}
 .badge-pending{background:rgba(255,165,0,0.15);color:orange}
+
+/* SEARCH */
+.search-input-wrapper{position:relative;margin-bottom:14px;margin-top:14px}
+.search-input-wrapper input{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 12px;font-size:16px;font-family:inherit;appearance:none;outline:none;transition:border-color 0.2s;padding-right:38px}
+.search-input-wrapper input:focus{border-color:var(--accent)}
+.search-input-wrapper input::placeholder{color:var(--text3)}
+.search-clear-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
+.search-clear-btn svg{width:16px;height:16px}
+.search-clear-btn:active{color:var(--accent)}
+#searchResultsCount{margin-top:14px;margin-bottom:10px}
+#searchResults{margin-top:10px}
+.search-item-note{font-size:11px;color:var(--text2);margin-top:5px;padding:6px 0;border-top:0.5px solid var(--border);word-break:break-word}
+.search-item-note .highlight{color:var(--accent);font-weight:500}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text2);font-size:13px}
+.search-loading{text-align:center;padding:20px;color:var(--text2);font-size:13px}
 
 /* CHART SHARED */
 .chart-page-section{margin-top:16px}
@@ -209,23 +222,19 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">Nota<span>.</span><span class="app-version">v2.0</span></div>
-    <button class="sync-btn" onclick="syncQueue()">
-      <svg id="syncIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
-      Sync
+    <div class="app-title">Nota<span>.</span><span class="app-version">v2.1</span></div>
+    <button class="search-icon-btn" onclick="openSearchOverlay()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
   </div>
   <div class="tab-bar">
     <div class="tab active" onclick="switchTab('input',this)">Input</div>
     <div class="tab" onclick="switchTab('history',this)">History</div>
+    <div class="tab" onclick="switchTab('search',this)">Search</div>
     <div class="tab" onclick="switchTab('insights',this)">Insights</div>
     <div class="tab" onclick="switchTab('networth',this)">Net Worth</div>
   </div>
-  <div class="status-bar">
-    <div class="status-dot"></div>
-    <span id="statusText">Ready</span>
-    <span id="queueInfo"></span>
-  </div>
+
 </div>
 
 <!-- INPUT -->
@@ -273,6 +282,10 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
         <input type="text" class="form-input" id="inputPm" placeholder="Or type payment method..." autocomplete="off"
           oninput="showAC('inputPm', allPMs)" onfocus="showAC('inputPm', allPMs)">
         <div class="autocomplete-list" id="ac-inputPm" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input type="text" class="form-input" id="inputNotes" placeholder="Add a note…" autocomplete="off">
       </div>
       <button class="submit-btn expense" id="submitOpexBtn" onclick="submitOpex()">Save Transaction</button>
     </div>
@@ -335,6 +348,19 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     </select>
   </div>
   <div id="historyList"></div>
+</div>
+
+<!-- SEARCH -->
+<div class="page" id="page-search">
+  <div class="search-input-wrapper">
+    <input type="text" id="searchInput" placeholder="Search transactions & notes..." autocomplete="off"
+      oninput="onSearchInput()">
+    <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+  <div id="searchResultsCount" style="display:none;margin:12px 0;font-size:12px;color:var(--text2)"></div>
+  <div id="searchResults"></div>
 </div>
 
 <!-- INSIGHTS -->
@@ -760,6 +786,9 @@ function switchTab(tab, el) {
   el.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
   if(tab==='history')renderHistory();
+  if(tab==='search'){
+    document.getElementById('searchInput').focus();
+  }
   if(tab==='insights'){
     ['monthlySummary','monthlyBarCard','monthlyDonutCard'].forEach(id=>{document.getElementById(id).style.display='block'});
     ['yearlySummary','yearlyBarCard','yearlyMonthCard','yearlyDonutCard','catRankingCard','catTrendCard'].forEach(id=>{document.getElementById(id).style.display='none'});
@@ -783,8 +812,9 @@ function submitOpex() {
   const amount=parseInt(document.getElementById('inputAmount').value)||0;
   const cat=document.getElementById('inputCat').value.trim();
   const pm=document.getElementById('inputPm').value.trim();
+  const notes=document.getElementById('inputNotes').value.trim();
   if(!date||!tx||!amount||!cat||!pm){showToast('All fields required','error');return}
-  const r = {id:Date.now(),date,tx,amount,category:cat,pm,type:inputMode,synced:false};
+  const r = {id:Date.now(),date,tx,amount,category:cat,pm,notes,type:inputMode,synced:false};
   txHistory.unshift(r);
   queue.push({...r, action:inputMode});
   saveLocal();updateStatus();
@@ -803,6 +833,7 @@ function resetOpexForm() {
   document.getElementById('inputAmount').value='';
   document.getElementById('inputCat').value='';
   document.getElementById('inputPm').value='';
+  document.getElementById('inputNotes').value='';
   document.getElementById('catPills').innerHTML='';
   document.getElementById('pmPills').innerHTML='';
 }
@@ -843,7 +874,7 @@ async function syncOpex(r) {
     const payload = {
       type:'opex', action:r.type,
       date:sheetDate, month, monthHeader,
-      tx:r.tx, cat:r.category, pm:r.pm, amount:r.amount
+      tx:r.tx, cat:r.category, pm:r.pm, amount:r.amount, notes:r.notes||''
     };
     const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
     const j = await res.json().catch(()=>({}));
@@ -1005,10 +1036,8 @@ function saveLocal(){
   localStorage.setItem('nota_invest_v2',JSON.stringify(investHistory));
 }
 function updateStatus(){
-  document.getElementById('statusText').textContent='Ready';
-  document.getElementById('queueInfo').textContent=queue.length?`· ${queue.length} pending`:'';
-}
-function showToast(msg,type){
+  // Status UI removed in v2.1
+}function showToast(msg,type){
   const t=document.getElementById('toast');t.textContent=msg;
   t.className='toast show'+(type?' '+type:'');
   setTimeout(()=>t.className='toast',3000);
@@ -1569,6 +1598,182 @@ initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
 updateStatus();
 updateHeaderHeight();
 window.addEventListener('resize',updateHeaderHeight);
+
+// ── SEARCH FUNCTIONS ──────────────────────────────────────────
+let searchTimeout;
+let searchCurrentResults = [];
+let searchPageIndex = 0;
+
+function onSearchInput() {
+  const val = document.getElementById('searchInput').value.trim();
+  document.getElementById('searchClearBtn').style.display = val ? 'flex' : 'none';
+  
+  clearTimeout(searchTimeout);
+  if (!val) {
+    clearSearch();
+    return;
+  }
+  
+  searchTimeout = setTimeout(() => {
+    performSearch(val);
+  }, 300);
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClearBtn').style.display = 'none';
+  document.getElementById('searchResultsCount').style.display = 'none';
+  document.getElementById('searchResults').innerHTML = '';
+  searchCurrentResults = [];
+  searchPageIndex = 0;
+}
+
+function performSearch(query) {
+  const q = query.toLowerCase();
+  const results = [];
+  
+  // Search historical data (data.json)
+  const histOpex = HIST.opex || [];
+  for (let i = 0; i < histOpex.length; i++) {
+    const row = histOpex[i];
+    const txMatch = row.tx && row.tx.toLowerCase().includes(q);
+    const notesMatch = false; // historical data doesn't have notes
+    if (txMatch || notesMatch) {
+      results.push({source: 'hist-opex', idx: i, row, type: 'opex'});
+    }
+  }
+  
+  const histInvest = HIST.invest || [];
+  for (let i = 0; i < histInvest.length; i++) {
+    const row = histInvest[i];
+    const txMatch = row.stock && row.stock.toLowerCase().includes(q);
+    if (txMatch) {
+      results.push({source: 'hist-invest', idx: i, row, type: 'invest'});
+    }
+  }
+  
+  // Search local transactions
+  for (let i = 0; i < txHistory.length; i++) {
+    const r = txHistory[i];
+    const txMatch = r.tx && r.tx.toLowerCase().includes(q);
+    const notesMatch = r.notes && r.notes.toLowerCase().includes(q);
+    if (txMatch || notesMatch) {
+      results.push({source: 'local-opex', idx: i, row: r, type: 'opex'});
+    }
+  }
+  
+  // Search local investments
+  for (let i = 0; i < investHistory.length; i++) {
+    const r = investHistory[i];
+    const txMatch = r.stock && r.stock.toLowerCase().includes(q);
+    if (txMatch) {
+      results.push({source: 'local-invest', idx: i, row: r, type: 'invest'});
+    }
+  }
+  
+  // Sort by date (newest first)
+  results.sort((a, b) => {
+    const dateA = new Date(a.row.date || `${a.row.y}-${String(a.row.m+1).padStart(2,'0')}-${String(a.row.d).padStart(2,'0')}`);
+    const dateB = new Date(b.row.date || `${b.row.y}-${String(b.row.m+1).padStart(2,'0')}-${String(b.row.d).padStart(2,'0')}`);
+    return dateB - dateA;
+  });
+  
+  searchCurrentResults = results;
+  searchPageIndex = 0;
+  renderSearchResults(q);
+}
+
+function renderSearchResults(query) {
+  const countEl = document.getElementById('searchResultsCount');
+  const resultsEl = document.getElementById('searchResults');
+  const total = searchCurrentResults.length;
+  
+  if (total === 0) {
+    countEl.style.display = 'none';
+    resultsEl.innerHTML = '<div class="empty-state">No results found</div>';
+    return;
+  }
+  
+  countEl.style.display = 'block';
+  countEl.textContent = `Found ${total} result${total !== 1 ? 's' : ''} for "${query}"`;
+  
+  const pageSize = 20;
+  const pageResults = searchCurrentResults.slice(0, (searchPageIndex + 1) * pageSize);
+  
+  resultsEl.innerHTML = pageResults.map((item, idx) => {
+    const row = item.row;
+    const isInvest = item.type === 'invest';
+    const isPending = item.source.startsWith('local');
+    
+    let date, tx, cat, pm, amount, notes, icon, cls, color;
+    
+    if (isInvest) {
+      date = row.date ? isoDisp(row.date) : `${row.d} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][row.m]} ${row.y}`;
+      tx = row.stock;
+      cat = row.type || 'Stock';
+      pm = row.action;
+      amount = fRp(row.totalIdr || (row.lot * row.price));
+      icon = '📈';
+      cls = 'invest';
+      color = 'var(--blue)';
+    } else {
+      date = row.date ? isoDisp(row.date) : `${row.d} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][row.m]} ${row.y}`;
+      tx = row.tx;
+      cat = row.cat || row.category;
+      pm = row.pm;
+      amount = fRp(row.exp || row.amount);
+      notes = row.notes || '';
+      icon = '💳';
+      cls = pm === 'CC BCA' ? 'cc-bca' : pm === 'CC Niaga' ? 'cc-niaga' : 'expense';
+      color = pm === 'CC BCA' ? 'var(--blue)' : pm === 'CC Niaga' ? 'var(--red)' : 'var(--accent)';
+    }
+    
+    const syncBadge = isPending && !row.synced ? '<span class="badge badge-pending">pending</span>' : '';
+    const notesHtml = !isInvest && notes ? `<div class="search-item-note">${highlightMatches(notes, query)}</div>` : '';
+    
+    return `<div class="tx-item">
+      <div class="tx-icon ${cls}">${icon}</div>
+      <div class="tx-info" style="flex:1">
+        <div class="tx-payee">${highlightMatches(tx, query)}${syncBadge}</div>
+        <div class="tx-meta">${date} • ${cat} · ${pm}</div>
+        ${notesHtml}
+      </div>
+      <div class="tx-amount" style="color:${color}">${amount}</div>
+    </div>`;
+  }).join('');
+  
+  if (pageResults.length < total) {
+    resultsEl.innerHTML += `<div class="search-loading">Scroll for more… (${pageResults.length}/${total})</div>`;
+    resultsEl.addEventListener('scroll', () => {
+      const el = resultsEl;
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
+        loadMoreSearchResults(query);
+      }
+    });
+  }
+}
+
+function loadMoreSearchResults(query) {
+  const pageSize = 20;
+  const total = searchCurrentResults.length;
+  const currentShown = (searchPageIndex + 1) * pageSize;
+  if (currentShown < total) {
+    searchPageIndex++;
+    renderSearchResults(query);
+  }
+}
+
+function highlightMatches(text, query) {
+  if (!query) return text;
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return text.replace(regex, '<span class="highlight">$1</span>');
+}
+
+function openSearchOverlay() {
+  const tab = document.querySelector('[data-m="search"], .tab[onclick*="search"]') || 
+              Array.from(document.querySelectorAll('.tab')).find(t => t.textContent === 'Search');
+  if (tab) tab.click();
+}
 
 async function loadHistData() {
   try {
