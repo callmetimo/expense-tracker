@@ -42,7 +42,7 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 
 /* FORM */
 .form-section{margin-top:16px}
-.form-group{margin-bottom:12px}
+.form-group{margin-bottom:12px;position:relative;overflow:visible}
 .form-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;display:block}
 .form-input{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 12px;font-size:16px;font-family:inherit;appearance:none;-webkit-appearance:none;outline:none;transition:border-color 0.2s}
 .form-input:focus{border-color:var(--accent)}
@@ -111,19 +111,20 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .badge-pending{background:rgba(255,165,0,0.15);color:orange}
 
 /* SEARCH */
-.search-input-wrapper{position:relative;margin-bottom:14px;margin-top:14px}
-.search-input-wrapper input{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 12px;font-size:16px;font-family:inherit;appearance:none;outline:none;transition:border-color 0.2s;padding-right:38px}
-.search-input-wrapper input:focus{border-color:var(--accent)}
-.search-input-wrapper input::placeholder{color:var(--text3)}
-.search-clear-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
-.search-clear-btn svg{width:16px;height:16px}
+.search-modal{max-height:90vh;display:flex;flex-direction:column}
+.search-modal-header{position:sticky;top:0;background:var(--bg);border-bottom:0.5px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:8px;margin:0 -18px;padding-left:calc(20px - 0px);margin-bottom:12px}
+#searchInput{flex:1;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:9px 12px;font-size:16px;font-family:inherit;outline:none;transition:border-color 0.2s}
+#searchInput:focus{border-color:var(--accent)}
+#searchInput::placeholder{color:var(--text3)}
+.search-clear-btn{background:none;border:none;color:var(--text2);padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s;flex-shrink:0}
+.search-clear-btn svg{width:18px;height:18px}
 .search-clear-btn:active{color:var(--accent)}
-#searchResultsCount{margin-top:14px;margin-bottom:10px}
-#searchResults{margin-top:10px}
+#searchResults{flex:1;overflow-y:auto;padding-bottom:20px}
 .search-item-note{font-size:11px;color:var(--text2);margin-top:5px;padding:6px 0;border-top:0.5px solid var(--border);word-break:break-word}
 .search-item-note .highlight{color:var(--accent);font-weight:500}
-.empty-state{text-align:center;padding:40px 20px;color:var(--text2);font-size:13px}
-.search-loading{text-align:center;padding:20px;color:var(--text2);font-size:13px}
+.highlight{color:var(--accent);font-weight:500}
+
+
 
 /* CHART SHARED */
 .chart-page-section{margin-top:16px}
@@ -230,7 +231,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   <div class="tab-bar">
     <div class="tab active" onclick="switchTab('input',this)">Input</div>
     <div class="tab" onclick="switchTab('history',this)">History</div>
-    <div class="tab" onclick="switchTab('search',this)">Search</div>
     <div class="tab" onclick="switchTab('insights',this)">Insights</div>
     <div class="tab" onclick="switchTab('networth',this)">Net Worth</div>
   </div>
@@ -350,17 +350,19 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   <div id="historyList"></div>
 </div>
 
-<!-- SEARCH -->
-<div class="page" id="page-search">
-  <div class="search-input-wrapper">
-    <input type="text" id="searchInput" placeholder="Search transactions & notes..." autocomplete="off"
-      oninput="onSearchInput()">
-    <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-    </button>
+<!-- Search Modal -->
+<div class="modal-overlay" id="searchModal">
+  <div class="modal search-modal">
+    <div class="modal-handle"></div>
+    <div class="search-modal-header">
+      <input type="text" id="searchInput" placeholder="Search transactions & notes..." autocomplete="off" oninput="onSearchInput()">
+      <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div id="searchResultsCount" style="display:none;margin:12px 0;font-size:12px;color:var(--text2);padding:0 20px"></div>
+    <div id="searchResults" style="padding:0 20px"></div>
   </div>
-  <div id="searchResultsCount" style="display:none;margin:12px 0;font-size:12px;color:var(--text2)"></div>
-  <div id="searchResults"></div>
 </div>
 
 <!-- INSIGHTS -->
@@ -786,9 +788,6 @@ function switchTab(tab, el) {
   el.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
   if(tab==='history')renderHistory();
-  if(tab==='search'){
-    document.getElementById('searchInput').focus();
-  }
   if(tab==='insights'){
     ['monthlySummary','monthlyBarCard','monthlyDonutCard'].forEach(id=>{document.getElementById(id).style.display='block'});
     ['yearlySummary','yearlyBarCard','yearlyMonthCard','yearlyDonutCard','catRankingCard','catTrendCard'].forEach(id=>{document.getElementById(id).style.display='none'});
@@ -1632,12 +1631,12 @@ function performSearch(query) {
   const q = query.toLowerCase();
   const results = [];
   
-  // Search historical data (data.json)
+  // Search historical data (data.json) - includes both tx and notes
   const histOpex = HIST.opex || [];
   for (let i = 0; i < histOpex.length; i++) {
     const row = histOpex[i];
     const txMatch = row.tx && row.tx.toLowerCase().includes(q);
-    const notesMatch = false; // historical data doesn't have notes
+    const notesMatch = row.notes && row.notes.toLowerCase().includes(q);
     if (txMatch || notesMatch) {
       results.push({source: 'hist-opex', idx: i, row, type: 'opex'});
     }
@@ -1770,10 +1769,12 @@ function highlightMatches(text, query) {
 }
 
 function openSearchOverlay() {
-  const tab = document.querySelector('[data-m="search"], .tab[onclick*="search"]') || 
-              Array.from(document.querySelectorAll('.tab')).find(t => t.textContent === 'Search');
-  if (tab) tab.click();
+  document.getElementById('searchModal').classList.add('open');
+  document.getElementById('searchInput').focus();
+  clearSearch();
 }
+document.getElementById('searchModal').addEventListener('click',e=>{if(e.target===document.getElementById('searchModal'))closeSearchModal()});
+function closeSearchModal(){document.getElementById('searchModal').classList.remove('open');clearSearch()}
 
 async function loadHistData() {
   try {
