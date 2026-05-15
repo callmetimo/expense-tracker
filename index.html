@@ -312,7 +312,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.1</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -560,8 +560,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.4';
-const APP_BUILD = '2026-05-15o';
+const APP_VERSION = 'v3.4.1';
+const APP_BUILD = '2026-05-15p';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1754,11 +1754,11 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
 
   html += `<div class="chart-card" style="margin-bottom:10px">
     <div class="chart-card-title">Allocation by type</div>
-    <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center">
-      <div style="position:relative;width:100%;aspect-ratio:1">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="position:relative;flex:0 0 auto;width:calc(100% - 90px);aspect-ratio:1">
         <canvas id="${canvasId}" role="img" aria-label="Portfolio allocation donut chart"></canvas>
       </div>
-      <div style="display:flex;flex-direction:column;gap:10px;padding-right:2px">${legendRows}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;flex:0 0 78px">${legendRows}</div>
     </div>
     <div style="margin-top:10px;padding-top:8px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text2)">
       FX rates: USD/IDR ${Math.round(usdRate).toLocaleString('id-ID')} · CHF/IDR ${Math.round(chfRate).toLocaleString('id-ID')}
@@ -1796,13 +1796,15 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           const midAngle = (arc.startAngle + arc.endAngle) / 2;
           const midRadius = (arc.innerRadius + arc.outerRadius) / 2;
 
-          // % inside ring
-          if (pct >= 5) {
-            const ix = arc.x + Math.cos(midAngle) * midRadius;
-            const iy = arc.y + Math.sin(midAngle) * midRadius;
+          // % inside ring — always show if segment fits
+          const ix = arc.x + Math.cos(midAngle) * midRadius;
+          const iy = arc.y + Math.sin(midAngle) * midRadius;
+          const ringWidth = arc.outerRadius - arc.innerRadius;
+          const arcSpan = Math.abs(arc.endAngle - arc.startAngle);
+          if (arcSpan * midRadius > 22 && ringWidth > 14) {
             ctx.save();
-            ctx.font = 'bold 11px -apple-system, sans-serif';
-            ctx.fillStyle = 'rgba(0,0,0,0.75)';
+            ctx.font = 'bold 10px -apple-system, sans-serif';
+            ctx.fillStyle = 'rgba(0,0,0,0.8)';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(pct + '%', ix, iy);
@@ -1810,6 +1812,7 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           }
 
           // Curved label outside ring
+          // Flip for bottom half so text reads left-to-right (not upside-down)
           const labelR = arc.outerRadius + 13;
           const arcLen = Math.abs(arc.endAngle - arc.startAngle) * labelR;
           const fontSize = 9.5;
@@ -1817,21 +1820,36 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           const textWidth = d.label.length * charWidth;
           if (arcLen < textWidth * 0.85) return;
 
+          // Determine if segment is on bottom half (midAngle between 0 and PI, i.e. below center)
+          // Chart.js starts at -PI/2 (top), goes clockwise
+          // Bottom half: midAngle in range (0, PI) after normalizing to (-PI, PI)
+          const normalMid = ((midAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+          const isBottom = normalMid > Math.PI * 0.1 && normalMid < Math.PI * 1.9;
+
           const anglePerChar = charWidth / labelR;
-          let charAngle = midAngle - (d.label.length - 1) * anglePerChar / 2;
+          const label = isBottom ? d.label.split('').reverse().join('') : d.label;
+          // For bottom: start from right side of arc so reversed text reads correctly
+          let startAngle = isBottom
+            ? midAngle + (d.label.length - 1) * anglePerChar / 2
+            : midAngle - (d.label.length - 1) * anglePerChar / 2;
+
           ctx.save();
           ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
           ctx.fillStyle = d.color;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          for (let j = 0; j < d.label.length; j++) {
-            const a = charAngle + j * anglePerChar;
+          for (let j = 0; j < label.length; j++) {
+            const a = isBottom
+              ? startAngle - j * anglePerChar
+              : startAngle + j * anglePerChar;
             const x = arc.x + Math.cos(a) * labelR;
             const y = arc.y + Math.sin(a) * labelR;
             ctx.save();
             ctx.translate(x, y);
-            ctx.rotate(a + Math.PI / 2);
-            ctx.fillText(d.label[j], 0, 0);
+            // Top half: rotate +90 (reads outward clockwise)
+            // Bottom half: rotate -90 (reads outward counter-clockwise, upright)
+            ctx.rotate(isBottom ? a - Math.PI / 2 : a + Math.PI / 2);
+            ctx.fillText(label[j], 0, 0);
             ctx.restore();
           }
           ctx.restore();
