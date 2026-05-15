@@ -246,10 +246,10 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-day{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 4px 7px;text-align:center;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;user-select:none;cursor:default;transition:background 0.15s,transform 0.12s;-webkit-tap-highlight-color:transparent}
 .cal-day.has-data{cursor:pointer}
 .cal-day.has-data:active{background:var(--bg3);transform:scale(0.94)}
-.cal-day.selected{border:1.5px solid var(--accent);background:var(--bg3)}
+.cal-day.selected{border:1.5px solid var(--text2);background:var(--bg3)}
 .cal-day.today{border:1.5px solid var(--accent)}
-.cal-day.today .cal-day-num{color:var(--accent)}
-.cal-day.today.selected{background:var(--bg3)}
+.cal-day.today .cal-day-num{color:var(--accent);font-weight:700}
+.cal-day.today.selected{border:1.5px solid var(--accent);background:var(--bg3)}
 .cal-day.other-month{opacity:0.3;pointer-events:none}
 .cal-day.future{opacity:0.35;pointer-events:none}
 .cal-day-num{font-size:13px;font-weight:600;line-height:1;color:var(--text)}
@@ -297,7 +297,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.1.1</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.1.2</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -545,8 +545,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.1.1';
-const APP_BUILD = '2026-05-15b';
+const APP_VERSION = 'v3.1.2';
+const APP_BUILD = '2026-05-15c';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1498,12 +1498,8 @@ async function renderNetWorth(){
     return {stock, type, netLot, costBasis, currentValue, avgCostPerUnit};
   }).filter(Boolean);
 
-  // cashBalance: prefer HIST field (from data.json), fallback to computing from opex
-  let cashBal = HIST.cashBalance || 0;
-  if (!cashBal) {
-    const allOp = HIST.opex || [];
-    cashBal = allOp.reduce((s, r) => s + (r.inc || 0) - (r.exp || 0), 0);
-  }
+  // cashBalance dari data.json field (sudah dihitung sebagai running balance di sheet Opex)
+  const cashBal = HIST.cashBalance || 0;
   const lastBalance = cashBal;
 
   if(nwMode==='holdings'){
