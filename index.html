@@ -300,7 +300,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.0.4</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.0.5</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -591,8 +591,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <div id="toast" class="toast"></div>
 
 <script>
-const APP_VERSION = 'v3.0.4';
-const APP_BUILD = '2026-05-15';
+const APP_VERSION = 'v3.0.5';
+const APP_BUILD = '2026-05-15b';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1873,9 +1873,9 @@ async function loadHistData() {
 // ── HOME CALENDAR ─────────────────────────────────────────────
 
 const CAL_TX_HEADER_H  = 46;
-const CAL_TX_ITEM_H    = 44;
-const CAL_TX_EMPTY_H   = 110;
-const CAL_TX_MAX_FRAC  = 0.50;
+const CAL_TX_ITEM_H    = 40;
+const CAL_TX_EMPTY_H   = 100;
+const CAL_TX_MAX_FRAC  = 0.45;
 
 let calInited       = false;
 let calOlderShown   = false;
@@ -2294,12 +2294,18 @@ function calSelectDay(cell, dateStr, totalStr) {
   if (row) {
     setTimeout(() => {
       const cs = document.getElementById('calScroll');
+      const panel = document.getElementById('calTxPanel');
+      const panelH = panel ? panel.offsetHeight : 0;
+      // visible area of calScroll = full clientHeight minus panel
+      const visibleH = cs.clientHeight - panelH;
       const rowTop = row.offsetTop;
       const rowBot = rowTop + row.offsetHeight;
-      const visTop = cs.scrollTop;
-      const visBot = visTop + cs.clientHeight;
-      if (rowTop < visTop || rowBot > visBot) {
-        row.scrollIntoView({behavior:'smooth', block:'nearest'});
+      const scrollTop = cs.scrollTop;
+      // if row bottom is hidden behind panel or row top is above scroll
+      if (rowBot > scrollTop + visibleH - 8 || rowTop < scrollTop) {
+        // scroll so the row sits with some padding above the panel
+        const target = rowBot - visibleH + 12;
+        cs.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
       }
     }, 50);
   }
