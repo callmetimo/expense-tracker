@@ -70,6 +70,13 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .submit-btn.invest{background:var(--blue);color:#0f0f0f}
 .submit-btn:active{transform:scale(0.98);opacity:0.9}
 
+/* Toggle pills */
+.pill-toggle{display:flex;gap:6px;margin-bottom:14px}
+.pill-toggle-btn{flex:1;padding:9px 4px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.2s}
+.pill-toggle-btn.active.expense{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.pill-toggle-btn.active.income{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.pill-toggle-btn.active.invest{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+
 /* Smart suggestions */
 .smart-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:-6px;margin-bottom:12px}
 .smart-pill{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all 0.15s}
@@ -215,10 +222,13 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .toast.error{border-color:var(--red);color:var(--red)}
 .empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
 
-/* HOME CALENDAR */
-#page-home{display:none;padding:0;flex-direction:column;height:calc(100vh - var(--header-height,120px));overflow:hidden}
+/* ── HOME CALENDAR ─────────────────────────────────────────── */
+/* Added min-height fallback so the scroll container does not collapse */
+#page-home{display:none;padding:0;flex-direction:column;height:calc(100vh - var(--header-height,120px));min-height:400px;overflow:hidden}
 #page-home.active{display:flex}
-.cal-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+
+.cal-scroll{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:150px}
+
 .cal-month-label{display:flex;align-items:center;gap:12px;padding:14px 20px 12px}
 .cal-month-name{font-size:14px;font-weight:700;letter-spacing:-0.2px;min-width:88px;flex-shrink:0}
 .cal-progress-wrap{flex:1;display:flex;align-items:center;gap:8px}
@@ -228,50 +238,69 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-progress-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;min-width:68px}
 .cal-progress-amount{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap}
 .cal-progress-avg{font-size:9px;color:var(--text2);white-space:nowrap}
+
 .cal-month-divider{height:0.5px;background:var(--border);margin:0 20px 2px}
+
 .cal-week-section{padding:8px 20px 4px}
 .cal-wday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding-bottom:6px}
 .cal-wday{text-align:center;font-size:10px;color:var(--text2);font-weight:500}
 .cal-week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
-.cal-day{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 4px 7px;text-align:center;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;user-select:none;cursor:pointer;transition:background 0.15s,transform 0.12s}
-.cal-day:active{background:var(--bg3);transform:scale(0.94)}
+
+.cal-day{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 4px 7px;text-align:center;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;user-select:none;cursor:default;transition:background 0.15s,transform 0.12s;-webkit-tap-highlight-color:transparent}
+.cal-day.has-data{cursor:pointer}
+.cal-day.has-data:active{background:var(--bg3);transform:scale(0.94)}
 .cal-day.selected{border:1.5px solid var(--accent);background:var(--bg3)}
 .cal-day.today{border:1.5px solid var(--accent)}
 .cal-day.today .cal-day-num{color:var(--accent)}
+.cal-day.today.selected{background:var(--bg3)}
 .cal-day.other-month{opacity:0.3;pointer-events:none}
 .cal-day.future{opacity:0.35;pointer-events:none}
 .cal-day-num{font-size:13px;font-weight:600;line-height:1;color:var(--text)}
 .cal-day-total{font-size:10px;font-weight:500;color:var(--text2);line-height:1}
-.cal-scroll-hint{display:flex;align-items:center;justify-content:center;gap:6px;padding:16px 20px;color:var(--text2);font-size:11px;cursor:pointer}
+
+.cal-scroll-hint{display:flex;align-items:center;justify-content:center;gap:6px;padding:16px 20px;color:var(--text2);font-size:11px;cursor:pointer;user-select:none;border-bottom:0.5px solid var(--border);transition:color 0.15s;-webkit-tap-highlight-color:transparent}
+.cal-scroll-hint:active{color:var(--text)}
 .cal-scroll-hint svg{width:13px;height:13px;stroke-width:2.2}
+
+/* tx panel */
 .cal-tx-panel{background:var(--bg2);border-top:0.5px solid var(--border2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;transition:height 0.26s cubic-bezier(0.4,0,0.2,1)}
 .cal-tx-header{height:46px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid var(--border)}
 .cal-tx-date{font-size:13px;font-weight:600}
 .cal-tx-total{font-size:11px;color:var(--text2)}
 .cal-tx-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.cal-tx-item{display:flex;align-items:center;padding:11px 20px;border-bottom:0.5px solid var(--border);gap:10px;cursor:pointer}
+.cal-tx-item{display:flex;align-items:center;padding:11px 20px;border-bottom:0.5px solid var(--border);gap:10px;cursor:pointer;transition:background 0.12s}
+.cal-tx-item:last-child{border-bottom:none}
 .cal-tx-item:active{background:var(--bg3)}
 .cal-tx-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,0.14)}
 .cal-tx-dot.income{background:rgba(74,222,128,0.5)}
 .cal-tx-dot.invest{background:rgba(96,160,240,0.5)}
 .cal-tx-info{flex:1;min-width:0}
-.cal-tx-cat{font-size:13px;font-weight:500;color:var(--text)}
-.cal-tx-pm{font-size:10px;color:var(--text2)}
-.cal-tx-amt{font-size:13px;font-weight:600;color:var(--text)}
+.cal-tx-tx{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-tx-meta{font-size:10px;color:var(--text2);margin-top:2px}
+.cal-tx-cat{font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-tx-pm{font-size:10px;color:var(--text2);margin-top:1px}
+.cal-tx-amt{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;margin-left:12px}
 .cal-tx-amt.income{color:var(--green)}
 .cal-tx-amt.invest{color:var(--blue)}
 .cal-tx-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:7px;padding:20px;text-align:center}
 .cal-tx-empty-icon{font-size:24px;opacity:0.2}
-.cal-tx-empty-text{font-size:13px;color:var(--text2)}
+.cal-tx-empty-text{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* fab */
 .cal-fab-wrap{flex-shrink:0;height:80px;background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:center}
-.cal-fab{width:64px;height:64px;background:var(--accent);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,240,96,0.28);color:#0f0f0f;font-size:30px}
+.cal-fab{width:64px;height:64px;background:var(--accent);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,240,96,0.28);color:#0f0f0f;font-size:30px;font-weight:400;line-height:1;transition:transform 0.16s,box-shadow 0.16s;user-select:none;-webkit-tap-highlight-color:transparent}
+.cal-fab:active{transform:scale(0.90);box-shadow:0 3px 10px rgba(200,240,96,0.18)}
+
+@media(min-width:769px){
+  .cal-fab{width:72px;height:72px;font-size:34px}
+}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.0.2</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.0.3</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -284,6 +313,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
+<!-- HOME (CALENDAR) -->
 <div class="page active" id="page-home">
   <div class="cal-scroll" id="calScroll">
     <div class="cal-scroll-hint" id="calScrollHint" onclick="calRevealOlder()">
@@ -307,10 +337,11 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     </div>
   </div>
   <div class="cal-fab-wrap">
-    <button class="cal-fab" onclick="switchTab('input',null);openInputFromHome()">+</button>
+    <button class="cal-fab" onclick="switchTab('input',document.createElement('div'));openInputFromHome()">+</button>
   </div>
 </div>
 
+<!-- INPUT -->
 <div class="page" id="page-input">
   <div class="form-section">
     <div class="pill-toggle">
@@ -319,18 +350,20 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div class="pill-toggle-btn invest" data-mode="invest" onclick="setInputMode('invest',this)">Invest</div>
     </div>
 
+    <!-- Expense / Income form -->
     <div id="form-opex">
-      <div class="form-group">
+      <div class="form-group" style="position:relative">
         <label class="form-label">Date</label>
         <input type="date" id="inputDateRaw" class="date-input-hidden">
-        <div class="date-display" id="inputDateDisplay">
+        <div class="date-display" id="inputDateDisplay" tabindex="0">
           <span id="inputDateText"></span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
       </div>
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Transaction</label>
-        <input type="text" class="form-input" id="inputTx" placeholder="Payee or transaction name..." autocomplete="off" oninput="onTxInput()" onfocus="onTxFocus()">
+        <input type="text" class="form-input" id="inputTx" placeholder="Payee or transaction name..." autocomplete="off"
+          oninput="onTxInput()" onfocus="onTxFocus()">
         <div class="autocomplete-list" id="ac-inputTx" style="display:none"></div>
       </div>
       <div class="form-group">
@@ -343,357 +376,1956 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div class="form-group">
         <label class="form-label">Category</label>
         <div class="smart-pills" id="catPills"></div>
-        <input type="text" class="form-input" id="inputCat" placeholder="Select or type..." oninput="showAC('inputCat', allCategories)" onfocus="showAC('inputCat', allCategories)">
+        <input type="text" class="form-input" id="inputCat" placeholder="Select or type category..." autocomplete="off"
+          oninput="showAC('inputCat', allCategories)" onfocus="showAC('inputCat', allCategories)">
         <div class="autocomplete-list" id="ac-inputCat" style="display:none"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Payment Method</label>
         <div class="smart-pills" id="pmPills"></div>
-        <input type="text" class="form-input" id="inputPm" placeholder="Or type..." oninput="showAC('inputPm', allPMs)" onfocus="showAC('inputPm', allPMs)">
+        <input type="text" class="form-input" id="inputPm" placeholder="Or type payment method..." autocomplete="off"
+          oninput="showAC('inputPm', allPMs)" onfocus="showAC('inputPm', allPMs)">
         <div class="autocomplete-list" id="ac-inputPm" style="display:none"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Notes</label>
-        <input type="text" class="form-input" id="inputNotes" placeholder="Add a note…">
+        <input type="text" class="form-input" id="inputNotes" placeholder="Add a note…" autocomplete="off">
       </div>
       <button class="submit-btn expense" id="submitOpexBtn" onclick="submitOpex()">Save Transaction</button>
     </div>
 
+    <!-- Invest form -->
     <div id="form-invest" style="display:none">
-      <div class="form-group">
+      <div class="form-group" style="position:relative">
         <label class="form-label">Date</label>
         <input type="date" id="inputDateRawI" class="date-input-hidden">
-        <div class="date-display" id="inputDateDisplayI"><span id="inputDateTextI"></span></div>
+        <div class="date-display" id="inputDateDisplayI" tabindex="0">
+          <span id="inputDateTextI"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
       </div>
-      <div class="form-group">
+      <div class="form-group autocomplete-wrapper">
         <label class="form-label">Stock / Asset</label>
-        <input type="text" class="form-input" id="inputStock" oninput="showAC('inputStock', allStocks)">
+        <input type="text" class="form-input" id="inputStock" placeholder="e.g. QQQ, Star Stable..." autocomplete="off"
+          oninput="showAC('inputStock', allStocks)" onfocus="showAC('inputStock', allStocks)">
         <div class="autocomplete-list" id="ac-inputStock" style="display:none"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Action</label>
         <div class="action-toggle">
-          <div class="action-btn active buy" onclick="setInvestAction('Buy',this)">Buy</div>
-          <div class="action-btn sell" onclick="setInvestAction('Sell',this)">Sell</div>
+          <div class="action-btn active buy" data-action="Buy" onclick="setInvestAction('Buy',this)">Buy</div>
+          <div class="action-btn sell" data-action="Sell" onclick="setInvestAction('Sell',this)">Sell</div>
         </div>
       </div>
-      <div class="form-group"><label class="form-label">Lot</label><input type="number" class="form-input" id="inputLot" oninput="calcTotal()"></div>
-      <div class="form-group"><label class="form-label">Price</label><input type="number" class="form-input" id="inputPrice" oninput="calcTotal()"></div>
-      <div class="form-group"><label class="form-label">Total IDR</label><input type="number" class="form-input" id="inputTotal"></div>
+      <div class="form-group">
+        <label class="form-label">Lot / Units</label>
+        <input type="number" class="form-input" id="inputLot" placeholder="0" inputmode="decimal" oninput="calcTotal()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Price per Unit</label>
+        <div class="amount-wrapper">
+          <span class="amount-prefix" id="investPricePrefix">Rp</span>
+          <input type="number" class="form-input amount-input" id="inputPrice" placeholder="0" inputmode="decimal" oninput="calcTotal()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total (IDR)</label>
+        <div class="amount-wrapper">
+          <span class="amount-prefix">Rp</span>
+          <input type="number" class="form-input amount-input" id="inputTotal" placeholder="Auto-calculated" inputmode="numeric">
+        </div>
+      </div>
       <button class="submit-btn invest" onclick="submitInvest()">Save Investment</button>
     </div>
   </div>
 </div>
 
+<!-- HISTORY -->
 <div class="page" id="page-history">
   <div class="section-header">
-    <div class="section-title">Local Transactions</div>
+    <div class="section-title">Local transactions</div>
     <select class="filter-select" id="historyFilter" onchange="renderHistory()">
-      <option value="all">All</option><option value="expense">Expense</option><option value="income">Income</option><option value="invest">Invest</option>
+      <option value="all">All</option>
+      <option value="expense">Expense</option>
+      <option value="income">Income</option>
+      <option value="invest">Invest</option>
     </select>
   </div>
   <div id="historyList"></div>
 </div>
 
+<!-- Search Modal -->
+<div class="modal-overlay" id="searchModal">
+  <div class="modal search-modal">
+    <div class="modal-handle"></div>
+    <div class="search-modal-header">
+      <input type="text" id="searchInput" placeholder="Search transactions & notes..." autocomplete="off" oninput="onSearchInput()">
+      <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div id="searchResultsCount" style="display:none;margin:12px 0;font-size:12px;color:var(--text2);padding:0 20px"></div>
+    <div id="searchResults" style="padding:0 20px"></div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
 <div class="page" id="page-insights">
   <div class="chart-page-section">
     <div class="insights-sticky">
       <div class="toggle-row" id="insightsModeToggle">
-        <div class="toggle-btn active" onclick="setIM('monthly',this)">Monthly</div>
-        <div class="toggle-btn" onclick="setIM('yearly',this)">Yearly</div>
-        <div class="toggle-btn" onclick="setIM('category',this)">Category</div>
+        <div class="toggle-btn active" data-m="monthly" onclick="setIM('monthly',this)">Monthly</div>
+        <div class="toggle-btn" data-m="yearly" onclick="setIM('yearly',this)">Yearly</div>
+        <div class="toggle-btn" data-m="category" onclick="setIM('category',this)">Category</div>
       </div>
       <div id="monthlyControls">
         <div class="toggle-row" id="monthlySourceToggle">
-          <div class="toggle-btn active" onclick="setMV('all',this)">All</div><div class="toggle-btn" onclick="setMV('opex',this)">OPEX</div><div class="toggle-btn" onclick="setMV('cc-bca',this)">CC BCA</div><div class="toggle-btn" onclick="setMV('cc-niaga',this)">CC Niaga</div>
+          <div class="toggle-btn active" data-v="all" onclick="setMV('all',this)">All</div>
+          <div class="toggle-btn" data-v="opex" onclick="setMV('opex',this)">OPEX</div>
+          <div class="toggle-btn" data-v="cc-bca" onclick="setMV('cc-bca',this)">CC BCA</div>
+          <div class="toggle-btn" data-v="cc-niaga" onclick="setMV('cc-niaga',this)">CC Niaga</div>
         </div>
         <div class="toggle-row" id="monthlyRangeToggle">
-          <div class="toggle-btn active" onclick="setMR(3,this)">3 Mo</div><div class="toggle-btn" onclick="setMR(6,this)">6 Mo</div><div class="toggle-btn" onclick="setMR(12,this)">12 Mo</div><div class="toggle-btn" onclick="setMR('ytd',this)">YTD</div>
+          <div class="toggle-btn active" data-r="3" onclick="setMR(3,this)">3 Mo</div>
+          <div class="toggle-btn" data-r="6" onclick="setMR(6,this)">6 Mo</div>
+          <div class="toggle-btn" data-r="12" onclick="setMR(12,this)">12 Mo</div>
+          <div class="toggle-btn" data-r="ytd" onclick="setMR('ytd',this)">YTD</div>
+        </div>
+      </div>
+      <div id="yearlyControls" style="display:none">
+        <div class="toggle-row" id="yearlySourceToggle">
+          <div class="toggle-btn active" data-v="all" onclick="setYV('all',this)">All</div>
+          <div class="toggle-btn" data-v="opex" onclick="setYV('opex',this)">OPEX</div>
+          <div class="toggle-btn" data-v="cc-bca" onclick="setYV('cc-bca',this)">CC BCA</div>
+          <div class="toggle-btn" data-v="cc-niaga" onclick="setYV('cc-niaga',this)">CC Niaga</div>
+        </div>
+        <div class="toggle-row" id="yearlyRangeToggle">
+          <div class="toggle-btn active" data-r="3" onclick="setYR(3,this)">3 Yr</div>
+          <div class="toggle-btn" data-r="5" onclick="setYR(5,this)">5 Yr</div>
+          <div class="toggle-btn" data-r="all" onclick="setYR('all',this)">All Time</div>
+        </div>
+      </div>
+      <div id="categoryControls" style="display:none">
+        <div class="toggle-row" id="catSourceToggle">
+          <div class="toggle-btn active" data-v="all" onclick="setCV('all',this)">All</div>
+          <div class="toggle-btn" data-v="opex" onclick="setCV('opex',this)">OPEX</div>
+          <div class="toggle-btn" data-v="cc-bca" onclick="setCV('cc-bca',this)">CC BCA</div>
+          <div class="toggle-btn" data-v="cc-niaga" onclick="setCV('cc-niaga',this)">CC Niaga</div>
+        </div>
+        <div class="toggle-row" id="catRangeToggle">
+          <div class="toggle-btn active" data-r="3" onclick="setCR(3,this)">3 Mo</div>
+          <div class="toggle-btn" data-r="6" onclick="setCR(6,this)">6 Mo</div>
+          <div class="toggle-btn" data-r="12" onclick="setCR(12,this)">12 Mo</div>
+          <div class="toggle-btn" data-r="ytd" onclick="setCR('ytd',this)">YTD</div>
         </div>
       </div>
     </div>
-    <div id="monthlySummary"></div><div id="monthlyBarCard"></div><div id="monthlyDonutCard"></div>
-    <div id="yearlySummary" style="display:none"></div><div id="yearlyBarCard" style="display:none"></div><div id="yearlyDonutCard" style="display:none"></div>
-    <div id="catRankingCard" style="display:none"></div><div id="catTrendCard" style="display:none"></div>
+    <div style="height:14px"></div>
+    <div id="monthlySummary"></div>
+    <div id="monthlyBarCard"></div>
+    <div id="monthlyDonutCard"></div>
+    <div id="yearlySummary" style="display:none"></div>
+    <div id="yearlyBarCard" style="display:none"></div>
+    <div id="yearlyMonthCard" style="display:none"></div>
+    <div id="yearlyDonutCard" style="display:none"></div>
+    <div id="catRankingCard" style="display:none"></div>
+    <div id="catTrendCard" style="display:none"></div>
   </div>
 </div>
 
+<!-- NET WORTH -->
 <div class="page" id="page-networth">
   <div class="form-section">
     <div class="nw-mode-toggle">
-      <div class="nw-mode-btn active" onclick="setNWMode('holdings',this)">Holdings</div><div class="nw-mode-btn" onclick="setNWMode('overview',this)">Overview</div>
+      <div class="nw-mode-btn active" data-nw="holdings" onclick="setNWMode('holdings',this)">Holdings</div>
+      <div class="nw-mode-btn" data-nw="overview" onclick="setNWMode('overview',this)">Overview</div>
     </div>
-    <div id="nwPriceInputs">
-       <div class="chart-card-title">Current Prices</div>
-       <div class="form-group"><label class="form-label">USD/IDR</label><input type="text" id="nwUSDIDR" class="form-input" onchange="saveAndRenderNW()"></div>
-       <div class="form-group"><label class="form-label">Star Stable NAV</label><input type="text" id="nwStarNav" class="form-input" onchange="saveAndRenderNW()"></div>
+    <div id="nwPriceInputs" style="display:none">
+      <div class="chart-card-title" style="margin-top:14px;margin-bottom:8px">Current Prices</div>
+      <div id="nwLastUpdated" style="font-size:11px;color:var(--text2);margin-bottom:10px"></div>
+      <div class="form-group">
+        <label class="form-label">Star Stable NAV (Rp/unit) — <a href="https://star-am.com/en/star-product/star-stable-income-fund/" target="_blank" style="color:var(--accent)">star-am.com</a></label>
+        <input type="text" id="nwStarNav" class="form-input" placeholder="e.g. 2208,95" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">USD/IDR</label>
+        <input type="text" id="nwUSDIDR" class="form-input" placeholder="e.g. 16500" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CHF/IDR</label>
+        <input type="text" id="nwCHFIDR" class="form-input" placeholder="e.g. 19500" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">QQQ (USD)</label>
+        <input type="text" id="nwQQQ" class="form-input" placeholder="e.g. 450.00" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">JNJ (USD)</label>
+        <input type="text" id="nwJNJ" class="form-input" placeholder="e.g. 155.00" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">VYM (USD)</label>
+        <input type="text" id="nwVYM" class="form-input" placeholder="e.g. 130.00" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">AAPL (USD)</label>
+        <input type="text" id="nwAAPL" class="form-input" placeholder="e.g. 200.00" inputmode="decimal" onchange="saveAndRenderNW()">
+      </div>
     </div>
-    <div id="nwContent"></div>
+    <div id="nwContent"><div class="chart-loading">Loading...</div></div>
   </div>
 </div>
 
-<div class="modal-overlay" id="searchModal"><div class="modal"><input type="text" id="searchInput" oninput="onSearchInput()"><div id="searchResults"></div></div></div>
-<div class="modal-overlay" id="editModal"><div class="modal"><div id="editModalBody"></div><div class="modal-actions"><button class="btn-delete" onclick="deleteTransaction()">Delete</button><button class="btn-save" onclick="saveEdit()">Save</button></div></div></div>
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="editModalTitle">Edit Transaction</div>
+    <div id="editModalBody"></div>
+    <div class="modal-actions">
+      <button class="btn-delete" onclick="deleteTransaction()">Delete</button>
+      <button class="btn-save" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
 <div id="toast" class="toast"></div>
 
 <script>
-const APP_VERSION = 'v3.0.2';
-const APP_BUILD = '2026-05-15';
+const APP_VERSION = 'v3.0.3';
+const APP_BUILD = '2026-05-13';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
 const allCategories = ['Administration','Auto','Books','Entertainment','Gadget','Gas','Gifts','Groceries','Home Repair','Household','Income','Insurance','Investment','Meals','Medical','Mortgage','Self Care','Transport','Travel','Utilities'];
 const allPMs = ['BCA','eWallet','Flazz','CC BCA','CC Niaga'];
 const allStocks = ['Star Stable Income Fund','USDIDR','CHFIDR','QQQ','JNJ','VYM','AAPL'];
-const CAT_COLORS = {'Transport':'#60a0f0','Meals':'#c8f060','Entertainment':'#ff6b6b','Groceries':'#ffaa44','Household':'#a78bfa','Medical':'#34d399','Utilities':'#f472b6','Auto':'#fb923c','Gas':'#fbbf24','Travel':'#22d3ee','Insurance':'#e879f9','Books':'#6ee7b7','Gifts':'#fca5a5','Self Care':'#c4b5fd','Administration':'#93c5fd','Gadget':'#818cf8','Home Repair':'#f87171','Investment':'#38bdf8','Income':'#4ade80','Mortgage':'#fb923c','Other':'#6b7280'};
-const STOCK_TYPE = {'Star Stable Income Fund':'Reksa Dana','USDIDR':'Forex','CHFIDR':'Forex','QQQ':'US Stock','JNJ':'US Stock','VYM':'US Stock','AAPL':'US Stock'};
 
+const CAT_COLORS = {
+  'Transport':'#60a0f0','Meals':'#c8f060','Entertainment':'#ff6b6b','Groceries':'#ffaa44',
+  'Household':'#a78bfa','Medical':'#34d399','Utilities':'#f472b6','Auto':'#fb923c',
+  'Gas':'#fbbf24','Travel':'#22d3ee','Insurance':'#e879f9','Books':'#6ee7b7',
+  'Gifts':'#fca5a5','Self Care':'#c4b5fd','Administration':'#93c5fd','Gadget':'#818cf8',
+  'Home Repair':'#f87171','Investment':'#38bdf8','Income':'#4ade80','Mortgage':'#fb923c',
+  'Other':'#6b7280'
+};
+
+const STOCK_TYPE = {'Star Stable Income Fund':'Reksa Dana','USDIDR':'Forex','CHFIDR':'Forex',
+  'QQQ':'US Stock','JNJ':'US Stock','VYM':'US Stock','AAPL':'US Stock'};
+
+// ── LOCAL DATA (historical) ───────────────────────────────────
 const HIST = {opex:[], invest:[], txCat:{}, txPm:{}, stockType:{}, cashBalance:0};
-let histLoaded = false, histLoadCallbacks = [];
-let inputMode = 'expense', investAction = 'Buy', editingIndex = null;
+let histLoaded = false;
+let histLoadCallbacks = [];
+
+function onHistLoaded(cb) {
+  if (histLoaded) { cb(); return; }
+  histLoadCallbacks.push(cb);
+}
+
+// ── STATE ─────────────────────────────────────────────────────
+let inputMode = 'expense';
+let investAction = 'Buy';
+let editingIndex = null;
 let queue = JSON.parse(localStorage.getItem('nota_queue_v2') || '[]');
 let txHistory = JSON.parse(localStorage.getItem('nota_history_v2') || '[]');
 let investHistory = JSON.parse(localStorage.getItem('nota_invest_v2') || '[]');
-let fxRates = JSON.parse(localStorage.getItem('nota_fx') || '{}'), stockPrices = JSON.parse(localStorage.getItem('nota_prices') || '{}');
-let insightsMode = 'monthly', nwMode = 'holdings', mView='all', mRange=3, mSelMonth=null, mSelCat=null;
+let fxRates = JSON.parse(localStorage.getItem('nota_fx') || '{}');
+let fxLastFetch = parseInt(localStorage.getItem('nota_fx_ts') || '0');
+let stockPrices = JSON.parse(localStorage.getItem('nota_prices') || '{}');
 
-// Helper: Gabungkan data statis & lokal untuk kalender/insight
+function parsePrice(str) {
+  if (!str) return 0;
+  return parseFloat(String(str).replace(',', '.')) || 0;
+}
+function loadPriceInputs() {
+  const map = {nwStarNav:'StarStable', nwUSDIDR:'USDIDR', nwCHFIDR:'CHFIDR',
+               nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
+  Object.entries(map).forEach(([fid, key]) => {
+    const el = document.getElementById(fid);
+    if (el && stockPrices[key]) el.value = stockPrices[key];
+  });
+  // Show last updated label if available
+  const lu = HIST.currentPrices?.lastUpdated;
+  const el = document.getElementById('nwLastUpdated');
+  if (el && lu) el.textContent = 'Default prices as of ' + lu;
+}
+function savePriceInputs() {
+  const map = {nwStarNav:'StarStable', nwUSDIDR:'USDIDR', nwCHFIDR:'CHFIDR',
+               nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
+  Object.entries(map).forEach(([fid, key]) => {
+    stockPrices[key] = document.getElementById(fid)?.value || '';
+  });
+  localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
+}
+function saveAndRenderNW() { savePriceInputs(); renderNetWorth(); }
+let insightsMode = 'monthly';
+let nwMode = 'holdings';
+let mView='all', mRange=3, mSelMonth=null, mSelCat=null;
+let yView='all', yRange=3, ySelYear=null, ySelCat=null;
+let cView='all', cRange=3, cSelCat=null;
+
+// ── COMBINED DATA ROWS ────────────────────────────────────────
 function getAllOpexRows() {
-  const h = (HIST.opex || []).map(r => ({...r, source:'hist'}));
-  const l = txHistory.map(r => {
-    const d = new Date(r.date);
+  const hist = (HIST.opex || []).map(r => ({
+    ...r, source:'hist',
+    mk: r.mk,
+    isIncome: !!r.inc,
+  }));
+  const local = txHistory.map(r => {
+    const dt = new Date(r.date);
     return {
-      y: d.getFullYear(), m: d.getMonth(), d: d.getDate(),
-      mk: `${MO[d.getMonth()]} ${d.getFullYear()}`,
-      cat: r.category, tx: r.tx, pm: r.pm,
-      exp: r.type === 'expense' ? r.amount : undefined,
-      inc: r.type === 'income' ? r.amount : undefined,
-      source: 'local', id: r.id
+      y:dt.getFullYear(), m:dt.getMonth(), d:dt.getDate(),
+      mk:`${MO[dt.getMonth()]} ${dt.getFullYear()}`,
+      cat:r.category, tx:r.tx||r.payee||r.transaction||'',
+      pm:r.pm||r.platform||'',
+      inc: r.type==='income' ? r.amount : undefined,
+      exp: r.type==='expense' ? r.amount : undefined,
+      source:'local', id:r.id
     };
   });
-  return [...h, ...l];
+  return [...hist, ...local];
 }
 
-function getRows(view) {
-  const all = getAllOpexRows().filter(r => r.exp);
-  if (view === 'all') return all;
-  if (view === 'opex') return all.filter(r => r.pm !== 'CC BCA' && r.pm !== 'CC Niaga');
-  if (view === 'cc-bca') return all.filter(r => r.pm === 'CC BCA');
-  if (view === 'cc-niaga') return all.filter(r => r.pm === 'CC Niaga');
+function getCCRows(source) {
+  const hist = HIST.opex || [];
+  if (source === 'cc-bca') return hist.filter(r => r.pm === 'CC BCA' && r.exp);
+  if (source === 'cc-niaga') return hist.filter(r => r.pm === 'CC Niaga' && r.exp);
   return [];
 }
 
-// ── CALENDAR LOGIC (DEBUGGED V3.0.2) ──────────────────────────
-let calInited = false, calOlderShown = false, calSelectedCell = null;
+function getRows(view) {
+  if (view === 'all') return getAllOpexRows().filter(r => r.exp);
+  if (view === 'opex') return getAllOpexRows().filter(r => r.exp && r.pm !== 'CC BCA' && r.pm !== 'CC Niaga');
+  return getCCRows(view);
+}
+
+function getAllInvestRows() {
+  const hist = (HIST.invest || []);
+  const local = investHistory.map(r => {
+    const dt = new Date(r.date);
+    return {
+      y:dt.getFullYear(), m:dt.getMonth(), d:dt.getDate(),
+      mk:`${MO[dt.getMonth()]} ${dt.getFullYear()}`,
+      stock:r.stock, type:STOCK_TYPE[r.stock]||'',
+      action:r.action, lot:r.lot, price:r.price, totalIdr:r.totalIdr,
+      source:'local', id:r.id
+    };
+  });
+  return [...hist, ...local];
+}
+
+// ── DATE ──────────────────────────────────────────────────────
+function todayISO(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function isoDisp(iso){if(!iso)return'';const[y,m,d]=iso.split('-');return`${parseInt(d)} ${MO[parseInt(m)-1]} ${y}`}
+function isoSheetDate(iso){const[,m,d]=iso.split('-');return`${parseInt(d)} ${MO[parseInt(m)-1]}`}
+function isoMonthKey(iso){const[y,m]=iso.split('-');return`${MO[parseInt(m)-1]} ${y}`}
+
+function initDatePicker(rawId, dispId, txtId) {
+  const raw=document.getElementById(rawId),disp=document.getElementById(dispId),txt=document.getElementById(txtId);
+  if(!raw)return;
+  const t=todayISO();raw.value=t;txt.textContent=isoDisp(t);
+  disp.addEventListener('click',()=>{try{raw.showPicker()}catch(e){raw.focus();raw.click()}});
+  raw.addEventListener('change',()=>{txt.textContent=raw.value?isoDisp(raw.value):'Select date...'});
+}
+
+// ── INPUT MODE ────────────────────────────────────────────────
+function setInputMode(mode, el) {
+  inputMode = mode;
+  document.querySelectorAll('.pill-toggle-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('form-opex').style.display = mode !== 'invest' ? 'block' : 'none';
+  document.getElementById('form-invest').style.display = mode === 'invest' ? 'block' : 'none';
+  const btn = document.getElementById('submitOpexBtn');
+  btn.className = `submit-btn ${mode}`;
+  btn.textContent = mode === 'income' ? 'Save Income' : 'Save Transaction';
+  document.getElementById('catPills').innerHTML = '';
+  document.getElementById('pmPills').innerHTML = '';
+  document.getElementById('inputCat').value = '';
+  document.getElementById('inputPm').value = '';
+}
+
+function setInvestAction(action, el) {
+  investAction = action;
+  document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── AUTOCOMPLETE ──────────────────────────────────────────────
+function showAC(fid, list) {
+  const inp=document.getElementById(fid),dd=document.getElementById('ac-'+fid);
+  if(!dd)return;
+  const v=inp.value.toLowerCase();
+  const f=v?list.filter(i=>i.toLowerCase().includes(v)):list;
+  if(!f.length){dd.style.display='none';return}
+  dd.innerHTML=f.map(i=>{
+    const safe=i.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+    return `<div class="autocomplete-item" data-val="${safe}" data-fid="${fid}" onmousedown="selectAC(this.dataset.fid,this.dataset.val)"><span>${i}</span></div>`;
+  }).join('');
+  dd.style.display='block';
+}
+function selectAC(fid,val){
+  const el=document.getElementById(fid);if(el)el.value=val;
+  const dd=document.getElementById('ac-'+fid);if(dd)dd.style.display='none';
+  if(fid==='inputTx'){onTxSelect(val);}
+  if(fid==='inputStock'){onStockSelect(val);}
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.autocomplete-wrapper'))
+    document.querySelectorAll('.autocomplete-list').forEach(d=>d.style.display='none');
+});
+
+// ── TX SMART SUGGESTIONS ──────────────────────────────────────
+function getRecentMonths(n) {
+  const now = new Date();
+  const months = [];
+  for (let i = 0; i < n; i++) {
+    let y = now.getFullYear();
+    let m = now.getMonth() + 1 - i;
+    if (m <= 0) { m += 12; y -= 1; }
+    months.push({y, m});
+  }
+  return months;
+}
+function getAllTxList() {
+  const recent = getRecentMonths(3);
+  const fromOpex = (HIST.opex || [])
+    .filter(r => recent.some(rm => rm.y === r.y && rm.m === r.m))
+    .map(r => r.tx || '')
+    .filter(Boolean);
+  const fromLocal = txHistory.map(r => r.tx || r.payee || '').filter(Boolean);
+  return [...new Set([...fromLocal, ...fromOpex])];
+}
+function onTxInput() {
+  const val = document.getElementById('inputTx').value;
+  showAC('inputTx', getAllTxList());
+  updateSmartSuggestions(val);
+  autoFillIfExactMatch(val);
+}
+function onTxFocus() {
+  showAC('inputTx', getAllTxList());
+}
+function onTxSelect(val) {
+  updateSmartSuggestions(val);
+  autoFillIfExactMatch(val);
+}
+function autoFillIfExactMatch(txName) {
+  const txLow = txName.toLowerCase().trim();
+  const txCat = HIST.txCat || {};
+  const txPm  = HIST.txPm  || {};
+  const catKey = Object.keys(txCat).find(k => k.toLowerCase() === txLow);
+  const pmKey  = Object.keys(txPm).find(k => k.toLowerCase() === txLow);
+  if (catKey && txCat[catKey].length > 0) {
+    const topCat = txCat[catKey][0];
+    document.getElementById('inputCat').value = topCat;
+    document.querySelectorAll('#catPills .smart-pill').forEach(p => {
+      p.classList.toggle('selected', p.dataset.cat === topCat);
+    });
+  }
+  if (pmKey && txPm[pmKey].length > 0) {
+    const topPm = txPm[pmKey][0];
+    document.getElementById('inputPm').value = topPm;
+    document.querySelectorAll('#pmPills .smart-pill').forEach(p => {
+      p.classList.toggle('selected', p.dataset.pm === topPm);
+    });
+  }
+}
+
+function updateSmartSuggestions(txName) {
+  const txLow = txName.toLowerCase().trim();
+  const txCat = HIST.txCat || {};
+  const txPm  = HIST.txPm  || {};
+  const catKey = Object.keys(txCat).find(k=>k.toLowerCase()===txLow) ||
+                 Object.keys(txCat).find(k=>txLow.includes(k.toLowerCase())||k.toLowerCase().includes(txLow));
+  const pmKey  = Object.keys(txPm).find(k=>k.toLowerCase()===txLow) ||
+                 Object.keys(txPm).find(k=>txLow.includes(k.toLowerCase())||k.toLowerCase().includes(txLow));
+  const sugCats = catKey ? txCat[catKey] : allCategories;
+  const sugPms  = pmKey  ? txPm[pmKey]   : allPMs;
+  const catContainer = document.getElementById('catPills');
+  catContainer.innerHTML = sugCats.map(c=>
+    `<div class="smart-pill" data-cat="${c}" onclick="selectSmartCat(this.dataset.cat)">${c}</div>`
+  ).join('');
+  const pmContainer = document.getElementById('pmPills');
+  pmContainer.innerHTML = sugPms.map(p=>
+    `<div class="smart-pill pm" data-pm="${p}" onclick="selectSmartPm(this.dataset.pm)">${p}</div>`
+  ).join('');
+}
+function selectSmartCat(cat) {
+  document.getElementById('inputCat').value = cat;
+  document.querySelectorAll('#catPills .smart-pill').forEach(p=>{
+    p.classList.toggle('selected', p.dataset.cat===cat);
+  });
+}
+function selectSmartPm(pm) {
+  document.getElementById('inputPm').value = pm;
+  document.querySelectorAll('#pmPills .smart-pill').forEach(p=>{
+    p.classList.toggle('selected', p.dataset.pm===pm);
+  });
+}
+
+// ── INVEST HELPERS ────────────────────────────────────────────
+function onStockSelect(stock) {
+  const type = STOCK_TYPE[stock] || '';
+  const isUSD = type === 'US Stock';
+  document.getElementById('investPricePrefix').textContent = isUSD ? '$' : 'Rp';
+}
+function calcTotal() {
+  const lot = parseFloat(document.getElementById('inputLot').value) || 0;
+  const price = parseFloat(document.getElementById('inputPrice').value) || 0;
+  const stock = document.getElementById('inputStock').value;
+  const type = STOCK_TYPE[stock] || '';
+  const isUSD = type === 'US Stock';
+  if (lot && price) {
+    let total = lot * price;
+    if (isUSD) {
+      const rate = fxRates['USD'] || 16500;
+      total = Math.round(total * rate);
+    }
+    document.getElementById('inputTotal').value = Math.round(total);
+  }
+}
+
+// ── FORMAT ────────────────────────────────────────────────────
+function fRp(n){if(!n&&n!==0)return'';return'Rp'+Number(n).toLocaleString('id-ID')}
+function fRpS(n){
+  if(!n)return'Rp0';
+  if(n>=1000000000)return'Rp'+(n/1000000000).toFixed(1)+'M';
+  if(n>=1000000)return'Rp'+(n/1000000).toFixed(1)+'jt';
+  if(n>=1000)return'Rp'+(n/1000).toFixed(0)+'rb';
+  return'Rp'+n;
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  if(el && el.classList) el.classList.add('active');
+  document.getElementById('page-'+tab).classList.add('active');
+  
+  if(tab==='home'){
+    if(!histLoaded) onHistLoaded(()=>initCalendar());
+    else initCalendar();
+  }
+  if(tab==='history')renderHistory();
+  if(tab==='insights'){
+    ['monthlySummary','monthlyBarCard','monthlyDonutCard'].forEach(id=>{document.getElementById(id).style.display='block'});
+    ['yearlySummary','yearlyBarCard','yearlyMonthCard','yearlyDonutCard','catRankingCard','catTrendCard'].forEach(id=>{document.getElementById(id).style.display='none'});
+    if(!histLoaded) {
+      document.getElementById('monthlySummary').innerHTML='<div class="chart-loading">Loading data…</div>';
+      onHistLoaded(()=>renderChartTab(insightsMode));
+    } else {
+      renderChartTab(insightsMode);
+    }
+  }
+  if(tab==='networth'){
+    if(!histLoaded) onHistLoaded(()=>initNetWorth());
+    else initNetWorth();
+  }
+}
+
+function openInputFromHome() {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-input').classList.add('active');
+}
+
+// ── SUBMIT OPEX ───────────────────────────────────────────────
+function submitOpex() {
+  const date=document.getElementById('inputDateRaw').value;
+  const tx=document.getElementById('inputTx').value.trim();
+  const amount=parseInt(document.getElementById('inputAmount').value)||0;
+  const cat=document.getElementById('inputCat').value.trim();
+  const pm=document.getElementById('inputPm').value.trim();
+  const notes=document.getElementById('inputNotes').value.trim();
+  if(!date||!tx||!amount||!cat||!pm){showToast('All fields required','error');return}
+  const r = {id:Date.now(),date,tx,amount,category:cat,pm,notes,type:inputMode,synced:false};
+  txHistory.unshift(r);
+  queue.push({...r, action:inputMode});
+  saveLocal();updateStatus();
+  syncOpex(r).then(ok=>{
+    if(ok){queue=queue.filter(q=>q.id!==r.id);txHistory=txHistory.map(h=>h.id===r.id?{...h,synced:true}:h);saveLocal();updateStatus();showToast('Saved ✓','success')}
+    else showToast('Saved locally — sync pending','');
+  });
+  resetOpexForm();
+}
+
+function resetOpexForm() {
+  const t=todayISO();
+  document.getElementById('inputDateRaw').value=t;
+  document.getElementById('inputDateText').textContent=isoDisp(t);
+  document.getElementById('inputTx').value='';
+  document.getElementById('inputAmount').value='';
+  document.getElementById('inputCat').value='';
+  document.getElementById('inputPm').value='';
+  document.getElementById('inputNotes').value='';
+  document.getElementById('catPills').innerHTML='';
+  document.getElementById('pmPills').innerHTML='';
+}
+
+// ── SUBMIT INVEST ─────────────────────────────────────────────
+function submitInvest() {
+  const date=document.getElementById('inputDateRawI').value;
+  const stock=document.getElementById('inputStock').value.trim();
+  const lot=parseFloat(document.getElementById('inputLot').value)||0;
+  const price=parseFloat(document.getElementById('inputPrice').value)||0;
+  const total=parseInt(document.getElementById('inputTotal').value)||0;
+  if(!date||!stock||!lot||!price){showToast('All fields required','error');return}
+  const r={id:Date.now(),date,stock,action:investAction,lot,price,totalIdr:total,type:'invest',synced:false};
+  investHistory.unshift(r);
+  queue.push({...r});
+  saveLocal();updateStatus();
+  syncInvest(r).then(ok=>{
+    if(ok){queue=queue.filter(q=>q.id!==r.id);investHistory=investHistory.map(h=>h.id===r.id?{...h,synced:true}:h);saveLocal();updateStatus();showToast('Saved ✓','success')}
+    else showToast('Saved locally — sync pending','');
+  });
+  const t=todayISO();
+  document.getElementById('inputDateRawI').value=t;
+  document.getElementById('inputDateTextI').textContent=isoDisp(t);
+  document.getElementById('inputStock').value='';
+  document.getElementById('inputLot').value='';
+  document.getElementById('inputPrice').value='';
+  document.getElementById('inputTotal').value='';
+}
+
+// ── SYNC ──────────────────────────────────────────────────────
+async function syncOpex(r) {
+  try {
+    const sheetDate = isoSheetDate(r.date);
+    const monthHeader = isoMonthKey(r.date);
+    const month = isoMonthKey(r.date);
+    const payload = {
+      type:'opex', action:r.type,
+      date:sheetDate, month, monthHeader,
+      tx:r.tx, cat:r.category, pm:r.pm, amount:r.amount, notes:r.notes||''
+    };
+    const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    const j = await res.json().catch(()=>({}));
+    return j.status === 'ok';
+  } catch(e){return false}
+}
+async function syncInvest(r) {
+  try {
+    const sheetDate = isoSheetDate(r.date);
+    const payload = {
+      type:'invest', date:sheetDate, stock:r.stock,
+      stockType:STOCK_TYPE[r.stock]||'',
+      action:r.action, lot:r.lot, price:r.price, totalIdr:r.totalIdr
+    };
+    const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    const j = await res.json().catch(()=>({}));
+    return j.status === 'ok';
+  } catch(e){return false}
+}
+
+// ── HISTORY ───────────────────────────────────────────────────
+function renderHistory() {
+  const filter = document.getElementById('historyFilter').value;
+  const list = document.getElementById('historyList');
+  let items = [];
+  if(filter==='all'||filter==='expense'||filter==='income') {
+    items = [...items, ...txHistory.filter(r=>filter==='all'||r.type===filter).map(r=>({...r,_src:'opex'}))];
+  }
+  if(filter==='all'||filter==='invest') {
+    items = [...items, ...investHistory.map(r=>({...r,_src:'invest'}))];
+  }
+  items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!items.length){list.innerHTML='<div class="empty-state">No transactions yet</div>';return}
+  list.innerHTML = items.map((r,i)=>{
+    const isInvest = r._src==='invest';
+    const isIncome = r.type==='income';
+    const icon = isInvest?'📈':isIncome?'💰':'💳';
+    const cls = isInvest?'invest':isIncome?'income':
+               (r.pm==='CC BCA'?'cc-bca':r.pm==='CC Niaga'?'cc-niaga':'expense');
+    const color = isInvest?'var(--blue)':isIncome?'var(--green)':
+                 (r.pm==='CC BCA'?'var(--blue)':r.pm==='CC Niaga'?'var(--red)':'var(--accent)');
+    const name = isInvest?`${r.action} ${r.stock}`:r.tx||r.payee||r.transaction||'';
+    const meta = isInvest?`${r.lot} units @ ${fRp(r.price)}`:`${r.category} · ${r.pm}`;
+    const amt = isInvest?fRp(r.totalIdr):fRp(r.amount);
+    const syncDot = r.synced?'':'<span class="badge badge-pending">pending</span>';
+    const oi = txHistory.indexOf(r);
+    const ii = investHistory.indexOf(r);
+    const onclick = isInvest?`openEditInvest(${ii})`:`openEdit(${oi})`;
+    return`<div class="tx-item" onclick="${onclick}">
+      <div class="tx-icon ${cls}">${icon}</div>
+      <div class="tx-info">
+        <div class="tx-payee">${name}${syncDot}</div>
+        <div class="tx-meta">${isoDisp(r.date)} · ${meta}</div>
+      </div>
+      <div class="tx-amount" style="color:${color}">${amt}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── EDIT MODALS ───────────────────────────────────────────────
+function openEdit(idx) {
+  if(idx<0||idx>=txHistory.length)return;
+  editingIndex = {src:'opex', idx};
+  const r = txHistory[idx];
+  document.getElementById('editModalTitle').textContent = 'Edit '+(r.type==='income'?'Income':'Transaction');
+  document.getElementById('editModalBody').innerHTML = `
+    <div class="form-group"><label class="form-label">Date</label>
+      <input type="date" class="form-input" id="edit-date" value="${r.date}"></div>
+    <div class="form-group"><label class="form-label">Transaction</label>
+      <input type="text" class="form-input" id="edit-tx" value="${r.tx||r.payee||''}"></div>
+    <div class="form-group"><label class="form-label">Amount</label>
+      <div class="amount-wrapper"><span class="amount-prefix">Rp</span>
+        <input type="number" class="form-input amount-input" id="edit-amount" value="${r.amount}" inputmode="numeric"></div></div>
+    <div class="form-group autocomplete-wrapper"><label class="form-label">Category</label>
+      <input type="text" class="form-input" id="edit-cat" value="${r.category||''}" autocomplete="off"
+        oninput="showAC('edit-cat',allCategories)" onfocus="showAC('edit-cat',allCategories)">
+      <div class="autocomplete-list" id="ac-edit-cat" style="display:none"></div></div>
+    <div class="form-group"><label class="form-label">Payment Method</label>
+      <input type="text" class="form-input" id="edit-pm" value="${r.pm||''}"></div>`;
+  document.getElementById('editModal').classList.add('open');
+}
+function openEditInvest(idx) {
+  if(idx<0||idx>=investHistory.length)return;
+  editingIndex = {src:'invest', idx};
+  const r = investHistory[idx];
+  document.getElementById('editModalTitle').textContent = 'Edit Investment';
+  document.getElementById('editModalBody').innerHTML = `
+    <div class="form-group"><label class="form-label">Date</label>
+      <input type="date" class="form-input" id="edit-date" value="${r.date}"></div>
+    <div class="form-group"><label class="form-label">Stock</label>
+      <input type="text" class="form-input" id="edit-stock" value="${r.stock||''}"></div>
+    <div class="form-group"><label class="form-label">Action</label>
+      <select class="form-input" id="edit-action">
+        <option ${r.action==='Buy'?'selected':''}>Buy</option>
+        <option ${r.action==='Sell'?'selected':''}>Sell</option>
+      </select></div>
+    <div class="form-group"><label class="form-label">Lot</label>
+      <input type="number" class="form-input" id="edit-lot" value="${r.lot}" inputmode="decimal"></div>
+    <div class="form-group"><label class="form-label">Price</label>
+      <input type="number" class="form-input" id="edit-price" value="${r.price}" inputmode="decimal"></div>
+    <div class="form-group"><label class="form-label">Total (IDR)</label>
+      <input type="number" class="form-input" id="edit-total" value="${r.totalIdr}" inputmode="numeric"></div>`;
+  document.getElementById('editModal').classList.add('open');
+}
+function saveEdit() {
+  if(!editingIndex)return;
+  if(editingIndex.src==='opex'){
+    const r=txHistory[editingIndex.idx];
+    r.date=document.getElementById('edit-date').value;
+    r.tx=document.getElementById('edit-tx').value;
+    r.amount=parseInt(document.getElementById('edit-amount').value)||0;
+    r.category=document.getElementById('edit-cat').value;
+    r.pm=document.getElementById('edit-pm').value;
+    r.synced=false;
+  } else {
+    const r=investHistory[editingIndex.idx];
+    r.date=document.getElementById('edit-date').value;
+    r.stock=document.getElementById('edit-stock').value;
+    r.action=document.getElementById('edit-action').value;
+    r.lot=parseFloat(document.getElementById('edit-lot').value)||0;
+    r.price=parseFloat(document.getElementById('edit-price').value)||0;
+    r.totalIdr=parseInt(document.getElementById('edit-total').value)||0;
+    r.synced=false;
+  }
+  saveLocal();closeModal();renderHistory();showToast('Saved','success');
+}
+function deleteTransaction() {
+  if(!confirm('Delete?'))return;
+  if(editingIndex.src==='opex'){
+    const r=txHistory[editingIndex.idx];
+    txHistory.splice(editingIndex.idx,1);
+    queue=queue.filter(q=>q.id!==r.id);
+  } else {
+    const r=investHistory[editingIndex.idx];
+    investHistory.splice(editingIndex.idx,1);
+    queue=queue.filter(q=>q.id!==r.id);
+  }
+  saveLocal();closeModal();renderHistory();updateStatus();showToast('Deleted','');
+}
+function closeModal(){document.getElementById('editModal').classList.remove('open');editingIndex=null}
+document.getElementById('editModal').addEventListener('click',e=>{if(e.target===document.getElementById('editModal'))closeModal()});
+
+// ── LOCAL STORAGE ─────────────────────────────────────────────
+function saveLocal(){
+  localStorage.setItem('nota_queue_v2',JSON.stringify(queue));
+  localStorage.setItem('nota_history_v2',JSON.stringify(txHistory));
+  localStorage.setItem('nota_invest_v2',JSON.stringify(investHistory));
+}
+function updateStatus(){}
+function showToast(msg,type){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.className='toast',3000);
+}
+
+// ── INSIGHTS ──────────────────────────────────────────────────
+function setIM(mode,el){
+  insightsMode=mode;
+  document.querySelectorAll('#insightsModeToggle .toggle-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('monthlyControls').style.display=mode==='monthly'?'block':'none';
+  document.getElementById('yearlyControls').style.display=mode==='yearly'?'block':'none';
+  document.getElementById('categoryControls').style.display=mode==='category'?'block':'none';
+  const mEls=['monthlySummary','monthlyBarCard','monthlyDonutCard'];
+  const yEls=['yearlySummary','yearlyBarCard','yearlyMonthCard','yearlyDonutCard'];
+  const cEls=['catRankingCard','catTrendCard'];
+  mEls.forEach(id=>document.getElementById(id).style.display=mode==='monthly'?'block':'none');
+  yEls.forEach(id=>document.getElementById(id).style.display=mode==='yearly'?'block':'none');
+  cEls.forEach(id=>document.getElementById(id).style.display=mode==='category'?'block':'none');
+  renderChartTab(mode);
+}
+function setMV(v,el){mView=v;mSelMonth=null;mSelCat=null;document.querySelectorAll('#monthlySourceToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderMonthly()}
+function setMR(r,el){mRange=r;mSelMonth=null;mSelCat=null;document.querySelectorAll('#monthlyRangeToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderMonthly()}
+function setYV(v,el){yView=v;ySelYear=null;ySelCat=null;document.querySelectorAll('#yearlySourceToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderYearly()}
+function setYR(r,el){yRange=r;ySelYear=null;ySelCat=null;document.querySelectorAll('#yearlyRangeToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderYearly()}
+function setCV(v,el){cView=v;cSelCat=null;document.querySelectorAll('#catSourceToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderCategory()}
+function setCR(r,el){cRange=r;cSelCat=null;document.querySelectorAll('#catRangeToggle .toggle-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderCategory()}
+
+function renderChartTab(tab){
+  if(tab==='monthly')renderMonthly();
+  else if(tab==='yearly')renderYearly();
+  else renderCategory();
+}
+
+function getMonthlyKeys(){
+  const now=new Date();
+  if(mRange==='ytd'){const k=[];for(let m=0;m<=now.getMonth();m++)k.push(`${MO[m]} ${now.getFullYear()}`);return k}
+  const n=parseInt(mRange),k=[];
+  for(let i=n-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);k.push(`${MO[d.getMonth()]} ${d.getFullYear()}`)}
+  return k;
+}
+function getYearlyKeys(){
+  const rows=getRows(yView),nowY=new Date().getFullYear();
+  if(yRange==='all'){const ys=[...new Set(rows.map(r=>r.y).filter(Boolean))].sort();return ys.length?ys:[nowY]}
+  const n=parseInt(yRange),ys=[];for(let i=n-1;i>=0;i--)ys.push(nowY-i);return ys;
+}
+function getCatKeys(){
+  const now=new Date();
+  if(cRange==='ytd'){const k=[];for(let m=0;m<=now.getMonth();m++)k.push(`${MO[m]} ${now.getFullYear()}`);return k}
+  const n=parseInt(cRange),k=[];
+  for(let i=n-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);k.push(`${MO[d.getMonth()]} ${d.getFullYear()}`)}
+  return k;
+}
+
+function renderMonthly(){
+  const rows=getRows(mView),keys=getMonthlyKeys();
+  const totals={},catMap={},rawRows={};
+  keys.forEach(k=>{totals[k]=0;catMap[k]={};rawRows[k]={}});
+  rows.forEach(r=>{
+    const mk=r.mk;if(totals[mk]===undefined)return;
+    const amt=r.exp||0;
+    totals[mk]+=amt;
+    catMap[mk][r.cat]=(catMap[mk][r.cat]||0)+amt;
+    if(!rawRows[mk][r.cat])rawRows[mk][r.cat]=[];
+    rawRows[mk][r.cat].push(r);
+  });
+  const selKey=mSelMonth||keys[keys.length-1];
+  if(!mSelMonth)mSelMonth=selKey;
+  const maxT=Math.max(...keys.map(k=>totals[k]),1);
+  const curTotal=totals[selKey]||0;
+  const prevKey=keys[keys.indexOf(selKey)-1];
+  const prevTotal=prevKey?totals[prevKey]:0;
+  const avgTotal=keys.slice(0,-1).reduce((s,k)=>s+(totals[k]||0),0)/Math.max(keys.length-1,1);
+  const trend=prevTotal>0?((curTotal-prevTotal)/prevTotal*100):null;
+  const trendStr=trend!==null?`${trend>0?'+':''}${trend.toFixed(0)}%`:'—';
+  const trendColor=trend===null?'var(--text2)':trend>0?'var(--red)':'var(--accent)';
+  const viewLabel=mView==='all'?'All':mView==='opex'?'OPEX':mView==='cc-bca'?'CC BCA':'CC Niaga';
+
+  document.getElementById('monthlySummary').innerHTML=`
+    <div class="summary-row">
+      <div class="summary-card"><div class="s-label">${selKey}</div><div class="s-value">${fRpS(curTotal)}</div><div class="s-sub">${viewLabel}</div></div>
+      <div class="summary-card"><div class="s-label">vs Last Month</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Avg ${fRpS(Math.round(avgTotal))}/mo</div></div>
+    </div>`;
+
+  let barCols='';
+  keys.forEach(k=>{
+    const t=totals[k]||0,hpct=maxT>0?(t/maxT*100):0,sel=k===selKey?'selected':'';
+    barCols+=`<div class="bar-col ${sel}" onclick="selectMonth('${k}')">
+      <div class="bar-amount">${t>0?fRpS(t):''}</div>
+      <div class="bar-fill" style="height:${Math.max(hpct,2)}%"></div>
+      <div class="bar-label">${k.split(' ')[0]}</div>
+    </div>`;
+  });
+  document.getElementById('monthlyBarCard').innerHTML=`<div class="chart-card"><div class="chart-card-title">Monthly Total — tap month for breakdown</div><div class="bar-chart-wrap"><div class="bar-chart">${barCols}</div></div></div>`;
+
+  const catData=catMap[selKey]||{},total=Object.values(catData).reduce((a,b)=>a+b,0),selRows=rawRows[selKey]||{};
+  const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
+  if(!mSelCat||!catData[mSelCat])mSelCat=sorted.length?sorted[0][0]:null;
+  if(total>0){
+    const legendHTML=sorted.map(([cat,val])=>{
+      const color=CAT_COLORS[cat]||CAT_COLORS['Other'],pct=((val/total)*100).toFixed(0),isActive=mSelCat===cat;
+      return`<div class="legend-row${isActive?' active':''}" onclick="selectMonthlyCat('${cat.replace(/'/g,"\'")}')">
+        <div class="legend-dot" style="background:${color}"></div>
+        <div class="legend-name">${cat}</div>
+        <div class="legend-pct">${pct}%</div>
+        <div class="legend-amt">${fRpS(val)}</div>
+      </div>`;
+    }).join('');
+    let detailHTML='';
+    if(mSelCat&&selRows[mSelCat]){
+      const color=CAT_COLORS[mSelCat]||CAT_COLORS['Other'];
+      const txList=[...selRows[mSelCat]].sort((a,b)=>(b.exp||0)-(a.exp||0));
+      detailHTML=`<div class="detail-section">
+        <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>${mSelCat} · ${fRp(catData[mSelCat])}</div>
+        ${txList.map(r=>`<div class="detail-item">
+          <div class="detail-name">${r.tx||''}</div>
+          <div class="detail-date">${r.d} ${MO[r.m]}</div>
+          <div class="detail-amt">${fRp(r.exp||0)}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+    document.getElementById('monthlyDonutCard').innerHTML=`<div class="chart-card">
+      <div class="chart-card-title">Breakdown ${selKey} — tap category for transactions</div>
+      <div class="donut-wrap"><div>${buildDonut(catData,100)}</div><div class="donut-legend">${legendHTML}</div></div>
+      ${detailHTML}</div>`;
+  } else {
+    document.getElementById('monthlyDonutCard').innerHTML=`<div class="chart-card"><div class="chart-card-title">Breakdown ${selKey}</div><div class="empty-state" style="padding:20px">No data</div></div>`;
+  }
+}
+function selectMonth(k){mSelMonth=k;mSelCat=null;renderMonthly()}
+function selectMonthlyCat(cat){mSelCat=cat;renderMonthly()}
+
+function renderYearly(){
+  const rows=getRows(yView),years=getYearlyKeys();
+  const totals={},cats={},monthBreak={},rawCats={};
+  years.forEach(y=>{totals[y]=0;cats[y]={};monthBreak[y]={};rawCats[y]={}});
+  rows.forEach(r=>{
+    if(!years.includes(r.y))return;
+    const amt=r.exp||0;
+    totals[r.y]+=amt;
+    cats[r.y][r.cat]=(cats[r.y][r.cat]||0)+amt;
+    monthBreak[r.y][r.mk]=(monthBreak[r.y][r.mk]||0)+amt;
+    if(!rawCats[r.y][r.cat])rawCats[r.y][r.cat]=[];
+    rawCats[r.y][r.cat].push(r);
+  });
+  const selY=ySelYear||years[years.length-1];
+  if(!ySelYear)ySelYear=selY;
+  const maxT=Math.max(...years.map(y=>totals[y]||0),1);
+  const curTotal=totals[selY]||0;
+  const prevY=years[years.indexOf(selY)-1];
+  const prevTotal=prevY?totals[prevY]:0;
+  const trend=prevTotal>0?((curTotal-prevTotal)/prevTotal*100):null;
+  const trendStr=trend!==null?`${trend>0?'+':''}${trend.toFixed(0)}%`:'—';
+  const trendColor=trend===null?'var(--text2)':trend>0?'var(--red)':'var(--accent)';
+
+  document.getElementById('yearlySummary').innerHTML=`
+    <div class="summary-row">
+      <div class="summary-card"><div class="s-label">${selY}</div><div class="s-value">${fRpS(curTotal)}</div><div class="s-sub">${yView==='all'?'All':yView==='opex'?'OPEX':yView==='cc-bca'?'CC BCA':'CC Niaga'}</div></div>
+      <div class="summary-card"><div class="s-label">vs Last Year</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Prev: ${fRpS(prevTotal)}</div></div>
+    </div>`;
+
+  let barCols='';
+  years.forEach(y=>{
+    const t=totals[y]||0,hpct=maxT>0?(t/maxT*100):0,sel=y===selY?'selected':'';
+    barCols+=`<div class="bar-col ${sel}" onclick="selectYear(${y})">
+      <div class="bar-amount">${fRpS(t)}</div>
+      <div class="bar-fill" style="height:${Math.max(hpct,2)}%"></div>
+      <div class="bar-label">${y}</div>
+    </div>`;
+  });
+  document.getElementById('yearlyBarCard').innerHTML=`<div class="chart-card"><div class="chart-card-title">Yearly Total — tap year for detail</div><div class="bar-chart-wrap"><div class="bar-chart">${barCols}</div></div></div>`;
+
+  const mbData=monthBreak[selY]||{},mbKeys=MO.map(m=>`${m} ${selY}`);
+  const mbMax=Math.max(...mbKeys.map(k=>mbData[k]||0),1);
+  let mbCols=mbKeys.map(k=>{
+    const t=mbData[k]||0,hpct=mbMax>0?(t/mbMax*100):0;
+    return`<div class="bar-col"><div class="bar-amount">${t>0?fRpS(t):''}</div><div class="bar-fill" style="height:${Math.max(hpct,2)}%;opacity:0.7"></div><div class="bar-label">${k.split(' ')[0]}</div></div>`;
+  }).join('');
+  document.getElementById('yearlyMonthCard').innerHTML=`<div class="chart-card"><div class="chart-card-title">Monthly Breakdown ${selY}</div><div class="bar-chart-wrap"><div class="bar-chart">${mbCols}</div></div></div>`;
+
+  const catData=cats[selY]||{},catTotal=Object.values(catData).reduce((a,b)=>a+b,0);
+  const sorted=Object.entries(catData).sort((a,b)=>b[1]-a[1]);
+  if(!ySelCat||!catData[ySelCat])ySelCat=sorted.length?sorted[0][0]:null;
+  if(catTotal>0){
+    const legendHTML=sorted.map(([cat,val])=>{
+      const color=CAT_COLORS[cat]||CAT_COLORS['Other'],pct=((val/catTotal)*100).toFixed(0),isActive=ySelCat===cat;
+      return`<div class="legend-row${isActive?' active':''}" onclick="selectYearlyCat('${cat.replace(/'/g,"\'")}')">
+        <div class="legend-dot" style="background:${color}"></div>
+        <div class="legend-name">${cat}</div>
+        <div class="legend-pct">${pct}%</div>
+        <div class="legend-amt">${fRpS(val)}</div>
+      </div>`;
+    }).join('');
+    let detailHTML='';
+    if(ySelCat&&rawCats[selY][ySelCat]){
+      const color=CAT_COLORS[ySelCat]||CAT_COLORS['Other'];
+      const txList=[...rawCats[selY][ySelCat]].sort((a,b)=>(b.exp||0)-(a.exp||0));
+      detailHTML=`<div class="detail-section">
+        <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>${ySelCat} ${selY} · ${fRp(catData[ySelCat])}</div>
+        ${txList.map(r=>`<div class="detail-item">
+          <div class="detail-name">${r.tx||''}</div>
+          <div class="detail-date">${r.mk}</div>
+          <div class="detail-amt">${fRp(r.exp||0)}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+    document.getElementById('yearlyDonutCard').innerHTML=`<div class="chart-card">
+      <div class="chart-card-title">Category Breakdown ${selY} — tap for transactions</div>
+      <div class="donut-wrap"><div>${buildDonut(catData,100)}</div><div class="donut-legend">${legendHTML}</div></div>
+      ${detailHTML}</div>`;
+  } else document.getElementById('yearlyDonutCard').innerHTML='';
+}
+function selectYear(y){ySelYear=y;ySelCat=null;renderYearly()}
+function selectYearlyCat(cat){ySelCat=cat;renderYearly()}
+
+function renderCategory(){
+  const rows=getRows(cView),keys=getCatKeys();
+  const catTotals={},catMonthly={},catRaw={};
+  rows.forEach(r=>{
+    if(!keys.includes(r.mk))return;
+    const cat=r.cat||'Other',amt=r.exp||0;
+    catTotals[cat]=(catTotals[cat]||0)+amt;
+    if(!catMonthly[cat])catMonthly[cat]={};
+    catMonthly[cat][r.mk]=(catMonthly[cat][r.mk]||0)+amt;
+    if(!catRaw[cat])catRaw[cat]=[];
+    catRaw[cat].push(r);
+  });
+  const sorted=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  const maxCat=sorted.length?sorted[0][1]:1;
+  if(!cSelCat&&sorted.length)cSelCat=sorted[0][0];
+
+  const CAT_SHORT={'Administration':'Admin','Entertainment':'Entertain.','Self Care':'Self Care'};
+  let pillHTML='<div class="pill-grid">';
+  sorted.forEach(([cat,total])=>{
+    const color=CAT_COLORS[cat]||CAT_COLORS['Other'];
+    const barW=maxCat>0?((total/maxCat)*100).toFixed(0):0;
+    const isActive=cSelCat===cat;
+    const displayName=CAT_SHORT[cat]||cat;
+    pillHTML+=`<div class="cat-pill${isActive?' active':''}" onclick="selectCat('${cat.replace(/'/g,"\'")}')">
+      <div class="cat-pill-bar" style="width:${barW}%;background:${color}"></div>
+      <div class="cat-pill-name">${displayName}</div>
+      <div class="cat-pill-amt">${fRpS(total)}</div>
+    </div>`;
+  });
+  pillHTML+='</div>';
+  document.getElementById('catRankingCard').innerHTML=pillHTML;
+
+  if(cSelCat&&catMonthly[cSelCat]){
+    const color=CAT_COLORS[cSelCat]||CAT_COLORS['Other'];
+    const mData=catMonthly[cSelCat];
+    const mMax=Math.max(...keys.map(k=>mData[k]||0),1);
+    const avg=keys.reduce((s,k)=>s+(mData[k]||0),0)/keys.length;
+    const txList=(catRaw[cSelCat]||[]).sort((a,b)=>(b.exp||0)-(a.exp||0)).slice(0,10);
+    let barCols=keys.map(k=>{
+      const t=mData[k]||0,hpct=mMax>0?(t/mMax*100):0;
+      return`<div class="bar-col"><div class="bar-amount">${t>0?fRpS(t):''}</div><div class="bar-fill" style="height:${Math.max(hpct,2)}%;background:${color};border-color:${color}"></div><div class="bar-label">${k.split(' ')[0]}</div></div>`;
+    }).join('');
+    document.getElementById('catTrendCard').innerHTML=`<div class="cat-trend-card">
+      <div class="cat-trend-header">
+        <div class="cat-trend-dot" style="background:${color}"></div>
+        <span style="color:var(--text);font-size:13px;font-weight:600">${cSelCat}</span>
+        <span style="color:var(--text2);font-size:12px"> · avg ${fRpS(Math.round(avg))}/mo · total ${fRpS(catTotals[cSelCat])}</span>
+      </div>
+      <div class="bar-chart-wrap"><div class="bar-chart">${barCols}</div></div>
+      ${txList.length?`<div class="detail-section">
+        <div class="detail-title"><div class="detail-title-dot" style="background:${color}"></div>Top transactions</div>
+        ${txList.map(r=>`<div class="detail-item">
+          <div class="detail-name">${r.tx||''}</div>
+          <div class="detail-date">${r.mk}</div>
+          <div class="detail-amt">${fRp(r.exp||0)}</div>
+        </div>`).join('')}
+      </div>`:''}
+    </div>`;
+  } else document.getElementById('catTrendCard').innerHTML='';
+}
+function selectCat(cat){cSelCat=cat;renderCategory()}
+
+function buildDonut(data,size){
+  const total=Object.values(data).reduce((a,b)=>a+b,0);
+  if(!total)return'';
+  const sorted=Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  const r=size/2-10,cx=size/2,cy=size/2,circ=2*Math.PI*r;
+  let offset=0,paths='';
+  sorted.forEach(([cat,val])=>{
+    const pct=val/total,dash=pct*circ,color=CAT_COLORS[cat]||CAT_COLORS['Other'];
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="13" stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset+=dash;
+  });
+  return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="13"/>
+    ${paths}
+    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="var(--text)" font-size="10" font-weight="700">${fRpS(total)}</text>
+  </svg>`;
+}
+
+// ── NET WORTH ─────────────────────────────────────────────────
+function setNWMode(mode,el){
+  nwMode=mode;
+  document.querySelectorAll('.nw-mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('nwPriceInputs').style.display = (mode === 'holdings') ? 'block' : 'none';
+  renderNetWorth();
+}
+function initNetWorth() {
+  document.getElementById('nwPriceInputs').style.display = 'block';
+  loadPriceInputs();
+  renderNetWorth();
+}
+
+async function fetchFxRates(){
+  const now=Date.now();
+  if(fxRates.USD && (now-fxLastFetch)<3600000)return; 
+  try {
+    const res=await fetch('https://api.frankfurter.app/latest?from=USD,CHF&to=IDR');
+    const j=await res.json();
+    fxRates.USD = j.rates?.USD?.IDR || j.rates?.IDR;
+    const [usdRes, chfRes] = await Promise.all([
+      fetch('https://api.frankfurter.app/latest?from=USD&to=IDR'),
+      fetch('https://api.frankfurter.app/latest?from=CHF&to=IDR'),
+    ]);
+    const usdJ = await usdRes.json();
+    const chfJ = await chfRes.json();
+    fxRates.USD = usdJ.rates?.IDR;
+    fxRates.CHF = chfJ.rates?.IDR;
+    fxLastFetch = now;
+    localStorage.setItem('nota_fx', JSON.stringify(fxRates));
+    localStorage.setItem('nota_fx_ts', String(now));
+  } catch(e){
+    fxRates.USD = fxRates.USD || 16500;
+    fxRates.CHF = fxRates.CHF || 19000;
+  }
+}
+
+async function renderNetWorth(){
+  await fetchFxRates();
+  const manualUSD = parsePrice(stockPrices['USDIDR']);
+  const manualCHF = parsePrice(stockPrices['CHFIDR']);
+  const usdRate = manualUSD > 0 ? manualUSD : (fxRates.USD || 16500);
+  const chfRate = manualCHF > 0 ? manualCHF : (fxRates.CHF || 19000);
+
+  const navStar = parsePrice(stockPrices['StarStable']);
+  const priceQQQ  = parsePrice(stockPrices['QQQ']);
+  const priceJNJ  = parsePrice(stockPrices['JNJ']);
+  const priceVYM  = parsePrice(stockPrices['VYM']);
+  const priceAAPL = parsePrice(stockPrices['AAPL']);
+
+  const allInvest = getAllInvestRows();
+  const buyLots={}, sellLots={}, buyTotalIdr={};
+  allInvest.forEach(r=>{
+    const s=r.stock;
+    if(!buyLots[s]){buyLots[s]=0;sellLots[s]=0;buyTotalIdr[s]=0;}
+    if(r.action==='Buy'){
+      buyLots[s]  += r.lot;
+      buyTotalIdr[s] += r.totalIdr||0;
+    } else {
+      sellLots[s] += r.lot;
+    }
+  });
+
+  const holdings = Object.keys(buyLots).map(stock=>{
+    const netLot = buyLots[stock] - (sellLots[stock]||0);
+    if(netLot <= 0) return null;
+    const type = STOCK_TYPE[stock]||'';
+    const buyRatio = buyLots[stock] > 0 ? netLot / buyLots[stock] : 0;
+    const costBasis = buyTotalIdr[stock] * buyRatio;
+    const avgCostPerUnit = buyLots[stock] > 0 ? buyTotalIdr[stock] / buyLots[stock] : 0;
+
+    let currentValue = 0;
+    if (stock==='Star Stable Income Fund') currentValue = navStar > 0 ? netLot * navStar : 0;
+    else if (stock==='USDIDR') currentValue = netLot * usdRate;
+    else if (stock==='CHFIDR') currentValue = netLot * chfRate;
+    else if (stock==='QQQ')  currentValue = priceQQQ  > 0 ? netLot * priceQQQ  * usdRate : 0;
+    else if (stock==='JNJ')  currentValue = priceJNJ  > 0 ? netLot * priceJNJ  * usdRate : 0;
+    else if (stock==='VYM')  currentValue = priceVYM  > 0 ? netLot * priceVYM  * usdRate : 0;
+    else if (stock==='AAPL') currentValue = priceAAPL > 0 ? netLot * priceAAPL * usdRate : 0;
+
+    return {stock, type, netLot, costBasis, currentValue, avgCostPerUnit};
+  }).filter(Boolean);
+
+  const cashBal = HIST.cashBalance || 0;
+  const lastBalance = cashBal;
+
+  if(nwMode==='holdings'){
+    renderHoldings(holdings, usdRate, chfRate);
+  } else {
+    renderOverview(holdings, usdRate, chfRate, lastBalance);
+  }
+}
+
+function renderHoldings(holdings, usdRate, chfRate){
+  const groups = {
+    'Reksa Dana': holdings.filter(h=>h.type==='Reksa Dana'),
+    'Forex':      holdings.filter(h=>h.type==='Forex'),
+    'US Stock':   holdings.filter(h=>h.type==='US Stock'),
+  };
+  const colorMap = {'Reksa Dana':'var(--green)','Forex':'var(--blue)','US Stock':'var(--accent)'};
+  const bgMap    = {'Reksa Dana':'var(--green-dim)','Forex':'var(--blue-dim)','US Stock':'var(--accent-dim)'};
+
+  let html = '';
+  Object.entries(groups).forEach(([type, items])=>{
+    if(!items.length) return;
+    const color = colorMap[type], bg = bgMap[type];
+    let groupCost=0, groupValue=0;
+    html += `<div class="chart-card-title" style="margin-top:14px;margin-bottom:8px;color:${color}">${type}</div>`;
+    items.forEach(h=>{
+      groupCost  += h.costBasis;
+      groupValue += h.currentValue;
+      const hasValue = h.currentValue > 0;
+      const pnl    = hasValue ? h.currentValue - h.costBasis : null;
+      const pnlPct = pnl !== null && h.costBasis > 0 ? (pnl/h.costBasis*100) : null;
+      const lotStr = h.type==='US Stock' ? `${h.netLot} shares` :
+                     h.stock==='USDIDR'  ? `${h.netLot.toFixed(2)} USD` :
+                     h.stock==='CHFIDR'  ? `${h.netLot} CHF` :
+                     `${h.netLot.toLocaleString('id-ID')} units`;
+      const avgStr = h.type==='US Stock'
+        ? `Avg $${(h.avgCostPerUnit/usdRate).toFixed(2)}`
+        : `Avg ${fRpS(Math.round(h.avgCostPerUnit))}/unit`;
+
+      html += `<div class="holding-item">
+        <div class="holding-header">
+          <div class="holding-name" style="color:${color}">${h.stock}</div>
+          <span class="holding-badge" style="background:${bg};color:${color}">${lotStr}</span>
+        </div>
+        <div class="holding-details">
+          <span>Cost basis <strong>${fRpS(Math.round(h.costBasis))}</strong></span>
+          ${hasValue
+            ? `<span>Value <strong style="color:${color}">${fRpS(Math.round(h.currentValue))}</strong></span>`
+            : `<span style="color:var(--text2)">Enter price above</span>`}
+        </div>
+        <div class="holding-details" style="margin-top:3px">
+          <span style="color:var(--text2)">${avgStr}</span>
+          ${pnl!==null ? `<span style="color:${pnl>=0?'var(--green)':'var(--red)'}">
+            ${pnl>=0?'+':''}${fRpS(Math.round(pnl))} (${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%)
+          </span>` : ''}
+        </div>
+      </div>`;
+    });
+    if(items.length > 1 || type==='US Stock'){
+      const gPnl = groupValue > 0 ? groupValue - groupCost : null;
+      html += `<div class="holding-item" style="border-color:${color};background:${bg}">
+        <div class="holding-header">
+          <div style="font-size:12px;font-weight:600;color:${color}">Total ${type}</div>
+          <div style="font-size:12px;font-weight:700;color:${color}">${fRpS(Math.round(groupCost))}</div>
+        </div>
+        ${gPnl!==null ? `<div class="holding-details">
+          <span>Est. value <strong style="color:${color}">${fRpS(Math.round(groupValue))}</strong></span>
+          <span style="color:${gPnl>=0?'var(--green)':'var(--red)'}">
+            ${gPnl>=0?'+':''}${fRpS(Math.round(gPnl))}
+          </span>
+        </div>` : ''}
+      </div>`;
+    }
+  });
+  document.getElementById('nwContent').innerHTML = html || '<div class="empty-state">No holdings found</div>';
+}
+
+function renderOverview(holdings, usdRate, chfRate, cashBalance){
+  const totalInvestCost  = holdings.reduce((s,h)=>s+h.costBasis, 0);
+  const totalInvestValue = holdings.reduce((s,h)=>s+h.currentValue, 0);
+  const hasValue = totalInvestValue > 0;
+  const totalNetWorth = (hasValue ? totalInvestValue : totalInvestCost) + cashBalance;
+  const pnl    = hasValue ? totalInvestValue - totalInvestCost : null;
+  const pnlPct = pnl !== null && totalInvestCost > 0 ? (pnl/totalInvestCost*100) : null;
+
+  function fRpFull(n){ return 'Rp ' + Math.round(n).toLocaleString('id-ID'); }
+  const lu = HIST.currentPrices?.lastUpdated || '';
+
+  let html = `
+    <div class="chart-card" style="margin-bottom:10px">
+      <div class="chart-card-title">Total net worth</div>
+      <div style="font-size:28px;font-weight:700;color:var(--accent);letter-spacing:-0.5px;margin:4px 0 6px">${fRpFull(totalNetWorth)}</div>
+      <div style="font-size:12px;color:var(--text2)">Invest + cash${lu?' · as of '+lu:''}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px">
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Invested</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text);margin:3px 0 2px">${fRpS(Math.round(totalInvestCost))}</div>
+        <div style="font-size:11px;color:var(--text2)">cost basis</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Unrealized</div>
+        <div style="font-size:14px;font-weight:600;color:${pnl===null?'var(--text2)':pnl>=0?'var(--green)':'var(--red)'};margin:3px 0 2px">
+          ${pnl===null?'—':(pnl>=0?'+':'')+fRpS(Math.round(pnl))}
+        </div>
+        <div style="font-size:11px;color:var(--text2)">${pnlPct!==null?(pnlPct>=0?'+':'')+pnlPct.toFixed(1)+'%':'—'}</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Cash</div>
+        <div style="font-size:14px;font-weight:600;color:var(--blue);margin:3px 0 2px">${fRpS(Math.round(cashBalance))}</div>
+        <div style="font-size:11px;color:var(--text2)">from Opex</div>
+      </div>
+    </div>`;
+
+  const byType = {'Cash': {cost: cashBalance, value: cashBalance}};
+  holdings.forEach(h=>{
+    const t = h.type;
+    if(!byType[t]) byType[t] = {cost:0, value:0};
+    byType[t].cost  += h.costBasis;
+    byType[t].value += h.currentValue;
+  });
+  const typeColor = {'Reksa Dana':'var(--green)','Forex':'var(--blue)','US Stock':'var(--accent)','Cash':'var(--text2)'};
+  const grandTotal = Object.values(byType).reduce((s,d)=>s+d.cost, 0);
+
+  html += `<div class="chart-card" style="margin-bottom:10px"><div class="chart-card-title">Allocation by type</div>`;
+  Object.entries(byType)
+    .sort((a,b)=>b[1].cost - a[1].cost)
+    .forEach(([type, data])=>{
+      const pct = grandTotal > 0 ? (data.cost/grandTotal*100) : 0;
+      const color = typeColor[type]||'var(--text2)';
+      html += `<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:12px;font-weight:500;color:${color}">${type}</span>
+          <span style="font-size:12px;color:var(--text2)">${pct.toFixed(0)}% · ${fRpS(Math.round(data.cost))}</span>
+        </div>
+        <div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${pct.toFixed(0)}%;background:${color};border-radius:3px"></div>
+        </div>
+      </div>`;
+    });
+  html += `<div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text2)">
+    FX rates: USD/IDR ${Math.round(usdRate).toLocaleString('id-ID')} · CHF/IDR ${Math.round(chfRate).toLocaleString('id-ID')}
+  </div></div>`;
+
+  document.getElementById('nwContent').innerHTML = html;
+}
+
+function updateHeaderHeight(){
+  const h=document.querySelector('.header');
+  if(h)document.documentElement.style.setProperty('--header-height',h.offsetHeight+'px');
+}
+
+// ── SEARCH FUNCTIONS ──────────────────────────────────────────
+let searchTimeout;
+let searchCurrentResults = [];
+let searchPageIndex = 0;
+
+function onSearchInput() {
+  const val = document.getElementById('searchInput').value.trim();
+  document.getElementById('searchClearBtn').style.display = val ? 'flex' : 'none';
+  clearTimeout(searchTimeout);
+  if (!val) { clearSearch(); return; }
+  searchTimeout = setTimeout(() => { performSearch(val); }, 300);
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClearBtn').style.display = 'none';
+  document.getElementById('searchResultsCount').style.display = 'none';
+  document.getElementById('searchResults').innerHTML = '';
+  searchCurrentResults = [];
+  searchPageIndex = 0;
+}
+
+function performSearch(query) {
+  const q = query.toLowerCase();
+  const results = [];
+  
+  const histOpex = HIST.opex || [];
+  for (let i = 0; i < histOpex.length; i++) {
+    const row = histOpex[i];
+    const txMatch = row.tx && row.tx.toLowerCase().includes(q);
+    const notesMatch = row.notes && row.notes.toLowerCase().includes(q);
+    if (txMatch || notesMatch) results.push({source: 'hist-opex', idx: i, row, type: 'opex'});
+  }
+  
+  const histInvest = HIST.invest || [];
+  for (let i = 0; i < histInvest.length; i++) {
+    const row = histInvest[i];
+    const txMatch = row.stock && row.stock.toLowerCase().includes(q);
+    if (txMatch) results.push({source: 'hist-invest', idx: i, row, type: 'invest'});
+  }
+  
+  for (let i = 0; i < txHistory.length; i++) {
+    const r = txHistory[i];
+    const txMatch = r.tx && r.tx.toLowerCase().includes(q);
+    const notesMatch = r.notes && r.notes.toLowerCase().includes(q);
+    if (txMatch || notesMatch) results.push({source: 'local-opex', idx: i, row: r, type: 'opex'});
+  }
+  
+  for (let i = 0; i < investHistory.length; i++) {
+    const r = investHistory[i];
+    const txMatch = r.stock && r.stock.toLowerCase().includes(q);
+    if (txMatch) results.push({source: 'local-invest', idx: i, row: r, type: 'invest'});
+  }
+  
+  results.sort((a, b) => {
+    const dateA = new Date(a.row.date || `${a.row.y}-${String(a.row.m+1).padStart(2,'0')}-${String(a.row.d).padStart(2,'0')}`);
+    const dateB = new Date(b.row.date || `${b.row.y}-${String(b.row.m+1).padStart(2,'0')}-${String(b.row.d).padStart(2,'0')}`);
+    return dateB - dateA;
+  });
+  
+  searchCurrentResults = results;
+  searchPageIndex = 0;
+  renderSearchResults(q);
+}
+
+function renderSearchResults(query) {
+  const countEl = document.getElementById('searchResultsCount');
+  const resultsEl = document.getElementById('searchResults');
+  const total = searchCurrentResults.length;
+  
+  if (total === 0) {
+    countEl.style.display = 'none';
+    resultsEl.innerHTML = '<div class="empty-state">No results found</div>';
+    return;
+  }
+  
+  countEl.style.display = 'block';
+  countEl.textContent = `Found ${total} result${total !== 1 ? 's' : ''} for "${query}"`;
+  
+  const pageSize = 20;
+  const pageResults = searchCurrentResults.slice(0, (searchPageIndex + 1) * pageSize);
+  
+  resultsEl.innerHTML = pageResults.map((item) => {
+    const row = item.row;
+    const isInvest = item.type === 'invest';
+    const isPending = item.source.startsWith('local');
+    
+    let date, tx, cat, pm, amount, notes, icon, cls, color;
+    if (isInvest) {
+      date = row.date ? isoDisp(row.date) : `${row.d} ${MO[row.m]} ${row.y}`;
+      tx = row.stock;
+      cat = row.type || 'Stock';
+      pm = row.action;
+      amount = fRp(row.totalIdr || (row.lot * row.price));
+      icon = '📈'; cls = 'invest'; color = 'var(--blue)';
+    } else {
+      date = row.date ? isoDisp(row.date) : `${row.d} ${MO[row.m]} ${row.y}`;
+      tx = row.tx;
+      cat = row.cat || row.category;
+      pm = row.pm;
+      amount = fRp(row.exp || row.amount);
+      notes = row.notes || '';
+      icon = '💳';
+      cls = pm === 'CC BCA' ? 'cc-bca' : pm === 'CC Niaga' ? 'cc-niaga' : 'expense';
+      color = pm === 'CC BCA' ? 'var(--blue)' : pm === 'CC Niaga' ? 'var(--red)' : 'var(--accent)';
+    }
+    
+    const syncBadge = isPending && !row.synced ? '<span class="badge badge-pending">pending</span>' : '';
+    const notesHtml = !isInvest && notes ? `<div class="search-item-note">${highlightMatches(notes, query)}</div>` : '';
+    
+    return `<div class="tx-item">
+      <div class="tx-icon ${cls}">${icon}</div>
+      <div class="tx-info" style="flex:1">
+        <div class="tx-payee">${highlightMatches(tx, query)}${syncBadge}</div>
+        <div class="tx-meta">${date} • ${cat} · ${pm}</div>
+        ${notesHtml}
+      </div>
+      <div class="tx-amount" style="color:${color}">${amount}</div>
+    </div>`;
+  }).join('');
+  
+  if (pageResults.length < total) {
+    resultsEl.innerHTML += `<div class="search-loading">Scroll for more… (${pageResults.length}/${total})</div>`;
+    resultsEl.addEventListener('scroll', () => {
+      const el = resultsEl;
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
+        loadMoreSearchResults(query);
+      }
+    });
+  }
+}
+
+function loadMoreSearchResults(query) {
+  const pageSize = 20;
+  const total = searchCurrentResults.length;
+  const currentShown = (searchPageIndex + 1) * pageSize;
+  if (currentShown < total) {
+    searchPageIndex++;
+    renderSearchResults(query);
+  }
+}
+
+function highlightMatches(text, query) {
+  if (!query) return text;
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return text.replace(regex, '<span class="highlight">$1</span>');
+}
+
+function openSearchOverlay() {
+  document.getElementById('searchModal').classList.add('open');
+  document.getElementById('searchInput').focus();
+  clearSearch();
+}
+document.getElementById('searchModal').addEventListener('click',e=>{if(e.target===document.getElementById('searchModal'))closeSearchModal()});
+function closeSearchModal(){document.getElementById('searchModal').classList.remove('open');clearSearch()}
+
+async function loadHistData() {
+  try {
+    const res = await fetch('data.json?v=' + APP_BUILD);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    Object.assign(HIST, d);
+    localStorage.setItem('nota_txCat', JSON.stringify(d.txCat||{}));
+    localStorage.setItem('nota_txPm',  JSON.stringify(d.txPm||{}));
+    if (d.currentPrices) {
+      const cp = d.currentPrices;
+      const keys = ['StarStable','AAPL','JNJ','VYM','QQQ','CHFIDR','USDIDR'];
+      keys.forEach(k => { if (!stockPrices[k]) stockPrices[k] = String(cp[k] || ''); });
+      localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
+    }
+    histLoaded = true;
+    histLoadCallbacks.forEach(cb => cb());
+    histLoadCallbacks = [];
+  } catch(e) {
+    console.warn('data.json load failed:', e.message);
+    const cachedCat = localStorage.getItem('nota_txCat');
+    const cachedPm  = localStorage.getItem('nota_txPm');
+    if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
+    if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
+    histLoaded = true;
+    histLoadCallbacks.forEach(cb => cb());
+    histLoadCallbacks = [];
+  }
+}
+
+(function() {
+  const cachedCat = localStorage.getItem('nota_txCat');
+  const cachedPm  = localStorage.getItem('nota_txPm');
+  if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
+  if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
+})();
+
+// ── HOME CALENDAR ─────────────────────────────────────────────
+
+const CAL_TX_HEADER_H  = 46;
+const CAL_TX_ITEM_H    = 44;
+const CAL_TX_EMPTY_H   = 110;
+const CAL_TX_MAX_FRAC  = 0.50;
+
+let calInited       = false;
+let calOlderShown   = false;
+let calSelectedCell = null;
 
 function calGetMonthData(year, month) {
-  const allRows = getAllOpexRows();
-  const mIndex = month - 1; // FIX: Sync 1-based month (arg) to 0-based data (r.m)
+  const opex = HIST.opex || [];
   const txByDay = {};
-
-  allRows.forEach(r => {
-    if (r.y !== year || r.m !== mIndex) return;
-    if (r.cat === 'Income' || r.cat === 'Investment') return;
+  
+  // Add HIST.opex data
+  opex.forEach(r => {
+    if (r.y !== year || r.m !== month) return;
     const key = r.d;
     if (!txByDay[key]) txByDay[key] = [];
     txByDay[key].push(r);
   });
+  
+  // Add txHistory (local transactions) data
+  const local = txHistory || [];
+  local.forEach(r => {
+    if (!r.date) return;
+    const d = new Date(r.date);
+    if (d.getFullYear() !== year || d.getMonth() !== month) return;
+    const key = d.getDate();
+    if (!txByDay[key]) txByDay[key] = [];
+    txByDay[key].push(r);
+  });
 
-  const total = allRows
-    .filter(r => r.y === year && r.m === mIndex && r.cat !== 'Income' && r.cat !== 'Investment')
+  const total = opex
+    .filter(r => r.y === year && r.m === month && r.cat !== 'Income' && r.cat !== 'Investment')
     .reduce((s, r) => s + (r.exp || 0), 0);
 
-  let avgT = 0, avgC = 0;
+  let avgTotal = 0, avgCount = 0;
   for (let i = 1; i <= 3; i++) {
-    let ay = year, am = mIndex - i; if (am < 0) { am += 12; ay -= 1; }
-    const mt = allRows.filter(r => r.y === ay && r.m === am && r.exp).reduce((s, r) => s + (r.exp || 0), 0);
-    if (mt > 0) { avgT += mt; avgC++; }
+    let ay = year, am = month - i;
+    if (am <= 0) { am += 12; ay -= 1; }
+    const mt = opex
+      .filter(r => r.y === ay && r.m === am && r.cat !== 'Income' && r.cat !== 'Investment')
+      .reduce((s, r) => s + (r.exp || 0), 0);
+    if (mt > 0) { avgTotal += mt; avgCount++; }
   }
-  const avg = avgC > 0 ? Math.round(avgT / avgC) : 0;
-  return { total, avg, txByDay };
+  const avg = avgCount > 0 ? Math.round(avgTotal / avgCount) : 0;
+  const pct = avg > 0 ? Math.min(Math.round((total / avg) * 100), 100) : 0;
+  const isOver = avg > 0 && total > avg;
+
+  return { total, avg, pct, isOver, txByDay };
+}
+
+function calFormatAmount(n) {
+  if (!n) return '';
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000)    return Math.round(n / 1000) + 'K';
+  return String(n);
+}
+
+function calMonthName(y, m) {
+  return new Date(y, m - 1, 1).toLocaleDateString('en-US', {month:'long', year:'numeric'});
 }
 
 function calBuildMonthHTML(year, month, today) {
-  const { total, avg, txByDay } = calGetMonthData(year, month);
-  const mName = new Date(year, month-1, 1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  const pct = avg > 0 ? Math.min(Math.round((total/avg)*100),100) : 0;
-  
-  const firstDay = new Date(year, month - 1, 1).getDay();
+  const { total, avg, pct, isOver, txByDay } = calGetMonthData(year, month);
+  const mName   = calMonthName(year, month);
+  const totalFmt = total ? fRpS(total) : 'Rp 0';
+  const avgFmt   = avg   ? fRpS(avg)   : '';
+  const fillPct  = pct + '%';
+  const overCls  = isOver ? ' over' : '';
+
+  const progressHTML = avg > 0
+    ? `<div class="cal-progress-wrap">
+        <div class="cal-progress-bar"><div class="cal-progress-fill${overCls}" style="width:${fillPct}"></div></div>
+        <div class="cal-progress-right">
+          <div class="cal-progress-amount">${totalFmt}</div>
+          <div class="cal-progress-avg">3mo avg ${avgFmt}</div>
+        </div>
+      </div>`
+    : `<div class="cal-progress-wrap">
+        <div class="cal-progress-bar"><div class="cal-progress-fill" style="width:0%"></div></div>
+        <div class="cal-progress-right">
+          <div class="cal-progress-amount">${totalFmt}</div>
+          <div class="cal-progress-avg" style="visibility:hidden">—</div>
+        </div>
+      </div>`;
+
+  const firstDay  = new Date(year, month - 1, 1).getDay();
   const daysInMon = new Date(year, month, 0).getDate();
-  const offset = (firstDay + 6) % 7;
-  
+  const offset    = (firstDay + 6) % 7;
+  const prevMonth = month === 1 ? 12 : month - 1;
+  const prevYear  = month === 1 ? year - 1 : year;
+  const daysInPrev = new Date(prevYear, prevMonth, 0).getDate();
+
   let cells = [];
-  const prevDate = new Date(year, month-1, 0);
-  for (let i = offset - 1; i >= 0; i--) cells.push({ d: prevDate.getDate()-i, cur: false });
-  for (let d = 1; d <= daysInMon; d++) cells.push({ d: d, cur: true });
-  while(cells.length % 7 !== 0) cells.push({ d: cells.length % 7 + 1, cur: false, next:true });
+  for (let i = offset - 1; i >= 0; i--) cells.push({ day: daysInPrev - i, cur: false, next: false });
+  for (let d = 1; d <= daysInMon; d++) cells.push({ day: d, cur: true, next: false });
+  const remainder = cells.length % 7;
+  if (remainder > 0) {
+    for (let d = 1; d <= 7 - remainder; d++) cells.push({ day: d, cur: false, next: true });
+  }
 
-  let weeks = '';
+  const todayY = today.getFullYear();
+  const todayM = today.getMonth() + 1;
+  const todayD = today.getDate();
+
+  let weeksHTML = '';
   for (let w = 0; w < cells.length / 7; w++) {
-    let row = '';
+    let weekCells = '';
     for (let d = 0; d < 7; d++) {
-      const c = cells[w*7+d];
-      const isToday = c.cur && year===today.getFullYear() && month===(today.getMonth()+1) && c.d===today.getDate();
-      const txs = c.cur ? (txByDay[c.d] || []) : [];
-      const dayTotal = txs.reduce((s,r)=>s+(r.exp||0),0);
-      
-      let cls = 'cal-day' + (c.cur ? '' : ' other-month');
-      if (isToday) cls += ' today';
-      if (txs.length > 0) cls += ' has-data';
+      const cell = cells[w * 7 + d];
+      if (!cell) continue;
 
-      const txJson = JSON.stringify(txs.map(r=>({cat:r.cat, pm:r.pm, amt:r.exp}))).replace(/'/g, '&#39;');
-      const dateStr = c.cur ? `${year}-${String(month).padStart(2,'0')}-${String(c.d).padStart(2,'0')}` : '';
-      
-      // FIX: Semua hari di bulan aktif bisa diklik
-      const click = c.cur ? `onclick="calSelectDay(this,'${dateStr}','${dayTotal?fRpS(dayTotal):''}')"` : '';
+      const isCur    = cell.cur;
+      const isToday  = isCur && year === todayY && month === todayM && cell.day === todayD;
+      const isFuture = isCur && (year > todayY || (year === todayY && month > todayM) ||
+                       (year === todayY && month === todayM && cell.day > todayD));
+      const txs      = isCur ? (txByDay[cell.day] || []) : [];
+      const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || 0), 0);
+      const hasData  = txs.length > 0;
 
-      row += `<div class="${cls}" ${click} data-txns='${txJson}'>
-        <div class="cal-day-num">${c.d}</div>
-        <div class="cal-day-total">${dayTotal?calFormatAmount(dayTotal):(isToday?'Today':'')}</div>
+      let cls = 'cal-day';
+      if (!isCur)    cls += ' other-month';
+      else if (isFuture) cls += ' future';
+      else if (hasData)  cls += ' has-data';
+      if (isToday)   cls += ' today';
+
+      const txJson = hasData
+        ? JSON.stringify(txs.map(r => ({
+            tx: r.tx || r.payee || r.mk || '', 
+            cat: r.category || r.cat || '', 
+            pm: r.pm || '',
+            amt: r.amount || r.exp || 0, 
+            type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : '')
+          }))).replace(/'/g, '&#39;')
+        : '[]';
+      const dateStr  = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
+      const totalStr = dayTotal ? fRpS(dayTotal) : '';
+      const clickAttr = (hasData || isToday)
+        ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
+
+      const totalLabel = isToday && !hasData ? 'Today'
+                       : (dayTotal ? calFormatAmount(dayTotal) : '');
+
+      weekCells += `<div class="${cls}" ${clickAttr} data-txns='${txJson}'>
+        <div class="cal-day-num">${cell.day}</div>
+        ${totalLabel ? `<div class="cal-day-total">${totalLabel}</div>` : ''}
       </div>`;
     }
-    weeks += `<div class="cal-week-row">${row}</div>`;
+    weeksHTML += `<div class="cal-week-row">${weekCells}</div>`;
   }
 
   return `
     <div class="cal-month-label">
       <div class="cal-month-name">${mName}</div>
-      <div class="cal-progress-wrap">
-        <div class="cal-progress-bar"><div class="cal-progress-fill" style="width:${pct}%"></div></div>
-        <div class="cal-progress-right"><div class="cal-progress-amount">${fRpS(total)}</div></div>
-      </div>
+      ${progressHTML}
     </div>
-    <div class="cal-week-section">${weeks}</div>`;
+    <div class="cal-week-section">
+      <div class="cal-wday-row">
+        <div class="cal-wday">Mon</div><div class="cal-wday">Tue</div><div class="cal-wday">Wed</div>
+        <div class="cal-wday">Thu</div><div class="cal-wday">Fri</div><div class="cal-wday">Sat</div><div class="cal-wday">Sun</div>
+      </div>
+      ${weeksHTML}
+    </div>`;
 }
 
 function calGetCurrentWeekHTML(year, month, today) {
   const { txByDay } = calGetMonthData(year, month);
-  const dow = (today.getDay() + 6) % 7;
-  const mon = new Date(today); mon.setDate(today.getDate() - dow);
-  
-  let row = '';
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(mon); d.setDate(mon.getDate()+i);
-    const dy = d.getFullYear(), dm = d.getMonth()+1, dd = d.getDate();
-    const isToday = dd===today.getDate() && dm===(today.getMonth()+1);
-    const txs = (dy===year && dm===month) ? (txByDay[dd] || []) : [];
-    const dayTotal = txs.reduce((s,r)=>s+(r.exp||0),0);
-    const dateStr = `${dy}-${String(dm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
-    const txJson = JSON.stringify(txs.map(r=>({cat:r.cat, pm:r.pm, amt:r.exp}))).replace(/'/g, '&#39;');
+  const todayD = today.getDate();
+  const todayDow = (today.getDay() + 6) % 7; 
+  const monDate = new Date(today);
+  monDate.setDate(today.getDate() - todayDow);
 
-    row += `<div class="cal-day ${isToday?'today':''} ${txs.length?'has-data':''}" onclick="calSelectDay(this,'${dateStr}','${dayTotal?fRpS(dayTotal):''}')" data-txns='${txJson}'>
+  let cells = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monDate);
+    d.setDate(monDate.getDate() + i);
+    const dy = d.getFullYear(), dm = d.getMonth() + 1, dd = d.getDate();
+    const isCur    = (dy === year && dm === month);
+    const isToday  = (dy === today.getFullYear() && dm === today.getMonth() + 1 && dd === todayD);
+    const isFuture = d > today;
+    const txs      = isCur ? (txByDay[dd] || []) : [];
+    const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || 0), 0);
+    const hasData  = txs.length > 0;
+
+    let cls = 'cal-day';
+    if (!isCur)     cls += ' other-month';
+    else if (isFuture)  cls += ' future';
+    else if (hasData)   cls += ' has-data';
+    if (isToday)    cls += ' today';
+
+    const txJson = hasData
+      ? JSON.stringify(txs.map(r => ({
+          tx: r.tx || r.payee || r.mk || '',
+          cat: r.category || r.cat || '', 
+          pm: r.pm || '',
+          amt: r.amount || r.exp || 0, 
+          type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : '')
+        }))).replace(/'/g,'&#39;')
+      : '[]';
+    const dateStr  = `${dy}-${String(dm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+    const totalStr = dayTotal ? fRpS(dayTotal) : '';
+    const clickAttr = (hasData || isToday)
+      ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
+    const totalLabel = isToday && !hasData ? 'Today' : (dayTotal ? calFormatAmount(dayTotal) : '');
+
+    cells += `<div class="${cls}" ${clickAttr} data-txns='${txJson}'>
       <div class="cal-day-num">${dd}</div>
-      <div class="cal-day-total">${dayTotal?calFormatAmount(dayTotal):(isToday?'Today':'')}</div>
+      ${totalLabel ? `<div class="cal-day-total">${totalLabel}</div>` : ''}
     </div>`;
   }
-  return `<div class="cal-week-row">${row}</div>`;
+  return `<div class="cal-week-row" id="calCurWeekRow">${cells}</div>`;
 }
 
 function initCalendar() {
-  if (calInited) return; calInited = true;
-  const today = new Date(), y = today.getFullYear(), m = today.getMonth()+1;
-  const weekHTML = calGetCurrentWeekHTML(y, m, today);
-  
+  if (calInited) return;
+  calInited = true;
+
+  const today  = new Date();
+  const year   = today.getFullYear();
+  const month  = today.getMonth() + 1;
+  const { total, avg, pct, isOver } = calGetMonthData(year, month);
+
+  const totalFmt = total ? fRpS(total) : 'Rp 0';
+  const avgFmt   = avg   ? fRpS(avg)   : '';
+  const fillPct  = (avg > 0 ? Math.min(Math.round((total/avg)*100),100) : 0) + '%';
+  const overCls  = isOver ? ' over' : '';
+
+  const progressHTML = avg > 0
+    ? `<div class="cal-progress-wrap">
+        <div class="cal-progress-bar"><div class="cal-progress-fill${overCls}" style="width:${fillPct}"></div></div>
+        <div class="cal-progress-right">
+          <div class="cal-progress-amount">${totalFmt}</div>
+          <div class="cal-progress-avg">3mo avg ${avgFmt}</div>
+        </div>
+      </div>`
+    : `<div class="cal-progress-wrap">
+        <div class="cal-progress-bar"><div class="cal-progress-fill" style="width:0%"></div></div>
+        <div class="cal-progress-right">
+          <div class="cal-progress-amount">${totalFmt}</div>
+        </div>
+      </div>`;
+
+  const curWeekHTML = calGetCurrentWeekHTML(year, month, today);
   document.getElementById('calCurrentMonth').innerHTML = `
-    <div class="cal-month-label"><div class="cal-month-name">${MO[m-1]} ${y}</div></div>
-    <div class="cal-week-section" id="calHiddenWeeks" style="display:none"><div id="calHiddenWeekRows"></div></div>
-    <div class="cal-week-section">
+    <div class="cal-month-label">
+      <div class="cal-month-name">${calMonthName(year, month)}</div>
+      ${progressHTML}
+    </div>
+    <div class="cal-week-section" id="calHiddenWeeks" style="display:none">
       <div class="cal-wday-row">
-        <div class="cal-wday">Mon</div><div class="cal-wday">Tue</div><div class="cal-wday">Wed</div><div class="cal-wday">Thu</div><div class="cal-wday">Fri</div><div class="cal-wday">Sat</div><div class="cal-wday">Sun</div>
+        <div class="cal-wday">Mon</div><div class="cal-wday">Tue</div><div class="cal-wday">Wed</div>
+        <div class="cal-wday">Thu</div><div class="cal-wday">Fri</div><div class="cal-wday">Sat</div><div class="cal-wday">Sun</div>
       </div>
-      ${weekHTML}
+      <div id="calHiddenWeekRows"></div>
+    </div>
+    <div class="cal-week-section" id="calCurWeekSection">
+      <div class="cal-wday-row" id="calCurWdayRow">
+        <div class="cal-wday">Mon</div><div class="cal-wday">Tue</div><div class="cal-wday">Wed</div>
+        <div class="cal-wday">Thu</div><div class="cal-wday">Fri</div><div class="cal-wday">Sat</div><div class="cal-wday">Sun</div>
+      </div>
+      ${curWeekHTML}
     </div>`;
-    
+
   const cs = document.getElementById('calScroll');
-  setTimeout(() => { cs.scrollTop = cs.scrollHeight; }, 100);
+  
+  // Set timeout to accurately read scrollHeight after DOM renders
+  setTimeout(() => {
+    if (cs) {
+      cs.scrollTop = cs.scrollHeight;
+      // DEBUG FIX: Force reveal older months if the screen has no scroll overflow
+      if (cs.scrollHeight <= cs.clientHeight + 10) {
+         calRevealOlder();
+         setTimeout(() => { cs.scrollTop = cs.scrollHeight; }, 50);
+      }
+    }
+  }, 50);
+
+  cs.addEventListener('scroll', calOnScroll);
+  calSetPanelH(0);
+
+  const todayCells = document.querySelectorAll('#page-home .cal-day.today');
+  if (todayCells.length > 0) {
+    const tc = todayCells[0];
+    const txns = JSON.parse(tc.dataset.txns || '[]');
+    if (txns.length > 0) {
+      calSelectDay(tc, `${year}-${String(month).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`, fRpS(txns.reduce((s,t)=>s+(t.amt||0),0)));
+    } else {
+      const d = today;
+      document.getElementById('calTxDate').textContent =
+        d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      document.getElementById('calTxTotal').textContent = 'No transactions today';
+    }
+  }
+}
+
+function calOnScroll() {
+  const cs = document.getElementById('calScroll');
+  if (cs.scrollTop < 28) calRevealOlder();
 }
 
 function calRevealOlder() {
-  if (calOlderShown) return; calOlderShown = true;
-  const today = new Date(), y = today.getFullYear(), m = today.getMonth()+1;
-  let older = '';
-  for (let i = 1; i <= 3; i++) {
-    let oy = y, om = m - i; if (om <= 0) { om += 12; oy -= 1; }
-    older = calBuildMonthHTML(oy, om, today) + older;
+  if (calOlderShown) return;
+  calOlderShown = true;
+
+  const today  = new Date();
+  const year   = today.getFullYear();
+  const month  = today.getMonth() + 1;
+  const todayDow = (today.getDay() + 6) % 7; 
+  const monOfCurWeek = new Date(today);
+  monOfCurWeek.setDate(today.getDate() - todayDow);
+
+  let hiddenRowsHTML = '';
+  
+  // DEBUG FIX: Only build hidden weeks for the current month if monOfCurWeek is within the same month
+  if (monOfCurWeek.getFullYear() === year && monOfCurWeek.getMonth() + 1 === month) {
+    const { txByDay } = calGetMonthData(year, month);
+    const firstDay = new Date(year, month - 1, 1).getDay();
+    const offset   = (firstDay + 6) % 7;
+    const daysInPrev = new Date(year, month - 1, 0).getDate();
+
+    let cells = [];
+    for (let i = offset - 1; i >= 0; i--) cells.push({day: daysInPrev - i, cur: false});
+    for (let d = 1; d < monOfCurWeek.getDate(); d++) cells.push({day: d, cur: true});
+    
+    const rem = cells.length % 7;
+    if (rem > 0) { for (let i = 0; i < 7 - rem; i++) cells.push({day:0,cur:false,pad:true}); }
+
+    for (let w = 0; w < cells.length / 7; w++) {
+      let weekCells = '';
+      for (let d = 0; d < 7; d++) {
+        const cell = cells[w*7+d];
+        if (!cell) continue;
+        if (cell.pad) { weekCells += `<div class="cal-day other-month"></div>`; continue; }
+        const isCur  = cell.cur;
+        const txs    = isCur ? (txByDay[cell.day] || []) : [];
+        const total  = txs.reduce((s,r)=>s+(r.amount||r.exp||0),0);
+        const hasData = txs.length > 0;
+        let cls = 'cal-day' + (isCur ? (hasData ? ' has-data' : '') : ' other-month');
+        const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||0,type:(r.category||r.cat)==='Income'?'income':((r.category||r.cat)==='Investment'?'invest':'')}))).replace(/'/g,'&#39;') : '[]';
+        const dateStr = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
+        const totalStr = total ? fRpS(total) : '';
+        const clickAttr = hasData ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
+        weekCells += `<div class="${cls}" ${clickAttr} data-txns='${txJson}'>
+          <div class="cal-day-num">${cell.day || ''}</div>
+          ${total ? `<div class="cal-day-total">${calFormatAmount(total)}</div>` : ''}
+        </div>`;
+      }
+      hiddenRowsHTML += `<div class="cal-week-row">${weekCells}</div>`;
+    }
   }
-  document.getElementById('calOlderMonths').innerHTML = older;
+  
+  document.getElementById('calHiddenWeekRows').innerHTML = hiddenRowsHTML;
+  document.getElementById('calHiddenWeeks').style.display = 'block';
+  const cwr = document.getElementById('calCurWdayRow');
+  if (cwr) cwr.style.display = 'none';
+
+  let olderHTML = '';
+  for (let i = 2; i >= 1; i--) {
+    let oy = year, om = month - i;
+    if (om <= 0) { om += 12; oy -= 1; }
+    olderHTML += `<div class="cal-month-divider"></div>` + calBuildMonthHTML(oy, om, today);
+  }
+  document.getElementById('calOlderMonths').innerHTML = olderHTML;
   document.getElementById('calScrollHint').style.display = 'none';
+
+  setTimeout(() => {
+    const curSec = document.getElementById('calCurWeekSection');
+    if (curSec) curSec.scrollIntoView({block:'end'});
+  }, 10);
+}
+
+function calSetPanelH(txCount) {
+  const maxH    = Math.floor(window.innerHeight * CAL_TX_MAX_FRAC);
+  const listH   = txCount === 0 ? CAL_TX_EMPTY_H : txCount * CAL_TX_ITEM_H + 8;
+  const targetH = Math.min(CAL_TX_HEADER_H + listH, maxH);
+  document.getElementById('calTxPanel').style.height = targetH + 'px';
 }
 
 function calSelectDay(cell, dateStr, totalStr) {
   if (calSelectedCell) calSelectedCell.classList.remove('selected');
-  calSelectedCell = cell; cell.classList.add('selected');
-  document.getElementById('calTxDate').textContent = dateStr;
+  calSelectedCell = cell;
+  cell.classList.add('selected');
+
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dateObj = new Date(y, m - 1, d);
+  const isToday = dateStr === new Date().toISOString().slice(0,10);
+  const dateLabel = dateObj.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'})
+    + (isToday ? ' — Today' : '');
+
+  document.getElementById('calTxDate').textContent  = dateLabel;
+
   const txns = JSON.parse(cell.dataset.txns || '[]');
-  if (!txns.length) {
+
+  if (txns.length === 0) {
     document.getElementById('calTxTotal').textContent = 'No transactions';
-    document.getElementById('calTxList').innerHTML = '<div class="cal-tx-empty">📭 No data</div>';
+    document.getElementById('calTxList').innerHTML = `
+      <div class="cal-tx-empty">
+        <div class="cal-tx-empty-icon">📭</div>
+        <div class="cal-tx-empty-text">No transactions this day.<br>Tap + to add one.</div>
+      </div>`;
     calSetPanelH(0);
   } else {
     document.getElementById('calTxTotal').textContent = totalStr + ' total';
-    document.getElementById('calTxList').innerHTML = txns.map(t => `
+    document.getElementById('calTxList').innerHTML = txns.map(tx => `
       <div class="cal-tx-item">
-        <div class="cal-tx-dot"></div>
-        <div class="cal-tx-info"><div class="cal-tx-cat">${t.cat}</div><div class="cal-tx-pm">${t.pm}</div></div>
-        <div class="cal-tx-amt">${fRp(t.amt)}</div>
+        <div class="cal-tx-dot ${tx.type||''}"></div>
+        <div class="cal-tx-info">
+          <div class="cal-tx-tx">${tx.tx}</div>
+          <div class="cal-tx-meta">${tx.cat} - ${tx.pm}</div>
+        </div>
+        <div class="cal-tx-amt ${tx.type||''}">${fRp(tx.amt)}</div>
       </div>`).join('');
     calSetPanelH(txns.length);
   }
-}
 
-function calSetPanelH(count) {
-  const h = count === 0 ? 120 : Math.min(46 + (count * 48), 300);
-  document.getElementById('calTxPanel').style.height = h + 'px';
-}
-
-// ── UTILITIES ────────────────────────────────────────────────
-function fRp(n) { return 'Rp' + (n||0).toLocaleString('id-ID'); }
-function fRpS(n) {
-  if (!n) return 'Rp0';
-  if (n >= 1000000) return 'Rp' + (n/1000000).toFixed(1) + 'M';
-  if (n >= 1000) return 'Rp' + (n/1000).toFixed(0) + 'k';
-  return 'Rp' + n;
-}
-function calFormatAmount(n) { return n >= 1000 ? Math.round(n/1000)+'k' : n; }
-
-function switchTab(tab, el) {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  if (el) el.classList.add('active');
-  document.getElementById('page-'+tab).classList.add('active');
-  if (tab === 'home') initCalendar();
-  if (tab === 'history') renderHistory();
-  if (tab === 'insights') renderMonthly();
-  if (tab === 'networth') initNetWorth();
-}
-
-function openInputFromHome() {
-  document.getElementById('page-input').classList.add('active');
-  const t = new Date().toISOString().split('T')[0];
-  document.getElementById('inputDateRaw').value = t;
-  document.getElementById('inputDateText').textContent = t;
-}
-
-async function loadHistData() {
-  try {
-    const res = await fetch('data.json?v=' + APP_BUILD);
-    const d = await res.json();
-    Object.assign(HIST, d);
-    histLoaded = true;
-    initCalendar();
-  } catch(e) { 
-    console.error(e);
-    histLoaded = true; initCalendar();
+  const row = cell.closest('.cal-week-row');
+  if (row) {
+    setTimeout(() => {
+      const cs = document.getElementById('calScroll');
+      const rowTop = row.offsetTop;
+      const rowBot = rowTop + row.offsetHeight;
+      const visTop = cs.scrollTop;
+      const visBot = visTop + cs.clientHeight;
+      if (rowTop < visTop || rowBot > visBot) {
+        row.scrollIntoView({behavior:'smooth', block:'nearest'});
+      }
+    }, 50);
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  const h = document.querySelector('.header');
-  if (h) document.documentElement.style.setProperty('--header-height', h.offsetHeight + 'px');
-  loadHistData();
-});
+function calReinit() {
+  calInited = false;
+  calOlderShown = false;
+  calSelectedCell = null;
+  document.getElementById('calOlderMonths').innerHTML = '';
+  document.getElementById('calCurrentMonth').innerHTML = '';
+  document.getElementById('calScrollHint').style.display = 'flex';
+  initCalendar();
+}
 
-// Sisanya fungsi standar (submitOpex, renderHistory, insights, dsb) tetap dipertahankan dari v3.0.0
-// agar tidak mengganggu fitur yang sudah jalan.
+// ── INIT ──────────────────────────────────────────────────────
+updateHeaderHeight();
+window.addEventListener('resize',updateHeaderHeight);
+initDatePicker('inputDateRaw','inputDateDisplay','inputDateText');
+initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
+
+// DEBUG FIX: Pastikan inisialisasi dilakukan sesudah DOM diload sempurna
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadHistData();
+  if (!calInited && document.getElementById('page-home').classList.contains('active')) {
+    initCalendar();
+  }
+});
 </script>
 </body>
 </html>
