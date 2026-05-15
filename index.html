@@ -204,9 +204,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .nw-update-label{font-size:11px;color:var(--text2);flex:1}
 .nw-update-btn{background:var(--bg3);border:0.5px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer}
 .star-nav-input{font-size:14px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--bg3);border:0.5px solid var(--border);color:var(--text);width:100%;margin-bottom:8px;font-family:inherit}
-#nwPriceInputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-#nwPriceInputs > .chart-card-title{grid-column:1/-1}
-
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:flex-end;display:none}
 .modal-overlay.open{display:flex}
@@ -216,28 +213,15 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .modal-actions{display:flex;gap:7px;margin-top:10px}
 .btn-delete{flex:1;padding:12px;border-radius:var(--radius);border:0.5px solid var(--red);background:var(--red-dim);color:var(--red);font-size:13px;font-weight:600;cursor:pointer}
 .btn-save{flex:2;padding:12px;border-radius:var(--radius);border:none;background:var(--accent);color:#0f0f0f;font-size:13px;font-weight:700;cursor:pointer}
-.toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg2);border:0.5px solid var(--border2);color:var(--text);padding:10px 16px;border-radius:30px;font-size:13px;opacity:0;transition:all 0.3s;z-index:1000;white-space:nowrap;max-width:90vw}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.success{border-color:var(--accent);color:var(--accent)}
-.toast.error{border-color:var(--red);color:var(--red)}
+.toast{display:none;align-items:center;justify-content:center;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);white-space:nowrap;opacity:0;transition:opacity 0.25s;margin:0 0 10px}
+.toast.show{display:flex;opacity:1}
+.toast.success{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.toast.error{border-color:var(--red);color:var(--red);background:var(--red-dim)}
 .empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
 
 /* ── HOME CALENDAR ─────────────────────────────────────────── */
-#page-home{
-  display:none;padding:0;
-  flex-direction:column;
-  /* Fixed to viewport — body scroll NEVER affects this page */
-  position:fixed;
-  top:var(--header-height,120px);
-  bottom:0;
-  /* Match body max-width centering */
-  left:50%;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:430px;
-  overflow:hidden;
-  z-index:1;
-}
+/* Added min-height fallback so the scroll container does not collapse */
+#page-home{display:none;padding:0;flex-direction:column;height:calc(100vh - var(--header-height,120px));min-height:400px;overflow:hidden}
 #page-home.active{display:flex}
 
 .cal-scroll{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:150px}
@@ -262,10 +246,10 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-day{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 4px 7px;text-align:center;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;user-select:none;cursor:default;transition:background 0.15s,transform 0.12s;-webkit-tap-highlight-color:transparent}
 .cal-day.has-data{cursor:pointer}
 .cal-day.has-data:active{background:var(--bg3);transform:scale(0.94)}
-.cal-day.selected{border:1.5px solid var(--text2);background:var(--bg3)}
+.cal-day.selected{border:1.5px solid var(--accent);background:var(--bg3)}
 .cal-day.today{border:1.5px solid var(--accent)}
 .cal-day.today .cal-day-num{color:var(--accent)}
-.cal-day.today.selected{border:1.5px solid var(--accent);background:var(--bg3)}
+.cal-day.today.selected{background:var(--bg3)}
 .cal-day.other-month{opacity:0.3;pointer-events:none}
 .cal-day.future{opacity:0.35;pointer-events:none}
 .cal-day-num{font-size:13px;font-weight:600;line-height:1;color:var(--text)}
@@ -313,14 +297,14 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.0.7</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.1</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
   </div>
+  <div id="toast" class="toast"></div>
   <div class="tab-bar">
     <div class="tab active" onclick="switchTab('home',this)">Home</div>
-    <div class="tab" onclick="switchTab('history',this)">History</div>
     <div class="tab" onclick="switchTab('insights',this)">Insights</div>
     <div class="tab" onclick="switchTab('networth',this)">Net Worth</div>
   </div>
@@ -453,19 +437,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
-<!-- HISTORY -->
-<div class="page" id="page-history">
-  <div class="section-header">
-    <div class="section-title">Local transactions</div>
-    <select class="filter-select" id="historyFilter" onchange="renderHistory()">
-      <option value="all">All</option>
-      <option value="expense">Expense</option>
-      <option value="income">Income</option>
-      <option value="invest">Invest</option>
-    </select>
-  </div>
-  <div id="historyList"></div>
-</div>
 
 <!-- Search Modal -->
 <div class="modal-overlay" id="searchModal">
@@ -553,37 +524,9 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div class="nw-mode-btn active" data-nw="holdings" onclick="setNWMode('holdings',this)">Holdings</div>
       <div class="nw-mode-btn" data-nw="overview" onclick="setNWMode('overview',this)">Overview</div>
     </div>
-    <div id="nwPriceInputs" style="display:none">
-      <div class="chart-card-title" style="margin-top:14px;margin-bottom:8px">Current Prices</div>
-      <div id="nwLastUpdated" style="font-size:11px;color:var(--text2);margin-bottom:10px"></div>
-      <div class="form-group">
-        <label class="form-label">Star Stable NAV (Rp/unit) — <a href="https://star-am.com/en/star-product/star-stable-income-fund/" target="_blank" style="color:var(--accent)">star-am.com</a></label>
-        <input type="text" id="nwStarNav" class="form-input" placeholder="e.g. 2208,95" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">USD/IDR</label>
-        <input type="text" id="nwUSDIDR" class="form-input" placeholder="e.g. 16500" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">CHF/IDR</label>
-        <input type="text" id="nwCHFIDR" class="form-input" placeholder="e.g. 19500" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">QQQ (USD)</label>
-        <input type="text" id="nwQQQ" class="form-input" placeholder="e.g. 450.00" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">JNJ (USD)</label>
-        <input type="text" id="nwJNJ" class="form-input" placeholder="e.g. 155.00" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">VYM (USD)</label>
-        <input type="text" id="nwVYM" class="form-input" placeholder="e.g. 130.00" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">AAPL (USD)</label>
-        <input type="text" id="nwAAPL" class="form-input" placeholder="e.g. 200.00" inputmode="decimal" onchange="saveAndRenderNW()">
-      </div>
+    <div id="nwPricesStatus" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:8px 12px;background:var(--bg3);border-radius:var(--radius-sm);border:0.5px solid var(--border)">
+      <div id="nwPricesLabel" style="font-size:11px;color:var(--text2)">Fetching prices…</div>
+      <button onclick="fetchSheetPrices(true)" style="background:none;border:none;color:var(--accent);font-size:11px;cursor:pointer;padding:0">Refresh</button>
     </div>
     <div id="nwContent"><div class="chart-loading">Loading...</div></div>
   </div>
@@ -601,11 +544,9 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     </div>
   </div>
 </div>
-<div id="toast" class="toast"></div>
-
 <script>
-const APP_VERSION = 'v3.0.7';
-const APP_BUILD = '2026-05-15d';
+const APP_VERSION = 'v3.1';
+const APP_BUILD = '2026-05-15';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -646,31 +587,53 @@ let fxRates = JSON.parse(localStorage.getItem('nota_fx') || '{}');
 let fxLastFetch = parseInt(localStorage.getItem('nota_fx_ts') || '0');
 let stockPrices = JSON.parse(localStorage.getItem('nota_prices') || '{}');
 
+let sheetPricesLastFetch = parseInt(localStorage.getItem('nota_sp_ts') || '0');
+
 function parsePrice(str) {
   if (!str) return 0;
-  return parseFloat(String(str).replace(',', '.')) || 0;
+  return parseFloat(String(str).replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
 }
-function loadPriceInputs() {
-  const map = {nwStarNav:'StarStable', nwUSDIDR:'USDIDR', nwCHFIDR:'CHFIDR',
-               nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
-  Object.entries(map).forEach(([fid, key]) => {
-    const el = document.getElementById(fid);
-    if (el && stockPrices[key]) el.value = stockPrices[key];
-  });
-  // Show last updated label if available
-  const lu = HIST.currentPrices?.lastUpdated;
-  const el = document.getElementById('nwLastUpdated');
-  if (el && lu) el.textContent = 'Default prices as of ' + lu;
+
+async function fetchSheetPrices(force) {
+  const now = Date.now();
+  const cached = localStorage.getItem('nota_prices');
+  const statusEl = document.getElementById('nwPricesLabel');
+  // Use cache if < 30 min and not forced
+  if (!force && cached && (now - sheetPricesLastFetch) < 1800000) {
+    stockPrices = JSON.parse(cached);
+    if (statusEl) {
+      const ago = Math.round((now - sheetPricesLastFetch) / 60000);
+      statusEl.textContent = `Prices from Google Sheets · ${ago < 1 ? 'just now' : ago + 'm ago'}`;
+    }
+    return;
+  }
+  if (statusEl) statusEl.textContent = 'Fetching prices from Google Sheets…';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?type=prices', {method:'GET'});
+    const j = await res.json();
+    if (j.prices) {
+      // j.prices: { AAPL: 298.21, JNJ: 230.80, VYM: 157.24, QQQ: 719.79, CHFIDR: 22425, USDIDR: 17599, StarStable: 2205 }
+      Object.assign(stockPrices, j.prices);
+      localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
+      sheetPricesLastFetch = now;
+      localStorage.setItem('nota_sp_ts', String(now));
+      if (statusEl) statusEl.textContent = `Prices from Google Sheets · just now`;
+    } else {
+      throw new Error('no prices');
+    }
+  } catch(e) {
+    // Fallback to HIST.currentPrices if available
+    if (HIST.currentPrices) {
+      const cp = HIST.currentPrices;
+      ['StarStable','AAPL','JNJ','VYM','QQQ','CHFIDR','USDIDR'].forEach(k => {
+        if (!stockPrices[k] && cp[k]) stockPrices[k] = String(cp[k]);
+      });
+    }
+    if (statusEl) statusEl.textContent = cached ? 'Using cached prices · Sheet unavailable' : 'Could not fetch prices · Enter manually';
+  }
 }
-function savePriceInputs() {
-  const map = {nwStarNav:'StarStable', nwUSDIDR:'USDIDR', nwCHFIDR:'CHFIDR',
-               nwQQQ:'QQQ', nwJNJ:'JNJ', nwVYM:'VYM', nwAAPL:'AAPL'};
-  Object.entries(map).forEach(([fid, key]) => {
-    stockPrices[key] = document.getElementById(fid)?.value || '';
-  });
-  localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
-}
-function saveAndRenderNW() { savePriceInputs(); renderNetWorth(); }
+
+function saveAndRenderNW() { renderNetWorth(); }
 let insightsMode = 'monthly';
 let nwMode = 'holdings';
 let mView='all', mRange=3, mSelMonth=null, mSelCat=null;
@@ -913,12 +876,11 @@ function switchTab(tab, el) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   if(el && el.classList) el.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
-
+  
   if(tab==='home'){
     if(!histLoaded) onHistLoaded(()=>initCalendar());
     else initCalendar();
   }
-  if(tab==='history')renderHistory();
   if(tab==='insights'){
     ['monthlySummary','monthlyBarCard','monthlyDonutCard'].forEach(id=>{document.getElementById(id).style.display='block'});
     ['yearlySummary','yearlyBarCard','yearlyMonthCard','yearlyDonutCard','catRankingCard','catTrendCard'].forEach(id=>{document.getElementById(id).style.display='none'});
@@ -1459,13 +1421,10 @@ function setNWMode(mode,el){
   nwMode=mode;
   document.querySelectorAll('.nw-mode-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('nwPriceInputs').style.display = (mode === 'holdings') ? 'block' : 'none';
   renderNetWorth();
 }
 function initNetWorth() {
-  document.getElementById('nwPriceInputs').style.display = 'block';
-  loadPriceInputs();
-  renderNetWorth();
+  fetchSheetPrices(false).then(() => renderNetWorth());
 }
 
 async function fetchFxRates(){
@@ -1586,7 +1545,7 @@ function renderHoldings(holdings, usdRate, chfRate){
           <span>Cost basis <strong>${fRpS(Math.round(h.costBasis))}</strong></span>
           ${hasValue
             ? `<span>Value <strong style="color:${color}">${fRpS(Math.round(h.currentValue))}</strong></span>`
-            : `<span style="color:var(--text2)">Enter price above</span>`}
+            : `<span style="color:var(--text2)">Price loading…</span>`}
         </div>
         <div class="holding-details" style="margin-top:3px">
           <span style="color:var(--text2)">${avgStr}</span>
@@ -1886,9 +1845,9 @@ async function loadHistData() {
 // ── HOME CALENDAR ─────────────────────────────────────────────
 
 const CAL_TX_HEADER_H  = 46;
-const CAL_TX_ITEM_H    = 40;
-const CAL_TX_EMPTY_H   = 100;
-const CAL_TX_MAX_FRAC  = 0.45;
+const CAL_TX_ITEM_H    = 44;
+const CAL_TX_EMPTY_H   = 110;
+const CAL_TX_MAX_FRAC  = 0.50;
 
 let calInited       = false;
 let calOlderShown   = false;
@@ -1898,9 +1857,9 @@ function calGetMonthData(year, month) {
   const opex = HIST.opex || [];
   const txByDay = {};
   
-  // Add HIST.opex data — r.m is 0-indexed in data.json
+  // Add HIST.opex data
   opex.forEach(r => {
-    if (r.y !== year || r.m !== month - 1) return;
+    if (r.y !== year || r.m !== month) return;
     const key = r.d;
     if (!txByDay[key]) txByDay[key] = [];
     txByDay[key].push(r);
@@ -1918,13 +1877,13 @@ function calGetMonthData(year, month) {
   });
 
   const total = opex
-    .filter(r => r.y === year && r.m === month - 1 && r.cat !== 'Income' && r.cat !== 'Investment')
+    .filter(r => r.y === year && r.m === month && r.cat !== 'Income' && r.cat !== 'Investment')
     .reduce((s, r) => s + (r.exp || 0), 0);
 
   let avgTotal = 0, avgCount = 0;
   for (let i = 1; i <= 3; i++) {
-    let ay = year, am = month - 1 - i;
-    if (am < 0) { am += 12; ay -= 1; }
+    let ay = year, am = month - i;
+    if (am <= 0) { am += 12; ay -= 1; }
     const mt = opex
       .filter(r => r.y === ay && r.m === am && r.cat !== 'Income' && r.cat !== 'Investment')
       .reduce((s, r) => s + (r.exp || 0), 0);
@@ -2005,7 +1964,6 @@ function calBuildMonthHTML(year, month, today) {
       const txs      = isCur ? (txByDay[cell.day] || []) : [];
       const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || 0), 0);
       const hasData  = txs.length > 0;
-      const isPast   = isCur && !isFuture;
 
       let cls = 'cal-day';
       if (!isCur)    cls += ' other-month';
@@ -2024,8 +1982,8 @@ function calBuildMonthHTML(year, month, today) {
         : '[]';
       const dateStr  = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
       const totalStr = dayTotal ? fRpS(dayTotal) : '';
-      const clickAttr = isPast
-        ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')" style="cursor:pointer"` : '';
+      const clickAttr = (hasData || isToday)
+        ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
 
       const totalLabel = isToday && !hasData ? 'Today'
                        : (dayTotal ? calFormatAmount(dayTotal) : '');
@@ -2070,7 +2028,6 @@ function calGetCurrentWeekHTML(year, month, today) {
     const txs      = isCur ? (txByDay[dd] || []) : [];
     const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || 0), 0);
     const hasData  = txs.length > 0;
-    const isPast   = isCur && !isFuture;
 
     let cls = 'cal-day';
     if (!isCur)     cls += ' other-month';
@@ -2089,8 +2046,8 @@ function calGetCurrentWeekHTML(year, month, today) {
       : '[]';
     const dateStr  = `${dy}-${String(dm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
     const totalStr = dayTotal ? fRpS(dayTotal) : '';
-    const clickAttr = isPast
-      ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')" style="cursor:pointer"` : '';
+    const clickAttr = (hasData || isToday)
+      ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
     const totalLabel = isToday && !hasData ? 'Today' : (dayTotal ? calFormatAmount(dayTotal) : '');
 
     cells += `<div class="${cls}" ${clickAttr} data-txns='${txJson}'>
@@ -2229,7 +2186,7 @@ function calRevealOlder() {
         const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||0,type:(r.category||r.cat)==='Income'?'income':((r.category||r.cat)==='Investment'?'invest':'')}))).replace(/'/g,'&#39;') : '[]';
         const dateStr = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
         const totalStr = total ? fRpS(total) : '';
-        const clickAttr = isCur ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')" style="cursor:pointer"` : '';
+        const clickAttr = hasData ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
         weekCells += `<div class="${cls}" ${clickAttr} data-txns='${txJson}'>
           <div class="cal-day-num">${cell.day || ''}</div>
           ${total ? `<div class="cal-day-total">${calFormatAmount(total)}</div>` : ''}
@@ -2307,18 +2264,12 @@ function calSelectDay(cell, dateStr, totalStr) {
   if (row) {
     setTimeout(() => {
       const cs = document.getElementById('calScroll');
-      const panel = document.getElementById('calTxPanel');
-      const panelH = panel ? panel.offsetHeight : 0;
-      // visible area of calScroll = full clientHeight minus panel
-      const visibleH = cs.clientHeight - panelH;
       const rowTop = row.offsetTop;
       const rowBot = rowTop + row.offsetHeight;
-      const scrollTop = cs.scrollTop;
-      // if row bottom is hidden behind panel or row top is above scroll
-      if (rowBot > scrollTop + visibleH - 8 || rowTop < scrollTop) {
-        // scroll so the row sits with some padding above the panel
-        const target = rowBot - visibleH + 12;
-        cs.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+      const visTop = cs.scrollTop;
+      const visBot = visTop + cs.clientHeight;
+      if (rowTop < visTop || rowBot > visBot) {
+        row.scrollIntoView({behavior:'smooth', block:'nearest'});
       }
     }, 50);
   }
