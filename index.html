@@ -217,6 +217,13 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .toast.show{display:flex;opacity:1}
 .toast.success{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 .toast.error{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+.toast.loading{border-color:var(--text3);color:var(--text2);background:var(--bg3)}
+
+/* SKELETON */
+.cal-day.skeleton{background:var(--bg3);border:0.5px solid var(--border);cursor:default;pointer-events:none}
+.cal-day.skeleton .cal-day-num{color:var(--text3)}
+.cal-progress-skeleton{flex:1;height:4px;background:var(--bg4);border-radius:2px}
+.cal-label-skeleton{width:60px;height:12px;background:var(--bg4);border-radius:3px}
 .empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
 
 /* ── HOME CALENDAR ─────────────────────────────────────────── */
@@ -297,7 +304,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.2.2</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.2.3</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -545,8 +552,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.2.2';
-const APP_BUILD = '2026-05-15h';
+const APP_VERSION = 'v3.2.3';
+const APP_BUILD = '2026-05-15j';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -675,7 +682,8 @@ async function fetchCurrentMonth(force) {
   if (!force && (now - curMonthLastFetch) < 300000) {
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
-      _applyCurrentMonthRows(JSON.parse(cached), y, m);
+      if (histLoaded) _applyCurrentMonthRows(JSON.parse(cached), y, m);
+      else onHistLoaded(() => _applyCurrentMonthRows(JSON.parse(cached), y, m));
       return;
     }
   }
@@ -686,10 +694,14 @@ async function fetchCurrentMonth(force) {
     if (j.status === 'ok' && Array.isArray(j.rows)) {
       localStorage.setItem(cacheKey, JSON.stringify(j.rows));
       curMonthLastFetch = now;
-      _applyCurrentMonthRows(j.rows, y, m);
+      // Wait for histLoaded before merging, to avoid race with loadHistData
+      if (histLoaded) {
+        _applyCurrentMonthRows(j.rows, y, m);
+      } else {
+        onHistLoaded(() => _applyCurrentMonthRows(j.rows, y, m));
+      }
     }
   } catch(e) {
-    // Silently fall back to data.json rows already in HIST.opex
     console.warn('fetchCurrentMonth failed:', e.message);
   }
 }
@@ -1197,10 +1209,14 @@ function saveLocal(){
   localStorage.setItem('nota_invest_v2',JSON.stringify(investHistory));
 }
 function updateStatus(){}
-function showToast(msg,type){
+function showToast(msg,type,duration){
   const t=document.getElementById('toast');t.textContent=msg;
   t.className='toast show'+(type?' '+type:'');
-  setTimeout(()=>t.className='toast',3000);
+  if(duration===0)return; // persistent — caller must dismiss
+  setTimeout(()=>t.className='toast',duration||3000);
+}
+function hideToast(){
+  const t=document.getElementById('toast');t.className='toast';
 }
 
 // ── INSIGHTS ──────────────────────────────────────────────────
@@ -2155,6 +2171,65 @@ function calGetCurrentWeekHTML(year, month, today) {
   return `<div class="cal-week-row" id="calCurWeekRow">${cells}</div>`;
 }
 
+function initCalendarSkeleton() {
+  const today = new Date();
+  const year  = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const mName = `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month-1]} ${year}`;
+
+  // Build full month grid (skeleton — no data, just day numbers)
+  const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7; // Mon=0
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const daysInPrev  = new Date(year, month - 1, 0).getDate();
+  const todayD = today.getDate();
+
+  let cells = [];
+  for (let i = firstDow - 1; i >= 0; i--) cells.push({ day: daysInPrev - i, cur: false });
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, cur: true });
+  const rem = cells.length % 7;
+  if (rem > 0) for (let i = 0; i < 7 - rem; i++) cells.push({ day: 0, cur: false, pad: true });
+
+  let weeksHTML = '';
+  for (let w = 0; w < cells.length / 7; w++) {
+    let row = '';
+    for (let d = 0; d < 7; d++) {
+      const cell = cells[w * 7 + d];
+      if (!cell) continue;
+      if (cell.pad) { row += `<div class="cal-day other-month"></div>`; continue; }
+      if (!cell.cur) { row += `<div class="cal-day other-month"><div class="cal-day-num">${cell.day}</div></div>`; continue; }
+      const isToday = cell.day === todayD;
+      const cls = 'cal-day skeleton' + (isToday ? ' today' : '');
+      const label = isToday ? '<div class="cal-day-total">Today</div>' : '';
+      row += `<div class="${cls}"><div class="cal-day-num">${cell.day}</div>${label}</div>`;
+    }
+    weeksHTML += `<div class="cal-week-row">${row}</div>`;
+  }
+
+  document.getElementById('calCurrentMonth').innerHTML = `
+    <div class="cal-month-label">
+      <div class="cal-month-name">${mName}</div>
+      <div class="cal-progress-wrap">
+        <div class="cal-progress-bar"><div class="cal-progress-skeleton"></div></div>
+        <div class="cal-progress-right">
+          <div class="cal-label-skeleton"></div>
+        </div>
+      </div>
+    </div>
+    <div class="cal-week-section">
+      <div class="cal-wday-row">
+        <div class="cal-wday">Mon</div><div class="cal-wday">Tue</div><div class="cal-wday">Wed</div>
+        <div class="cal-wday">Thu</div><div class="cal-wday">Fri</div><div class="cal-wday">Sat</div><div class="cal-wday">Sun</div>
+      </div>
+      ${weeksHTML}
+    </div>`;
+
+  // Scroll to today's week
+  setTimeout(() => {
+    const cs = document.getElementById('calScroll');
+    if (cs) cs.scrollTop = cs.scrollHeight;
+  }, 10);
+}
+
 function initCalendar() {
   if (calInited) return;
   calInited = true;
@@ -2390,8 +2465,13 @@ initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
 
 // DEBUG FIX: Pastikan inisialisasi dilakukan sesudah DOM diload sempurna
 window.addEventListener('DOMContentLoaded', async () => {
-  await loadHistData();
-  await fetchCurrentMonth();
+  // Show skeleton instantly — no blank screen
+  if (document.getElementById('page-home').classList.contains('active')) {
+    initCalendarSkeleton();
+  }
+  showToast('Loading data…', 'loading', 0);
+  await Promise.all([loadHistData(), fetchCurrentMonth()]);
+  hideToast();
   calInited = false;
   if (document.getElementById('page-home').classList.contains('active')) {
     initCalendar();
