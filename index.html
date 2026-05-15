@@ -50,7 +50,7 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 .page{display:none;padding:0 20px}
 .page.active{display:block}
 /* Non-home pages need their own scroll since body is overflow:hidden */
-#page-insights.active,#page-input.active,#page-networth.active{
+#page-insights.active,#page-networth.active{
   display:block;
   height:calc(100vh - var(--header-height,120px));
   overflow-y:auto;
@@ -303,6 +303,20 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-fab{width:64px;height:64px;background:var(--accent);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,240,96,0.28);color:#0f0f0f;font-size:30px;font-weight:400;line-height:1;transition:transform 0.16s,box-shadow 0.16s;user-select:none;-webkit-tap-highlight-color:transparent}
 .cal-fab:active{transform:scale(0.90);box-shadow:0 3px 10px rgba(200,240,96,0.18)}
 
+/* INPUT SLIDE-UP OVERLAY */
+.input-overlay{position:fixed;inset:0;z-index:400;pointer-events:none}
+.input-overlay.open{pointer-events:auto}
+.input-overlay::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0);transition:background 0.35s cubic-bezier(0.4,0,0.2,1)}
+.input-overlay.open::before{background:rgba(0,0,0,0.55)}
+.input-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-radius:20px 20px 0 0;border-top:0.5px solid var(--border2);max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 0 40px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
+.input-overlay.open .input-sheet{transform:translateY(0)}
+.input-sheet-handle{width:32px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 12px}
+/* Hide page-input from tab switching — it lives inside overlay now */
+#page-input{display:block !important;height:auto !important;overflow:visible !important;padding-bottom:0 !important}
+
+/* Toast update for 'Updated!' success state */
+.toast.updated{color:var(--accent);font-weight:600}
+
 @media(min-width:769px){
   .cal-fab{width:72px;height:72px;font-size:34px}
 }
@@ -312,7 +326,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.7</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.5</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -349,12 +363,15 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     </div>
   </div>
   <div class="cal-fab-wrap">
-    <button class="cal-fab" onclick="switchTab('input',document.createElement('div'));openInputFromHome()">+</button>
+    <button class="cal-fab" onclick="openInputOverlay()">+</button>
   </div>
 </div>
 
-<!-- INPUT -->
-<div class="page" id="page-input">
+<!-- INPUT OVERLAY (slide-up) -->
+<div class="input-overlay" id="inputOverlay" onclick="closeInputOverlay()">
+  <div class="input-sheet" id="inputSheet" onclick="event.stopPropagation()">
+    <div class="input-sheet-handle"></div>
+    <div id="page-input" style="display:block;padding:0 20px">
   <div class="form-section">
     <div class="pill-toggle">
       <div class="pill-toggle-btn active expense" data-mode="expense" onclick="setInputMode('expense',this)">Expense</div>
@@ -450,7 +467,9 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <button class="submit-btn invest" onclick="submitInvest()">Save Investment</button>
     </div>
   </div>
-</div>
+</div><!-- /page-input -->
+  </div><!-- /input-sheet -->
+</div><!-- /inputOverlay -->
 
 
 <!-- Search Modal -->
@@ -560,8 +579,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.4.7';
-const APP_BUILD = '2026-05-15v';
+const APP_VERSION = 'v3.5';
+const APP_BUILD = '2026-05-15n';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -969,6 +988,7 @@ function fRpS(n){
 
 // ── TABS ──────────────────────────────────────────────────────
 function switchTab(tab, el) {
+  closeInputOverlay();
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   if(el && el.classList) el.classList.add('active');
@@ -994,10 +1014,32 @@ function switchTab(tab, el) {
   }
 }
 
+function openInputOverlay() {
+  // Reset to expense mode
+  const expBtn = document.querySelector('.pill-toggle-btn[data-mode="expense"]');
+  if (expBtn) setInputMode('expense', expBtn);
+  // Reset date to today
+  const t = todayISO();
+  const rawEl = document.getElementById('inputDateRaw');
+  if (rawEl) { rawEl.value = t; document.getElementById('inputDateText').textContent = isoDisp(t); }
+  // Clear fields
+  ['inputTx','inputAmount','inputNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  if (typeof buildSmartPills === 'function') buildSmartPills();
+  document.getElementById('inputOverlay').classList.add('open');
+  // Focus first input after slide animation completes
+  setTimeout(() => {
+    const f = document.getElementById('inputTx');
+    if (f) f.focus();
+  }, 360);
+}
+
+function closeInputOverlay() {
+  const ov = document.getElementById('inputOverlay');
+  if (ov) ov.classList.remove('open');
+}
+
 function openInputFromHome() {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-input').classList.add('active');
+  openInputOverlay();
 }
 
 // ── SUBMIT OPEX ───────────────────────────────────────────────
@@ -2618,24 +2660,88 @@ window.addEventListener('resize',updateHeaderHeight);
 initDatePicker('inputDateRaw','inputDateDisplay','inputDateText');
 initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
 
-// DEBUG FIX: Pastikan inisialisasi dilakukan sesudah DOM diload sempurna
+// ── INIT v3.5: Render from cache instantly, fetch in background ──
 window.addEventListener('DOMContentLoaded', async () => {
-  // Show skeleton instantly — no blank screen
-  if (document.getElementById('page-home').classList.contains('active')) {
-    initCalendarSkeleton();
-  }
-  showToast('Loading data…', 'loading', 0);
-  // Load hist first so _applyCurrentMonthRows has HIST ready,
-  // then fetch current month — avoids race where initCalendar runs
-  // before onHistLoaded callback fires and applies May rows
-  await loadHistData();
-  await fetchCurrentMonth();
-  hideToast();
-  calInited = false;
-  if (document.getElementById('page-home').classList.contains('active')) {
-    initCalendar();
+  const isHome = () => document.getElementById('page-home').classList.contains('active');
+
+  // Step 1: Show skeleton instantly
+  if (isHome()) initCalendarSkeleton();
+
+  // Step 2: Try rendering from localStorage cache for instant display
+  const cachedCurMonth = (() => {
+    const today = new Date();
+    const y = today.getFullYear(), m = today.getMonth() + 1;
+    const cacheKey = `nota_curMonth_${y}_${m}`;
+    try { return JSON.parse(localStorage.getItem(cacheKey) || 'null'); } catch(e) { return null; }
+  })();
+  const cachedHistLoaded = !!(localStorage.getItem('nota_txCat'));
+
+  if (cachedHistLoaded && cachedCurMonth) {
+    // Render from cache — near-instant
+    const cachedCat = localStorage.getItem('nota_txCat');
+    const cachedPm  = localStorage.getItem('nota_txPm');
+    if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
+    if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
+    histLoaded = true;
+    histLoadCallbacks.forEach(cb => cb());
+    histLoadCallbacks = [];
+    const today = new Date();
+    _applyCurrentMonthRows(cachedCurMonth, today.getFullYear(), today.getMonth() + 1);
+    calInited = false;
+    if (isHome()) initCalendar();
+    // Show loading toast then fetch fresh in background
+    showToast('Loading data…', 'loading', 0);
+    const [,freshMonth] = await Promise.all([
+      loadHistData(),
+      fetchCurrentMonthFresh()
+    ]);
+    if (freshMonth) {
+      calInited = false;
+      if (isHome()) {
+        initCalendar();
+        showToast('✓ Updated', 'updated', 3000);
+      } else {
+        hideToast();
+      }
+    } else {
+      hideToast();
+    }
+  } else {
+    // No cache — sequential load (first visit)
+    showToast('Loading data…', 'loading', 0);
+    await loadHistData();
+    await fetchCurrentMonth();
+    hideToast();
+    calInited = false;
+    if (isHome()) initCalendar();
   }
 });
+
+// Fetch current month and return true if data changed vs cache
+async function fetchCurrentMonthFresh() {
+  const now = Date.now();
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = today.getMonth() + 1;
+  const cacheKey = `nota_curMonth_${y}_${m}`;
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?type=month&y=${y}&m=${m}`, { method: 'GET' });
+    const j = await res.json();
+    if (j.status === 'ok' && Array.isArray(j.rows)) {
+      const prev = localStorage.getItem(cacheKey);
+      const next = JSON.stringify(j.rows);
+      const changed = prev !== next;
+      localStorage.setItem(cacheKey, next);
+      curMonthLastFetch = now;
+      _applyCurrentMonthRows(j.rows, y, m);
+      return changed;
+    }
+    return false;
+  } catch(e) {
+    console.warn('fetchCurrentMonthFresh failed:', e.message);
+    return false;
+  }
+}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 </body>
