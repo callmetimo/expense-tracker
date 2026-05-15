@@ -297,7 +297,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.1</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.1.1</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -545,8 +545,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.1';
-const APP_BUILD = '2026-05-15';
+const APP_VERSION = 'v3.1.1';
+const APP_BUILD = '2026-05-15b';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1421,7 +1421,8 @@ function setNWMode(mode,el){
   nwMode=mode;
   document.querySelectorAll('.nw-mode-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  renderNetWorth();
+  if(!histLoaded) onHistLoaded(()=>renderNetWorth());
+  else renderNetWorth();
 }
 function initNetWorth() {
   fetchSheetPrices(false).then(() => renderNetWorth());
@@ -1497,7 +1498,12 @@ async function renderNetWorth(){
     return {stock, type, netLot, costBasis, currentValue, avgCostPerUnit};
   }).filter(Boolean);
 
-  const cashBal = HIST.cashBalance || 0;
+  // cashBalance: prefer HIST field (from data.json), fallback to computing from opex
+  let cashBal = HIST.cashBalance || 0;
+  if (!cashBal) {
+    const allOp = HIST.opex || [];
+    cashBal = allOp.reduce((s, r) => s + (r.inc || 0) - (r.exp || 0), 0);
+  }
   const lastBalance = cashBal;
 
   if(nwMode==='holdings'){
@@ -1858,8 +1864,9 @@ function calGetMonthData(year, month) {
   const txByDay = {};
   
   // Add HIST.opex data
+  // NOTE: r.m in data.json is 0-indexed (Jan=0), but `month` param here is 1-indexed (Jan=1)
   opex.forEach(r => {
-    if (r.y !== year || r.m !== month) return;
+    if (r.y !== year || r.m !== month - 1) return;
     const key = r.d;
     if (!txByDay[key]) txByDay[key] = [];
     txByDay[key].push(r);
@@ -1877,13 +1884,13 @@ function calGetMonthData(year, month) {
   });
 
   const total = opex
-    .filter(r => r.y === year && r.m === month && r.cat !== 'Income' && r.cat !== 'Investment')
+    .filter(r => r.y === year && r.m === month - 1 && r.cat !== 'Income' && r.cat !== 'Investment')
     .reduce((s, r) => s + (r.exp || 0), 0);
 
   let avgTotal = 0, avgCount = 0;
   for (let i = 1; i <= 3; i++) {
-    let ay = year, am = month - i;
-    if (am <= 0) { am += 12; ay -= 1; }
+    let ay = year, am = month - 1 - i; // am is now 0-indexed
+    if (am < 0) { am += 12; ay -= 1; }
     const mt = opex
       .filter(r => r.y === ay && r.m === am && r.cat !== 'Income' && r.cat !== 'Investment')
       .reduce((s, r) => s + (r.exp || 0), 0);
