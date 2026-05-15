@@ -312,7 +312,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.1</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.2</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -560,8 +560,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.4.1';
-const APP_BUILD = '2026-05-15p';
+const APP_VERSION = 'v3.4.2';
+const APP_BUILD = '2026-05-15q';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1820,11 +1820,11 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           const textWidth = d.label.length * charWidth;
           if (arcLen < textWidth * 0.85) return;
 
-          // Determine if segment is on bottom half (midAngle between 0 and PI, i.e. below center)
-          // Chart.js starts at -PI/2 (top), goes clockwise
-          // Bottom half: midAngle in range (0, PI) after normalizing to (-PI, PI)
+          // Determine if segment is on bottom half so text doesn't render upside-down
+          // Chart.js 0 = right, PI/2 = bottom, PI = left, 3PI/2 = top
+          // Bottom half = midAngle normalized between PI*0.5 and PI*1.5
           const normalMid = ((midAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-          const isBottom = normalMid > Math.PI * 0.1 && normalMid < Math.PI * 1.9;
+          const isBottom = normalMid > Math.PI * 0.5 && normalMid < Math.PI * 1.5;
 
           const anglePerChar = charWidth / labelR;
           const label = isBottom ? d.label.split('').reverse().join('') : d.label;
