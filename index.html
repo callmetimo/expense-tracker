@@ -312,7 +312,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.4</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.5</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -560,8 +560,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.4.4';
-const APP_BUILD = '2026-05-15s';
+const APP_VERSION = 'v3.4.5';
+const APP_BUILD = '2026-05-15t';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1013,6 +1013,10 @@ function submitOpex() {
   txHistory.unshift(r);
   queue.push({...r, action:inputMode});
   saveLocal();updateStatus();
+  // Navigate back to Home immediately, with Saving toast
+  const homeTab = document.querySelector('.tab[onclick*="home"]');
+  switchTab('home', homeTab);
+  showToast('Saving transaction…', 'loading', 0);
   syncOpex(r).then(ok=>{
     if(ok){queue=queue.filter(q=>q.id!==r.id);txHistory=txHistory.map(h=>h.id===r.id?{...h,synced:true}:h);saveLocal();updateStatus();showToast('Saved ✓','success')}
     else showToast('Saved locally — sync pending','');
@@ -2630,7 +2634,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     initCalendarSkeleton();
   }
   showToast('Loading data…', 'loading', 0);
-  await Promise.all([loadHistData(), fetchCurrentMonth()]);
+  // Load hist first so _applyCurrentMonthRows has HIST ready,
+  // then fetch current month — avoids race where initCalendar runs
+  // before onHistLoaded callback fires and applies May rows
+  await loadHistData();
+  await fetchCurrentMonth();
   hideToast();
   calInited = false;
   if (document.getElementById('page-home').classList.contains('active')) {
