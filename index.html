@@ -1884,7 +1884,6 @@ function calGetMonthData(year, month) {
   const txByDay = {};
   opex.forEach(r => {
     if (r.y !== year || r.m !== month) return;
-    if (r.cat === 'Income' || r.cat === 'Investment') return;
     const key = r.d;
     if (!txByDay[key]) txByDay[key] = [];
     txByDay[key].push(r);
