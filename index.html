@@ -312,7 +312,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.2</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.3</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -560,8 +560,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.4.2';
-const APP_BUILD = '2026-05-15q';
+const APP_VERSION = 'v3.4.3';
+const APP_BUILD = '2026-05-15r';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1811,8 +1811,8 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
             ctx.restore();
           }
 
-          // Curved label outside ring
-          // Flip for bottom half so text reads left-to-right (not upside-down)
+          // Curved label outside ring — render char by char along arc
+          // For bottom half segments, traverse arc in reverse so text reads L→R
           const labelR = arc.outerRadius + 13;
           const arcLen = Math.abs(arc.endAngle - arc.startAngle) * labelR;
           const fontSize = 9.5;
@@ -1820,38 +1820,44 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           const textWidth = d.label.length * charWidth;
           if (arcLen < textWidth * 0.85) return;
 
-          // Determine if segment is on bottom half so text doesn't render upside-down
-          // Chart.js 0 = right, PI/2 = bottom, PI = left, 3PI/2 = top
-          // Bottom half = midAngle normalized between PI*0.5 and PI*1.5
+          // normalMid: 0=right, PI/2=bottom, PI=left, 3PI/2=top (Chart.js clockwise from top)
           const normalMid = ((midAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-          const isBottom = normalMid > Math.PI * 0.5 && normalMid < Math.PI * 1.5;
+          // Bottom half: 45°–270° — verified against actual segment midAngles
+          const isBottom = normalMid > Math.PI / 4 && normalMid < Math.PI * 3 / 2;
 
           const anglePerChar = charWidth / labelR;
-          const label = isBottom ? d.label.split('').reverse().join('') : d.label;
-          // For bottom: start from right side of arc so reversed text reads correctly
-          let startAngle = isBottom
-            ? midAngle + (d.label.length - 1) * anglePerChar / 2
-            : midAngle - (d.label.length - 1) * anglePerChar / 2;
 
           ctx.save();
           ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
           ctx.fillStyle = d.color;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          for (let j = 0; j < label.length; j++) {
-            const a = isBottom
-              ? startAngle - j * anglePerChar
-              : startAngle + j * anglePerChar;
-            const x = arc.x + Math.cos(a) * labelR;
-            const y = arc.y + Math.sin(a) * labelR;
-            ctx.save();
-            ctx.translate(x, y);
-            // Top half: rotate +90 (reads outward clockwise)
-            // Bottom half: rotate -90 (reads outward counter-clockwise, upright)
-            ctx.rotate(isBottom ? a - Math.PI / 2 : a + Math.PI / 2);
-            ctx.fillText(label[j], 0, 0);
-            ctx.restore();
+
+          if (!isBottom) {
+            // Top half: draw L→R clockwise along outer edge
+            const startA = midAngle - (d.label.length - 1) * anglePerChar / 2;
+            for (let j = 0; j < d.label.length; j++) {
+              const a = startA + j * anglePerChar;
+              ctx.save();
+              ctx.translate(arc.x + Math.cos(a) * labelR, arc.y + Math.sin(a) * labelR);
+              ctx.rotate(a + Math.PI / 2);
+              ctx.fillText(d.label[j], 0, 0);
+              ctx.restore();
+            }
+          } else {
+            // Bottom half: draw L→R counter-clockwise so text is not upside-down
+            // Start from the right end of the label arc and go left
+            const startA = midAngle + (d.label.length - 1) * anglePerChar / 2;
+            for (let j = 0; j < d.label.length; j++) {
+              const a = startA - j * anglePerChar;
+              ctx.save();
+              ctx.translate(arc.x + Math.cos(a) * labelR, arc.y + Math.sin(a) * labelR);
+              ctx.rotate(a - Math.PI / 2);
+              ctx.fillText(d.label[j], 0, 0);
+              ctx.restore();
+            }
           }
+
           ctx.restore();
         });
       }
