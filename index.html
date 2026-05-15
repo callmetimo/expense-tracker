@@ -297,7 +297,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.1.3</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.1.4</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -545,8 +545,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.1.3';
-const APP_BUILD = '2026-05-15d';
+const APP_VERSION = 'v3.1.4';
+const APP_BUILD = '2026-05-15e';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -601,6 +601,9 @@ async function fetchSheetPrices(force) {
   // Use cache if < 30 min and not forced
   if (!force && cached && (now - sheetPricesLastFetch) < 1800000) {
     stockPrices = JSON.parse(cached);
+    // Restore cached cashBalance if HIST not yet loaded
+    const cachedCash = localStorage.getItem('nota_cashBalance');
+    if (cachedCash && !HIST.cashBalance) HIST.cashBalance = Number(cachedCash);
     if (statusEl) {
       const ago = Math.round((now - sheetPricesLastFetch) / 60000);
       statusEl.textContent = `Prices from Google Sheets · ${ago < 1 ? 'just now' : ago + 'm ago'}`;
@@ -612,11 +615,15 @@ async function fetchSheetPrices(force) {
     const res = await fetch(APPS_SCRIPT_URL + '?type=prices', {method:'GET'});
     const j = await res.json();
     if (j.prices) {
-      // j.prices: { AAPL: 298.21, JNJ: 230.80, VYM: 157.24, QQQ: 719.79, CHFIDR: 22425, USDIDR: 17599, StarStable: 2205 }
       Object.assign(stockPrices, j.prices);
       localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
       sheetPricesLastFetch = now;
       localStorage.setItem('nota_sp_ts', String(now));
+      // Save cashBalance from sheet — always up to date
+      if (j.cashBalance) {
+        HIST.cashBalance = j.cashBalance;
+        localStorage.setItem('nota_cashBalance', String(j.cashBalance));
+      }
       if (statusEl) statusEl.textContent = `Prices from Google Sheets · just now`;
     } else {
       throw new Error('no prices');
@@ -629,7 +636,10 @@ async function fetchSheetPrices(force) {
         if (!stockPrices[k] && cp[k]) stockPrices[k] = String(cp[k]);
       });
     }
-    if (statusEl) statusEl.textContent = cached ? 'Using cached prices · Sheet unavailable' : 'Could not fetch prices · Enter manually';
+    // Restore cached cashBalance
+    const cachedCash = localStorage.getItem('nota_cashBalance');
+    if (cachedCash && !HIST.cashBalance) HIST.cashBalance = Number(cachedCash);
+    if (statusEl) statusEl.textContent = cached ? 'Using cached prices · Sheet unavailable' : 'Could not fetch prices';
   }
 }
 
