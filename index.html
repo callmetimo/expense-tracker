@@ -297,7 +297,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.2.1</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.2.2</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -545,8 +545,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.2.1';
-const APP_BUILD = '2026-05-15g';
+const APP_VERSION = 'v3.2.2';
+const APP_BUILD = '2026-05-15h';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -657,6 +657,60 @@ async function fetchSheetPrices(force) {
 }
 
 function saveAndRenderNW() { renderNetWorth(); }
+
+// ── FETCH CURRENT MONTH FROM SHEET (v12) ─────────────────────
+// Fetches real-time opex rows for current month from Apps Script.
+// Merges into HIST.opex, overwriting any existing rows for that month.
+// Cache: localStorage nota_curMonth_YYYY_M, expires after 5 minutes.
+let curMonthLastFetch = 0;
+
+async function fetchCurrentMonth(force) {
+  const now = Date.now();
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = today.getMonth() + 1; // 1-indexed
+  const cacheKey = `nota_curMonth_${y}_${m}`;
+
+  // Use cache if < 5 min and not forced
+  if (!force && (now - curMonthLastFetch) < 300000) {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      _applyCurrentMonthRows(JSON.parse(cached), y, m);
+      return;
+    }
+  }
+
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?type=month&y=${y}&m=${m}`, { method: 'GET' });
+    const j = await res.json();
+    if (j.status === 'ok' && Array.isArray(j.rows)) {
+      localStorage.setItem(cacheKey, JSON.stringify(j.rows));
+      curMonthLastFetch = now;
+      _applyCurrentMonthRows(j.rows, y, m);
+    }
+  } catch(e) {
+    // Silently fall back to data.json rows already in HIST.opex
+    console.warn('fetchCurrentMonth failed:', e.message);
+  }
+}
+
+function _applyCurrentMonthRows(rows, y, m) {
+  // m is 1-indexed; HIST.opex uses 0-indexed m
+  const mIdx = m - 1;
+  const mk = `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mIdx]} ${y}`;
+
+  // Remove existing HIST.opex rows for this month (from old data.json snapshot)
+  HIST.opex = (HIST.opex || []).filter(r => !(r.y === y && r.m === mIdx));
+
+  // Append fresh rows from sheet
+  rows.forEach(r => {
+    HIST.opex.push({ y, m: mIdx, d: r.d, mk, cat: r.cat, tx: r.tx, pm: r.pm,
+      ...(r.inc ? { inc: r.inc } : {}),
+      ...(r.exp ? { exp: r.exp } : {}),
+      ...(r.notes ? { notes: r.notes } : {})
+    });
+  });
+}
 let insightsMode = 'monthly';
 let nwMode = 'holdings';
 let mView='all', mRange=3, mSelMonth=null, mSelCat=null;
@@ -901,8 +955,8 @@ function switchTab(tab, el) {
   document.getElementById('page-'+tab).classList.add('active');
   
   if(tab==='home'){
-    if(!histLoaded) onHistLoaded(()=>initCalendar());
-    else initCalendar();
+    if(!histLoaded) onHistLoaded(()=>fetchCurrentMonth().then(()=>{ calInited=false; initCalendar(); }));
+    else fetchCurrentMonth().then(()=>{ calInited=false; initCalendar(); });
   }
   if(tab==='insights'){
     ['monthlySummary','monthlyBarCard','monthlyDonutCard'].forEach(id=>{document.getElementById(id).style.display='block'});
@@ -2337,7 +2391,7 @@ initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
 // DEBUG FIX: Pastikan inisialisasi dilakukan sesudah DOM diload sempurna
 window.addEventListener('DOMContentLoaded', async () => {
   await loadHistData();
-  // Setelah data loaded, selalu reinit calendar agar data terbaru ter-render
+  await fetchCurrentMonth();
   calInited = false;
   if (document.getElementById('page-home').classList.contains('active')) {
     initCalendar();
