@@ -223,8 +223,21 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
 
 /* ── HOME CALENDAR ─────────────────────────────────────────── */
-/* Added min-height fallback so the scroll container does not collapse */
-#page-home{display:none;padding:0;flex-direction:column;height:calc(100vh - var(--header-height,120px));min-height:400px;overflow:hidden}
+#page-home{
+  display:none;padding:0;
+  flex-direction:column;
+  /* Fixed to viewport — body scroll NEVER affects this page */
+  position:fixed;
+  top:var(--header-height,120px);
+  bottom:0;
+  /* Match body max-width centering */
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:430px;
+  overflow:hidden;
+  z-index:1;
+}
 #page-home.active{display:flex}
 
 .cal-scroll{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:150px}
@@ -300,7 +313,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.0.6</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.0.7</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -591,8 +604,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <div id="toast" class="toast"></div>
 
 <script>
-const APP_VERSION = 'v3.0.6';
-const APP_BUILD = '2026-05-15c';
+const APP_VERSION = 'v3.0.7';
+const APP_BUILD = '2026-05-15d';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -900,16 +913,6 @@ function switchTab(tab, el) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   if(el && el.classList) el.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
-
-  // Lock body scroll on home (calendar handles its own scroll internally)
-  // Restore body scroll for all other tabs
-  if (tab === 'home') {
-    document.body.style.overflow = 'hidden';
-    document.body.style.paddingBottom = '0';
-  } else {
-    document.body.style.overflow = '';
-    document.body.style.paddingBottom = '';
-  }
 
   if(tab==='home'){
     if(!histLoaded) onHistLoaded(()=>initCalendar());
@@ -2336,10 +2339,6 @@ updateHeaderHeight();
 window.addEventListener('resize',updateHeaderHeight);
 initDatePicker('inputDateRaw','inputDateDisplay','inputDateText');
 initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
-
-// Home is default active tab — lock body scroll immediately
-document.body.style.overflow = 'hidden';
-document.body.style.paddingBottom = '0';
 
 // DEBUG FIX: Pastikan inisialisasi dilakukan sesudah DOM diload sempurna
 window.addEventListener('DOMContentLoaded', async () => {
