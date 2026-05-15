@@ -1,27 +1,497 @@
-<!-- Bagian HTML Tetap Sama Seperti index_7.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- ... style tetap sama ... -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nota">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<title>Nota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--bg4:#2e2e2e;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+  --text:#f0f0f0;--text2:#999;--text3:#777;
+  --accent:#c8f060;--accent-dim:rgba(200,240,96,0.11);
+  --red:#ff6b6b;--red-dim:rgba(255,107,107,0.11);
+  --blue:#60a0f0;--blue-dim:rgba(96,160,240,0.11);
+  --green:#4ade80;--green-dim:rgba(74,222,128,0.11);
+  --radius:14px;--radius-sm:8px;
+  --font-logo:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:430px;margin:0 auto;padding-bottom:90px}
+
+/* HEADER */
+.header{padding:52px 20px 14px;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:0.5px solid var(--border)}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.app-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px;font-family:var(--font-logo);color:var(--accent)}
+.app-title .dot{color:rgba(200,240,96,0.4)}
+.app-title .app-version{font-size:10px;color:var(--text2);font-weight:400;margin-left:2px;font-family:-apple-system,'SF Pro Display',system-ui,sans-serif}
+.search-icon-btn{background:none;border:none;color:var(--text2);padding:7px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
+.search-icon-btn svg{width:18px;height:18px}
+.search-icon-btn:active{color:var(--accent)}
+.tab-bar{display:flex;background:var(--bg3);border-radius:9px;padding:3px;gap:2px}
+.tab{flex:1;padding:6px 2px;text-align:center;font-size:10px;font-weight:500;border-radius:7px;cursor:pointer;color:var(--text2);transition:all 0.2s;white-space:nowrap}
+.tab.active{background:var(--accent);color:#0f0f0f;font-weight:700}
+
+.page{display:none;padding:0 20px}
+.page.active{display:block}
+
+/* FORM */
+.form-section{margin-top:16px}
+.form-group{margin-bottom:12px;position:relative;overflow:visible}
+.form-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;display:block}
+.form-input{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 12px;font-size:16px;font-family:inherit;appearance:none;-webkit-appearance:none;outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--text3)}
+select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px}
+.amount-wrapper{position:relative}
+.amount-prefix{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:15px}
+.amount-input{padding-left:44px !important;font-size:20px !important;font-weight:600}
+.autocomplete-wrapper{position:relative}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius-sm);z-index:200;max-height:150px;overflow-y:auto;margin-top:3px}
+.autocomplete-item{padding:9px 12px;font-size:14px;cursor:pointer;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:active{background:var(--accent-dim);color:var(--accent)}
+.ac-hint{font-size:10px;color:var(--text2)}
+.date-input-hidden{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0}
+.date-display{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 12px;font-size:16px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s}
+.date-display svg{opacity:0.35;flex-shrink:0}
+.submit-btn{width:100%;border:none;border-radius:var(--radius);padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity 0.2s,transform 0.1s}
+.submit-btn.expense{background:var(--accent);color:#0f0f0f}
+.submit-btn.income{background:var(--green);color:#0f0f0f}
+.submit-btn.invest{background:var(--blue);color:#0f0f0f}
+.submit-btn:active{transform:scale(0.98);opacity:0.9}
+
+/* Smart suggestions */
+.smart-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:-6px;margin-bottom:12px}
+.smart-pill{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all 0.15s}
+.smart-pill:hover,.smart-pill.selected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.smart-pill.pm{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+.smart-pill.pm.selected{background:var(--blue);color:#0f0f0f}
+.smart-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;margin-top:2px;display:block}
+
+/* Action toggle for Invest */
+.action-toggle{display:flex;gap:6px;margin-bottom:12px}
+.action-btn{flex:1;padding:10px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--bg3);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.2s}
+.action-btn.active.buy{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.action-btn.active.sell{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+
+/* HISTORY */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:10px}
+.section-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px}
+.filter-select{background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);padding:4px 9px;border-radius:6px;font-size:11px;cursor:pointer}
+.tx-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:11px;margin-bottom:7px;display:flex;align-items:center;gap:9px;cursor:pointer}
+.tx-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.tx-icon.expense{background:var(--accent-dim)}
+.tx-icon.income{background:var(--green-dim)}
+.tx-icon.cc-bca{background:var(--blue-dim)}
+.tx-icon.cc-niaga{background:var(--red-dim)}
+.tx-icon.invest{background:var(--blue-dim)}
+.tx-info{flex:1;min-width:0}
+.tx-payee{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.tx-amount{font-size:13px;font-weight:600;text-align:right;flex-shrink:0}
+.badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500;margin-left:3px}
+.badge-opex{background:var(--accent-dim);color:var(--accent)}
+.badge-bca{background:var(--blue-dim);color:var(--blue)}
+.badge-niaga{background:var(--red-dim);color:var(--red)}
+.badge-income{background:var(--green-dim);color:var(--green)}
+.badge-invest{background:var(--blue-dim);color:var(--blue)}
+.badge-pending{background:rgba(255,165,0,0.15);color:orange}
+
+/* SEARCH */
+.search-modal{max-height:90vh;display:flex;flex-direction:column}
+.search-modal-header{position:sticky;top:0;background:var(--bg);border-bottom:0.5px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:8px;margin:0 -18px;padding-left:calc(20px - 0px);margin-bottom:12px}
+#searchInput{flex:1;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:9px 12px;font-size:16px;font-family:inherit;outline:none;transition:border-color 0.2s}
+#searchInput:focus{border-color:var(--accent)}
+#searchInput::placeholder{color:var(--text3)}
+.search-clear-btn{background:none;border:none;color:var(--text2);padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s;flex-shrink:0}
+.search-clear-btn svg{width:18px;height:18px}
+.search-clear-btn:active{color:var(--accent)}
+#searchResults{flex:1;overflow-y:auto;padding-bottom:20px}
+.search-item-note{font-size:11px;color:var(--text2);margin-top:5px;padding:6px 0;border-top:0.5px solid var(--border);word-break:break-word}
+.search-item-note .highlight{color:var(--accent);font-weight:500}
+.highlight{color:var(--accent);font-weight:500}
+
+/* CHART SHARED */
+.chart-page-section{margin-top:16px}
+.insights-sticky{position:sticky;top:var(--header-height,120px);z-index:90;background:var(--bg);padding:10px 20px 8px;margin:0 -20px;border-bottom:0.5px solid var(--border)}
+.toggle-row{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.toggle-btn{flex:1;min-width:0;padding:7px 3px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--bg3);color:var(--text2);font-size:10px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.2s;white-space:nowrap}
+.toggle-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.chart-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.chart-card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px}
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.summary-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:11px}
+.s-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.s-value{font-size:18px;font-weight:700;color:var(--accent)}
+.s-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.chart-loading{text-align:center;padding:40px;color:var(--text2);font-size:13px}
+
+/* BAR CHART */
+.bar-chart-wrap{width:100%;overflow-x:auto}
+.bar-chart{display:flex;align-items:flex-end;gap:3px;height:140px;padding-bottom:22px;position:relative;min-width:100%}
+.bar-col{flex:1;min-width:20px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;cursor:pointer}
+.bar-fill{width:100%;border-radius:3px 3px 0 0;background:var(--accent-dim);border:0.5px solid var(--accent);transition:all 0.25s;opacity:0.6;min-height:2px}
+.bar-col.selected .bar-fill{background:var(--accent);opacity:1}
+.bar-col:hover .bar-fill{opacity:0.9}
+.bar-label{font-size:11px;font-weight:500;color:var(--text2);text-align:center;white-space:nowrap;overflow:hidden;width:100%;position:absolute;bottom:0;left:0}
+.bar-amount{font-size:11px;font-weight:600;color:var(--text);text-align:center;margin-bottom:3px;line-height:1.3}
+
+/* DONUT */
+.donut-wrap{display:flex;gap:14px;align-items:center}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+.legend-row{display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 5px;border-radius:6px;transition:background 0.15s}
+.legend-row:hover{background:var(--bg3)}
+.legend-row.active{background:var(--bg3);outline:0.5px solid var(--border2)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.legend-name{color:var(--text2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.legend-pct{color:var(--text);font-size:11px;font-weight:600;white-space:nowrap}
+.legend-amt{color:var(--text2);font-size:11px;white-space:nowrap}
+
+/* DETAIL */
+.detail-section{margin-top:10px;border-top:0.5px solid var(--border);padding-top:10px}
+.detail-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.detail-title-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.detail-item{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);gap:8px}
+.detail-item:last-child{border-bottom:none}
+.detail-name{font-size:13px;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detail-date{font-size:11px;color:var(--text2);white-space:nowrap}
+.detail-amt{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap}
+
+/* CATEGORY PILLS */
+.pill-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px}
+.cat-pill{position:relative;border-radius:10px;overflow:hidden;border:0.5px solid var(--border);padding:8px 9px;cursor:pointer;background:var(--bg2);transition:border-color 0.15s}
+.cat-pill.active{border-color:var(--accent)}
+.cat-pill-bar{position:absolute;top:0;left:0;height:100%;border-radius:10px;opacity:0.13}
+.cat-pill-name{font-size:11px;font-weight:600;color:var(--text);position:relative;z-index:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-pill-amt{font-size:10px;color:var(--text2);position:relative;z-index:1;margin-top:2px}
+.cat-trend-card{background:var(--bg2);border-radius:var(--radius);border:0.5px solid rgba(200,240,96,0.25);padding:12px;margin-bottom:12px}
+.cat-trend-header{font-size:11px;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.cat-trend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* NET WORTH */
+.nw-mode-toggle{display:flex;gap:6px;margin-bottom:14px}
+.nw-mode-btn{flex:1;padding:9px 4px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.2s}
+.nw-mode-btn.active{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+.nw-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.nw-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px}
+.nw-card-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.nw-card-value{font-size:17px;font-weight:700}
+.nw-card-sub{font-size:10px;color:var(--text2);margin-top:2px}
+.holding-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px}
+.holding-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.holding-name{font-size:14px;font-weight:600}
+.holding-badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:500}
+.holding-details{display:flex;gap:12px;font-size:11px;color:var(--text2)}
+.holding-pnl{font-size:12px;font-weight:600;margin-top:4px}
+.nw-update-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.nw-update-label{font-size:11px;color:var(--text2);flex:1}
+.nw-update-btn{background:var(--bg3);border:0.5px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer}
+.star-nav-input{font-size:14px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--bg3);border:0.5px solid var(--border);color:var(--text);width:100%;margin-bottom:8px;font-family:inherit}
+#nwPriceInputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#nwPriceInputs > .chart-card-title{grid-column:1/-1}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:flex-end;display:none}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;padding:18px;width:100%;max-height:85vh;overflow-y:auto;border-top:0.5px solid var(--border2)}
+.modal-handle{width:32px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 14px}
+.modal-title{font-size:15px;font-weight:600;margin-bottom:14px}
+.modal-actions{display:flex;gap:7px;margin-top:10px}
+.btn-delete{flex:1;padding:12px;border-radius:var(--radius);border:0.5px solid var(--red);background:var(--red-dim);color:var(--red);font-size:13px;font-weight:600;cursor:pointer}
+.btn-save{flex:2;padding:12px;border-radius:var(--radius);border:none;background:var(--accent);color:#0f0f0f;font-size:13px;font-weight:700;cursor:pointer}
+.toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg2);border:0.5px solid var(--border2);color:var(--text);padding:10px 16px;border-radius:30px;font-size:13px;opacity:0;transition:all 0.3s;z-index:1000;white-space:nowrap;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:var(--accent);color:var(--accent)}
+.toast.error{border-color:var(--red);color:var(--red)}
+.empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
+
+/* HOME CALENDAR */
+#page-home{display:none;padding:0;flex-direction:column;height:calc(100vh - var(--header-height,120px));overflow:hidden}
+#page-home.active{display:flex}
+.cal-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.cal-month-label{display:flex;align-items:center;gap:12px;padding:14px 20px 12px}
+.cal-month-name{font-size:14px;font-weight:700;letter-spacing:-0.2px;min-width:88px;flex-shrink:0}
+.cal-progress-wrap{flex:1;display:flex;align-items:center;gap:8px}
+.cal-progress-bar{flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;min-width:40px}
+.cal-progress-fill{height:100%;background:var(--accent);border-radius:2px}
+.cal-progress-fill.over{background:var(--red)}
+.cal-progress-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;min-width:68px}
+.cal-progress-amount{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap}
+.cal-progress-avg{font-size:9px;color:var(--text2);white-space:nowrap}
+.cal-month-divider{height:0.5px;background:var(--border);margin:0 20px 2px}
+.cal-week-section{padding:8px 20px 4px}
+.cal-wday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding-bottom:6px}
+.cal-wday{text-align:center;font-size:10px;color:var(--text2);font-weight:500}
+.cal-week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
+.cal-day{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 4px 7px;text-align:center;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;user-select:none;cursor:pointer;transition:background 0.15s,transform 0.12s}
+.cal-day:active{background:var(--bg3);transform:scale(0.94)}
+.cal-day.selected{border:1.5px solid var(--accent);background:var(--bg3)}
+.cal-day.today{border:1.5px solid var(--accent)}
+.cal-day.today .cal-day-num{color:var(--accent)}
+.cal-day.other-month{opacity:0.3;pointer-events:none}
+.cal-day.future{opacity:0.35;pointer-events:none}
+.cal-day-num{font-size:13px;font-weight:600;line-height:1;color:var(--text)}
+.cal-day-total{font-size:10px;font-weight:500;color:var(--text2);line-height:1}
+.cal-scroll-hint{display:flex;align-items:center;justify-content:center;gap:6px;padding:16px 20px;color:var(--text2);font-size:11px;cursor:pointer}
+.cal-scroll-hint svg{width:13px;height:13px;stroke-width:2.2}
+.cal-tx-panel{background:var(--bg2);border-top:0.5px solid var(--border2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;transition:height 0.26s cubic-bezier(0.4,0,0.2,1)}
+.cal-tx-header{height:46px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid var(--border)}
+.cal-tx-date{font-size:13px;font-weight:600}
+.cal-tx-total{font-size:11px;color:var(--text2)}
+.cal-tx-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.cal-tx-item{display:flex;align-items:center;padding:11px 20px;border-bottom:0.5px solid var(--border);gap:10px;cursor:pointer}
+.cal-tx-item:active{background:var(--bg3)}
+.cal-tx-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,0.14)}
+.cal-tx-dot.income{background:rgba(74,222,128,0.5)}
+.cal-tx-dot.invest{background:rgba(96,160,240,0.5)}
+.cal-tx-info{flex:1;min-width:0}
+.cal-tx-cat{font-size:13px;font-weight:500;color:var(--text)}
+.cal-tx-pm{font-size:10px;color:var(--text2)}
+.cal-tx-amt{font-size:13px;font-weight:600;color:var(--text)}
+.cal-tx-amt.income{color:var(--green)}
+.cal-tx-amt.invest{color:var(--blue)}
+.cal-tx-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:7px;padding:20px;text-align:center}
+.cal-tx-empty-icon{font-size:24px;opacity:0.2}
+.cal-tx-empty-text{font-size:13px;color:var(--text2)}
+.cal-fab-wrap{flex-shrink:0;height:80px;background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:center}
+.cal-fab{width:64px;height:64px;background:var(--accent);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,240,96,0.28);color:#0f0f0f;font-size:30px}
+</style>
 </head>
 <body>
 
-<!-- ... struktur body tetap sama ... -->
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version">v3.0.2</span></div>
+    <button class="search-icon-btn" onclick="openSearchOverlay()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </button>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('home',this)">Home</div>
+    <div class="tab" onclick="switchTab('history',this)">History</div>
+    <div class="tab" onclick="switchTab('insights',this)">Insights</div>
+    <div class="tab" onclick="switchTab('networth',this)">Net Worth</div>
+  </div>
+</div>
+
+<div class="page active" id="page-home">
+  <div class="cal-scroll" id="calScroll">
+    <div class="cal-scroll-hint" id="calScrollHint" onclick="calRevealOlder()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 15l-6-6-6 6"/></svg>
+      Scroll up for previous weeks
+    </div>
+    <div id="calOlderMonths"></div>
+    <div id="calCurrentMonth"></div>
+    <div style="height:8px"></div>
+  </div>
+  <div class="cal-tx-panel" id="calTxPanel">
+    <div class="cal-tx-header">
+      <div class="cal-tx-date" id="calTxDate">—</div>
+      <div class="cal-tx-total" id="calTxTotal"></div>
+    </div>
+    <div class="cal-tx-list" id="calTxList">
+      <div class="cal-tx-empty">
+        <div class="cal-tx-empty-icon">📅</div>
+        <div class="cal-tx-empty-text">Tap a day to see transactions</div>
+      </div>
+    </div>
+  </div>
+  <div class="cal-fab-wrap">
+    <button class="cal-fab" onclick="switchTab('input',null);openInputFromHome()">+</button>
+  </div>
+</div>
+
+<div class="page" id="page-input">
+  <div class="form-section">
+    <div class="pill-toggle">
+      <div class="pill-toggle-btn active expense" data-mode="expense" onclick="setInputMode('expense',this)">Expense</div>
+      <div class="pill-toggle-btn income" data-mode="income" onclick="setInputMode('income',this)">Income</div>
+      <div class="pill-toggle-btn invest" data-mode="invest" onclick="setInputMode('invest',this)">Invest</div>
+    </div>
+
+    <div id="form-opex">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" id="inputDateRaw" class="date-input-hidden">
+        <div class="date-display" id="inputDateDisplay">
+          <span id="inputDateText"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+      </div>
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">Transaction</label>
+        <input type="text" class="form-input" id="inputTx" placeholder="Payee or transaction name..." autocomplete="off" oninput="onTxInput()" onfocus="onTxFocus()">
+        <div class="autocomplete-list" id="ac-inputTx" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount</label>
+        <div class="amount-wrapper">
+          <span class="amount-prefix">Rp</span>
+          <input type="number" class="form-input amount-input" id="inputAmount" placeholder="0" inputmode="numeric">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <div class="smart-pills" id="catPills"></div>
+        <input type="text" class="form-input" id="inputCat" placeholder="Select or type..." oninput="showAC('inputCat', allCategories)" onfocus="showAC('inputCat', allCategories)">
+        <div class="autocomplete-list" id="ac-inputCat" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <div class="smart-pills" id="pmPills"></div>
+        <input type="text" class="form-input" id="inputPm" placeholder="Or type..." oninput="showAC('inputPm', allPMs)" onfocus="showAC('inputPm', allPMs)">
+        <div class="autocomplete-list" id="ac-inputPm" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input type="text" class="form-input" id="inputNotes" placeholder="Add a note…">
+      </div>
+      <button class="submit-btn expense" id="submitOpexBtn" onclick="submitOpex()">Save Transaction</button>
+    </div>
+
+    <div id="form-invest" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" id="inputDateRawI" class="date-input-hidden">
+        <div class="date-display" id="inputDateDisplayI"><span id="inputDateTextI"></span></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stock / Asset</label>
+        <input type="text" class="form-input" id="inputStock" oninput="showAC('inputStock', allStocks)">
+        <div class="autocomplete-list" id="ac-inputStock" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Action</label>
+        <div class="action-toggle">
+          <div class="action-btn active buy" onclick="setInvestAction('Buy',this)">Buy</div>
+          <div class="action-btn sell" onclick="setInvestAction('Sell',this)">Sell</div>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Lot</label><input type="number" class="form-input" id="inputLot" oninput="calcTotal()"></div>
+      <div class="form-group"><label class="form-label">Price</label><input type="number" class="form-input" id="inputPrice" oninput="calcTotal()"></div>
+      <div class="form-group"><label class="form-label">Total IDR</label><input type="number" class="form-input" id="inputTotal"></div>
+      <button class="submit-btn invest" onclick="submitInvest()">Save Investment</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-history">
+  <div class="section-header">
+    <div class="section-title">Local Transactions</div>
+    <select class="filter-select" id="historyFilter" onchange="renderHistory()">
+      <option value="all">All</option><option value="expense">Expense</option><option value="income">Income</option><option value="invest">Invest</option>
+    </select>
+  </div>
+  <div id="historyList"></div>
+</div>
+
+<div class="page" id="page-insights">
+  <div class="chart-page-section">
+    <div class="insights-sticky">
+      <div class="toggle-row" id="insightsModeToggle">
+        <div class="toggle-btn active" onclick="setIM('monthly',this)">Monthly</div>
+        <div class="toggle-btn" onclick="setIM('yearly',this)">Yearly</div>
+        <div class="toggle-btn" onclick="setIM('category',this)">Category</div>
+      </div>
+      <div id="monthlyControls">
+        <div class="toggle-row" id="monthlySourceToggle">
+          <div class="toggle-btn active" onclick="setMV('all',this)">All</div><div class="toggle-btn" onclick="setMV('opex',this)">OPEX</div><div class="toggle-btn" onclick="setMV('cc-bca',this)">CC BCA</div><div class="toggle-btn" onclick="setMV('cc-niaga',this)">CC Niaga</div>
+        </div>
+        <div class="toggle-row" id="monthlyRangeToggle">
+          <div class="toggle-btn active" onclick="setMR(3,this)">3 Mo</div><div class="toggle-btn" onclick="setMR(6,this)">6 Mo</div><div class="toggle-btn" onclick="setMR(12,this)">12 Mo</div><div class="toggle-btn" onclick="setMR('ytd',this)">YTD</div>
+        </div>
+      </div>
+    </div>
+    <div id="monthlySummary"></div><div id="monthlyBarCard"></div><div id="monthlyDonutCard"></div>
+    <div id="yearlySummary" style="display:none"></div><div id="yearlyBarCard" style="display:none"></div><div id="yearlyDonutCard" style="display:none"></div>
+    <div id="catRankingCard" style="display:none"></div><div id="catTrendCard" style="display:none"></div>
+  </div>
+</div>
+
+<div class="page" id="page-networth">
+  <div class="form-section">
+    <div class="nw-mode-toggle">
+      <div class="nw-mode-btn active" onclick="setNWMode('holdings',this)">Holdings</div><div class="nw-mode-btn" onclick="setNWMode('overview',this)">Overview</div>
+    </div>
+    <div id="nwPriceInputs">
+       <div class="chart-card-title">Current Prices</div>
+       <div class="form-group"><label class="form-label">USD/IDR</label><input type="text" id="nwUSDIDR" class="form-input" onchange="saveAndRenderNW()"></div>
+       <div class="form-group"><label class="form-label">Star Stable NAV</label><input type="text" id="nwStarNav" class="form-input" onchange="saveAndRenderNW()"></div>
+    </div>
+    <div id="nwContent"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="searchModal"><div class="modal"><input type="text" id="searchInput" oninput="onSearchInput()"><div id="searchResults"></div></div></div>
+<div class="modal-overlay" id="editModal"><div class="modal"><div id="editModalBody"></div><div class="modal-actions"><button class="btn-delete" onclick="deleteTransaction()">Delete</button><button class="btn-save" onclick="saveEdit()">Save</button></div></div></div>
+<div id="toast" class="toast"></div>
 
 <script>
-const APP_VERSION = 'v3.0.1'; // Increment version for debug
+const APP_VERSION = 'v3.0.2';
 const APP_BUILD = '2026-05-15';
-// ... konstanta lainnya tetap sama ...
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
+const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const allCategories = ['Administration','Auto','Books','Entertainment','Gadget','Gas','Gifts','Groceries','Home Repair','Household','Income','Insurance','Investment','Meals','Medical','Mortgage','Self Care','Transport','Travel','Utilities'];
+const allPMs = ['BCA','eWallet','Flazz','CC BCA','CC Niaga'];
+const allStocks = ['Star Stable Income Fund','USDIDR','CHFIDR','QQQ','JNJ','VYM','AAPL'];
+const CAT_COLORS = {'Transport':'#60a0f0','Meals':'#c8f060','Entertainment':'#ff6b6b','Groceries':'#ffaa44','Household':'#a78bfa','Medical':'#34d399','Utilities':'#f472b6','Auto':'#fb923c','Gas':'#fbbf24','Travel':'#22d3ee','Insurance':'#e879f9','Books':'#6ee7b7','Gifts':'#fca5a5','Self Care':'#c4b5fd','Administration':'#93c5fd','Gadget':'#818cf8','Home Repair':'#f87171','Investment':'#38bdf8','Income':'#4ade80','Mortgage':'#fb923c','Other':'#6b7280'};
+const STOCK_TYPE = {'Star Stable Income Fund':'Reksa Dana','USDIDR':'Forex','CHFIDR':'Forex','QQQ':'US Stock','JNJ':'US Stock','VYM':'US Stock','AAPL':'US Stock'};
 
-// ── FIX 1: UPDATE calGetMonthData ─────────────────────────────
+const HIST = {opex:[], invest:[], txCat:{}, txPm:{}, stockType:{}, cashBalance:0};
+let histLoaded = false, histLoadCallbacks = [];
+let inputMode = 'expense', investAction = 'Buy', editingIndex = null;
+let queue = JSON.parse(localStorage.getItem('nota_queue_v2') || '[]');
+let txHistory = JSON.parse(localStorage.getItem('nota_history_v2') || '[]');
+let investHistory = JSON.parse(localStorage.getItem('nota_invest_v2') || '[]');
+let fxRates = JSON.parse(localStorage.getItem('nota_fx') || '{}'), stockPrices = JSON.parse(localStorage.getItem('nota_prices') || '{}');
+let insightsMode = 'monthly', nwMode = 'holdings', mView='all', mRange=3, mSelMonth=null, mSelCat=null;
+
+// Helper: Gabungkan data statis & lokal untuk kalender/insight
+function getAllOpexRows() {
+  const h = (HIST.opex || []).map(r => ({...r, source:'hist'}));
+  const l = txHistory.map(r => {
+    const d = new Date(r.date);
+    return {
+      y: d.getFullYear(), m: d.getMonth(), d: d.getDate(),
+      mk: `${MO[d.getMonth()]} ${d.getFullYear()}`,
+      cat: r.category, tx: r.tx, pm: r.pm,
+      exp: r.type === 'expense' ? r.amount : undefined,
+      inc: r.type === 'income' ? r.amount : undefined,
+      source: 'local', id: r.id
+    };
+  });
+  return [...h, ...l];
+}
+
+function getRows(view) {
+  const all = getAllOpexRows().filter(r => r.exp);
+  if (view === 'all') return all;
+  if (view === 'opex') return all.filter(r => r.pm !== 'CC BCA' && r.pm !== 'CC Niaga');
+  if (view === 'cc-bca') return all.filter(r => r.pm === 'CC BCA');
+  if (view === 'cc-niaga') return all.filter(r => r.pm === 'CC Niaga');
+  return [];
+}
+
+// ── CALENDAR LOGIC (DEBUGGED V3.0.2) ──────────────────────────
+let calInited = false, calOlderShown = false, calSelectedCell = null;
+
 function calGetMonthData(year, month) {
-  // Gunakan getAllOpexRows() agar data lokal & historis terbaca
-  const allRows = getAllOpexRows(); 
-  const mIndex = month - 1; // Ubah ke 0-indexed untuk komparasi
-
+  const allRows = getAllOpexRows();
+  const mIndex = month - 1; // FIX: Sync 1-based month (arg) to 0-based data (r.m)
   const txByDay = {};
+
   allRows.forEach(r => {
-    if (r.y !== year || r.m !== mIndex) return; // Fix komparasi index
+    if (r.y !== year || r.m !== mIndex) return;
     if (r.cat === 'Income' || r.cat === 'Investment') return;
     const key = r.d;
     if (!txByDay[key]) txByDay[key] = [];
@@ -32,135 +502,198 @@ function calGetMonthData(year, month) {
     .filter(r => r.y === year && r.m === mIndex && r.cat !== 'Income' && r.cat !== 'Investment')
     .reduce((s, r) => s + (r.exp || 0), 0);
 
-  // 3-month avg baseline
-  let avgTotal = 0, avgCount = 0;
+  let avgT = 0, avgC = 0;
   for (let i = 1; i <= 3; i++) {
-    let ay = year, am = mIndex - i; 
-    if (am < 0) { am += 12; ay -= 1; }
-    const mt = allRows
-      .filter(r => r.y === ay && r.m === am && r.cat !== 'Income' && r.cat !== 'Investment')
-      .reduce((s, r) => s + (r.exp || 0), 0);
-    if (mt > 0) { avgTotal += mt; avgCount++; }
+    let ay = year, am = mIndex - i; if (am < 0) { am += 12; ay -= 1; }
+    const mt = allRows.filter(r => r.y === ay && r.m === am && r.exp).reduce((s, r) => s + (r.exp || 0), 0);
+    if (mt > 0) { avgT += mt; avgC++; }
   }
-  const avg = avgCount > 0 ? Math.round(avgTotal / avgCount) : 0;
-  const pct = avg > 0 ? Math.min(Math.round((total / avg) * 100), 100) : 0;
-  const isOver = avg > 0 && total > avg;
-
-  return { total, avg, pct, isOver, txByDay };
+  const avg = avgC > 0 ? Math.round(avgT / avgC) : 0;
+  return { total, avg, txByDay };
 }
 
-// ── FIX 2: UPDATE calBuildMonthHTML (Klik untuk semua hari) ────
 function calBuildMonthHTML(year, month, today) {
-  const { total, avg, pct, isOver, txByDay } = calGetMonthData(year, month);
-  const mName = calMonthName(year, month);
-  const totalFmt = total ? fRpS(total) : 'Rp 0';
-  const avgFmt = avg ? fRpS(avg) : '';
-  const fillPct = pct + '%';
-  const overCls = isOver ? ' over' : '';
-
-  const progressHTML = avg > 0
-    ? `<div class="cal-progress-wrap">
-        <div class="cal-progress-bar"><div class="cal-progress-fill${overCls}" style="width:${fillPct}"></div></div>
-        <div class="cal-progress-right">
-          <div class="cal-progress-amount">${totalFmt}</div>
-          <div class="cal-progress-avg">3mo avg ${avgFmt}</div>
-        </div>
-      </div>`
-    : `<div class="cal-progress-wrap">
-        <div class="cal-progress-bar"><div class="cal-progress-fill" style="width:0%"></div></div>
-        <div class="cal-progress-right">
-          <div class="cal-progress-amount">${totalFmt}</div>
-        </div>
-      </div>`;
-
-  const firstDay = new Date(year, month - 1, 1).getDay(); 
+  const { total, avg, txByDay } = calGetMonthData(year, month);
+  const mName = new Date(year, month-1, 1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const pct = avg > 0 ? Math.min(Math.round((total/avg)*100),100) : 0;
+  
+  const firstDay = new Date(year, month - 1, 1).getDay();
   const daysInMon = new Date(year, month, 0).getDate();
   const offset = (firstDay + 6) % 7;
-  const prevMonth = month === 1 ? 12 : month - 1;
-  const prevYear = month === 1 ? year - 1 : year;
-  const daysInPrev = new Date(prevYear, prevMonth, 0).getDate();
-
+  
   let cells = [];
-  for (let i = offset - 1; i >= 0; i--) cells.push({ day: daysInPrev - i, cur: false });
-  for (let d = 1; d <= daysInMon; d++) cells.push({ day: d, cur: true });
-  const remainder = cells.length % 7;
-  if (remainder > 0) { for (let d = 1; d <= 7 - remainder; d++) cells.push({ day: d, cur: false }); }
+  const prevDate = new Date(year, month-1, 0);
+  for (let i = offset - 1; i >= 0; i--) cells.push({ d: prevDate.getDate()-i, cur: false });
+  for (let d = 1; d <= daysInMon; d++) cells.push({ d: d, cur: true });
+  while(cells.length % 7 !== 0) cells.push({ d: cells.length % 7 + 1, cur: false, next:true });
 
-  const todayY = today.getFullYear(), todayM = today.getMonth() + 1, todayD = today.getDate();
-
-  let weeksHTML = '';
+  let weeks = '';
   for (let w = 0; w < cells.length / 7; w++) {
-    let weekCells = '';
+    let row = '';
     for (let d = 0; d < 7; d++) {
-      const cell = cells[w * 7 + d];
-      const isCur = cell.cur;
-      const isToday = isCur && year === todayY && month === todayM && cell.day === todayD;
-      const txs = isCur ? (txByDay[cell.day] || []) : [];
-      const dayTotal = txs.reduce((s, r) => s + (r.exp || 0), 0);
-
-      let cls = 'cal-day';
-      if (!isCur) cls += ' other-month';
-      else if (txs.length > 0) cls += ' has-data';
-      if (isToday) cls += ' today';
-
-      const txJson = JSON.stringify(txs.map(r => ({
-        cat: r.cat, pm: r.pm, amt: r.exp || r.inc, type: r.cat==='Income'?'income':(r.cat==='Investment'?'invest':'')
-      }))).replace(/'/g, '&#39;');
+      const c = cells[w*7+d];
+      const isToday = c.cur && year===today.getFullYear() && month===(today.getMonth()+1) && c.d===today.getDate();
+      const txs = c.cur ? (txByDay[c.d] || []) : [];
+      const dayTotal = txs.reduce((s,r)=>s+(r.exp||0),0);
       
-      const dateStr = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
-      const totalStr = dayTotal ? fRpS(dayTotal) : '';
-      // FIX: Semua sel di bulan aktif bisa di-klik
-      const clickAttr = isCur ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
+      let cls = 'cal-day' + (c.cur ? '' : ' other-month');
+      if (isToday) cls += ' today';
+      if (txs.length > 0) cls += ' has-data';
 
-      weekCells += `<div class="${cls}" ${clickAttr} data-txns='${txJson}'>
-        <div class="cal-day-num">${cell.day}</div>
-        ${dayTotal ? `<div class="cal-day-total">${calFormatAmount(dayTotal)}</div>` : (isToday ? '<div class="cal-day-total">Today</div>' : '')}
+      const txJson = JSON.stringify(txs.map(r=>({cat:r.cat, pm:r.pm, amt:r.exp}))).replace(/'/g, '&#39;');
+      const dateStr = c.cur ? `${year}-${String(month).padStart(2,'0')}-${String(c.d).padStart(2,'0')}` : '';
+      
+      // FIX: Semua hari di bulan aktif bisa diklik
+      const click = c.cur ? `onclick="calSelectDay(this,'${dateStr}','${dayTotal?fRpS(dayTotal):''}')"` : '';
+
+      row += `<div class="${cls}" ${click} data-txns='${txJson}'>
+        <div class="cal-day-num">${c.d}</div>
+        <div class="cal-day-total">${dayTotal?calFormatAmount(dayTotal):(isToday?'Today':'')}</div>
       </div>`;
     }
-    weeksHTML += `<div class="cal-week-row">${weekCells}</div>`;
+    weeks += `<div class="cal-week-row">${row}</div>`;
   }
-  return `<div class="cal-month-label"><div class="cal-month-name">${mName}</div>${progressHTML}</div><div class="cal-week-section">${weeksHTML}</div>`;
+
+  return `
+    <div class="cal-month-label">
+      <div class="cal-month-name">${mName}</div>
+      <div class="cal-progress-wrap">
+        <div class="cal-progress-bar"><div class="cal-progress-fill" style="width:${pct}%"></div></div>
+        <div class="cal-progress-right"><div class="cal-progress-amount">${fRpS(total)}</div></div>
+      </div>
+    </div>
+    <div class="cal-week-section">${weeks}</div>`;
 }
 
-// ── FIX 3: UPDATE calGetCurrentWeekHTML (Klik untuk semua hari) ────
 function calGetCurrentWeekHTML(year, month, today) {
   const { txByDay } = calGetMonthData(year, month);
-  const todayDow = (today.getDay() + 6) % 7; 
-  const monDate = new Date(today);
-  monDate.setDate(today.getDate() - todayDow);
-
-  let cells = '';
+  const dow = (today.getDay() + 6) % 7;
+  const mon = new Date(today); mon.setDate(today.getDate() - dow);
+  
+  let row = '';
   for (let i = 0; i < 7; i++) {
-    const d = new Date(monDate); d.setDate(monDate.getDate() + i);
-    const dy = d.getFullYear(), dm = d.getMonth() + 1, dd = d.getDate();
-    const isCur = (dy === year && dm === month);
-    const isToday = (dy === today.getFullYear() && dm === today.getMonth() + 1 && dd === today.getDate());
-    const txs = isCur ? (txByDay[dd] || []) : [];
-    const dayTotal = txs.reduce((s, r) => s + (r.exp || 0), 0);
-
-    let cls = 'cal-day';
-    if (!isCur) cls += ' other-month';
-    else if (txs.length > 0) cls += ' has-data';
-    if (isToday) cls += ' today';
-
-    const txJson = JSON.stringify(txs.map(r => ({
-      cat: r.cat, pm: r.pm, amt: r.exp || r.inc, type: r.cat==='Income'?'income':(r.cat==='Investment'?'invest':'')
-    }))).replace(/'/g,'&#39;');
-    
+    const d = new Date(mon); d.setDate(mon.getDate()+i);
+    const dy = d.getFullYear(), dm = d.getMonth()+1, dd = d.getDate();
+    const isToday = dd===today.getDate() && dm===(today.getMonth()+1);
+    const txs = (dy===year && dm===month) ? (txByDay[dd] || []) : [];
+    const dayTotal = txs.reduce((s,r)=>s+(r.exp||0),0);
     const dateStr = `${dy}-${String(dm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
-    const totalStr = dayTotal ? fRpS(dayTotal) : '';
-    // FIX: Selalu aktifkan klik pada minggu berjalan[cite: 1]
-    const clickAttr = `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"`;
+    const txJson = JSON.stringify(txs.map(r=>({cat:r.cat, pm:r.pm, amt:r.exp}))).replace(/'/g, '&#39;');
 
-    cells += `<div class="${cls}" ${clickAttr} data-txns='${txJson}'>
+    row += `<div class="cal-day ${isToday?'today':''} ${txs.length?'has-data':''}" onclick="calSelectDay(this,'${dateStr}','${dayTotal?fRpS(dayTotal):''}')" data-txns='${txJson}'>
       <div class="cal-day-num">${dd}</div>
-      ${dayTotal ? `<div class="cal-day-total">${calFormatAmount(dayTotal)}</div>` : (isToday ? '<div class="cal-day-total">Today</div>' : '')}
+      <div class="cal-day-total">${dayTotal?calFormatAmount(dayTotal):(isToday?'Today':'')}</div>
     </div>`;
   }
-  return `<div class="cal-week-row" id="calCurWeekRow">${cells}</div>`;
+  return `<div class="cal-week-row">${row}</div>`;
 }
 
-// ... Sisanya tetap sama dengan index_7.html ...
+function initCalendar() {
+  if (calInited) return; calInited = true;
+  const today = new Date(), y = today.getFullYear(), m = today.getMonth()+1;
+  const weekHTML = calGetCurrentWeekHTML(y, m, today);
+  
+  document.getElementById('calCurrentMonth').innerHTML = `
+    <div class="cal-month-label"><div class="cal-month-name">${MO[m-1]} ${y}</div></div>
+    <div class="cal-week-section" id="calHiddenWeeks" style="display:none"><div id="calHiddenWeekRows"></div></div>
+    <div class="cal-week-section">
+      <div class="cal-wday-row">
+        <div class="cal-wday">Mon</div><div class="cal-wday">Tue</div><div class="cal-wday">Wed</div><div class="cal-wday">Thu</div><div class="cal-wday">Fri</div><div class="cal-wday">Sat</div><div class="cal-wday">Sun</div>
+      </div>
+      ${weekHTML}
+    </div>`;
+    
+  const cs = document.getElementById('calScroll');
+  setTimeout(() => { cs.scrollTop = cs.scrollHeight; }, 100);
+}
+
+function calRevealOlder() {
+  if (calOlderShown) return; calOlderShown = true;
+  const today = new Date(), y = today.getFullYear(), m = today.getMonth()+1;
+  let older = '';
+  for (let i = 1; i <= 3; i++) {
+    let oy = y, om = m - i; if (om <= 0) { om += 12; oy -= 1; }
+    older = calBuildMonthHTML(oy, om, today) + older;
+  }
+  document.getElementById('calOlderMonths').innerHTML = older;
+  document.getElementById('calScrollHint').style.display = 'none';
+}
+
+function calSelectDay(cell, dateStr, totalStr) {
+  if (calSelectedCell) calSelectedCell.classList.remove('selected');
+  calSelectedCell = cell; cell.classList.add('selected');
+  document.getElementById('calTxDate').textContent = dateStr;
+  const txns = JSON.parse(cell.dataset.txns || '[]');
+  if (!txns.length) {
+    document.getElementById('calTxTotal').textContent = 'No transactions';
+    document.getElementById('calTxList').innerHTML = '<div class="cal-tx-empty">📭 No data</div>';
+    calSetPanelH(0);
+  } else {
+    document.getElementById('calTxTotal').textContent = totalStr + ' total';
+    document.getElementById('calTxList').innerHTML = txns.map(t => `
+      <div class="cal-tx-item">
+        <div class="cal-tx-dot"></div>
+        <div class="cal-tx-info"><div class="cal-tx-cat">${t.cat}</div><div class="cal-tx-pm">${t.pm}</div></div>
+        <div class="cal-tx-amt">${fRp(t.amt)}</div>
+      </div>`).join('');
+    calSetPanelH(txns.length);
+  }
+}
+
+function calSetPanelH(count) {
+  const h = count === 0 ? 120 : Math.min(46 + (count * 48), 300);
+  document.getElementById('calTxPanel').style.height = h + 'px';
+}
+
+// ── UTILITIES ────────────────────────────────────────────────
+function fRp(n) { return 'Rp' + (n||0).toLocaleString('id-ID'); }
+function fRpS(n) {
+  if (!n) return 'Rp0';
+  if (n >= 1000000) return 'Rp' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return 'Rp' + (n/1000).toFixed(0) + 'k';
+  return 'Rp' + n;
+}
+function calFormatAmount(n) { return n >= 1000 ? Math.round(n/1000)+'k' : n; }
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('page-'+tab).classList.add('active');
+  if (tab === 'home') initCalendar();
+  if (tab === 'history') renderHistory();
+  if (tab === 'insights') renderMonthly();
+  if (tab === 'networth') initNetWorth();
+}
+
+function openInputFromHome() {
+  document.getElementById('page-input').classList.add('active');
+  const t = new Date().toISOString().split('T')[0];
+  document.getElementById('inputDateRaw').value = t;
+  document.getElementById('inputDateText').textContent = t;
+}
+
+async function loadHistData() {
+  try {
+    const res = await fetch('data.json?v=' + APP_BUILD);
+    const d = await res.json();
+    Object.assign(HIST, d);
+    histLoaded = true;
+    initCalendar();
+  } catch(e) { 
+    console.error(e);
+    histLoaded = true; initCalendar();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const h = document.querySelector('.header');
+  if (h) document.documentElement.style.setProperty('--header-height', h.offsetHeight + 'px');
+  loadHistData();
+});
+
+// Sisanya fungsi standar (submitOpex, renderHistory, insights, dsb) tetap dipertahankan dari v3.0.0
+// agar tidak mengganggu fitur yang sudah jalan.
 </script>
 </body>
 </html>
