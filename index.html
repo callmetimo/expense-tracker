@@ -312,7 +312,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.5</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.4.7</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -392,7 +392,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
           oninput="showAC('inputCat', allCategories)" onfocus="showAC('inputCat', allCategories)">
         <div class="autocomplete-list" id="ac-inputCat" style="display:none"></div>
       </div>
-      <div class="form-group">
+      <div class="form-group autocomplete-wrapper">
         <label class="form-label">Payment Method</label>
         <div class="smart-pills" id="pmPills"></div>
         <input type="text" class="form-input" id="inputPm" placeholder="Or type payment method..." autocomplete="off"
@@ -560,8 +560,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.4.5';
-const APP_BUILD = '2026-05-15t';
+const APP_VERSION = 'v3.4.7';
+const APP_BUILD = '2026-05-15v';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1711,28 +1711,18 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
       <div style="font-size:12px;color:var(--text2)">Invest + cash + JHT · as of ${asOfStr}</div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px">
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:10px">
       <div class="chart-card">
         <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Invested</div>
-        <div style="font-size:13px;font-weight:600;color:var(--text);margin:3px 0 2px">${fRpS(Math.round(totalInvestCost))}</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin:3px 0 2px">${fRpS(Math.round(totalInvestCost))}</div>
         <div style="font-size:10px;color:var(--text2)">cost basis</div>
       </div>
       <div class="chart-card">
         <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Unrealized</div>
-        <div style="font-size:13px;font-weight:600;color:${pnl===null?'var(--text2)':pnl>=0?'var(--green)':'var(--red)'};margin:3px 0 2px">
+        <div style="font-size:15px;font-weight:600;color:${pnl===null?'var(--text2)':pnl>=0?'var(--green)':'var(--red)'};margin:3px 0 2px">
           ${pnl===null?'—':(pnl>=0?'+':'')+fRpS(Math.round(pnl))}
         </div>
         <div style="font-size:10px;color:var(--text2)">${pnlPct!==null?(pnlPct>=0?'+':'')+pnlPct.toFixed(1)+'%':'—'}</div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">Cash</div>
-        <div style="font-size:13px;font-weight:600;color:var(--blue);margin:3px 0 2px">${fRpS(Math.round(cashBalance))}</div>
-        <div style="font-size:10px;color:var(--text2)">from Opex</div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-title" style="margin-bottom:4px;font-size:9px">JHT</div>
-        <div style="font-size:13px;font-weight:600;color:var(--green);margin:3px 0 2px">${fRpS(Math.round(jhtBalance))}</div>
-        <div style="font-size:10px;color:var(--text2)">+13 tiap bln</div>
       </div>
     </div>`;
 
@@ -1758,11 +1748,11 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
 
   html += `<div class="chart-card" style="margin-bottom:10px">
     <div class="chart-card-title">Allocation by type</div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="position:relative;flex:0 0 auto;width:calc(100% - 90px);aspect-ratio:1">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="position:relative;flex:0 0 auto;width:calc(100% - 76px);aspect-ratio:1">
         <canvas id="${canvasId}" role="img" aria-label="Portfolio allocation donut chart"></canvas>
       </div>
-      <div style="display:flex;flex-direction:column;gap:10px;flex:0 0 78px">${legendRows}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;flex:0 0 68px">${legendRows}</div>
     </div>
     <div style="margin-top:10px;padding-top:8px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text2)">
       FX rates: USD/IDR ${Math.round(usdRate).toLocaleString('id-ID')} · CHF/IDR ${Math.round(chfRate).toLocaleString('id-ID')}
@@ -1800,14 +1790,15 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           const midAngle = (arc.startAngle + arc.endAngle) / 2;
           const midRadius = (arc.innerRadius + arc.outerRadius) / 2;
 
-          // % inside ring — lower threshold so Forex (4%) also shows
+          // % inside ring — threshold in radians so it works on any canvas size
+          // 0.20 rad ≈ 11.5° which covers Forex at 4% (≈0.25 rad)
           const ix = arc.x + Math.cos(midAngle) * midRadius;
           const iy = arc.y + Math.sin(midAngle) * midRadius;
           const ringWidth = arc.outerRadius - arc.innerRadius;
           const arcSpan = Math.abs(arc.endAngle - arc.startAngle);
-          if (arcSpan * midRadius > 14 && ringWidth > 14) {
+          if (arcSpan > 0.20 && ringWidth > 10) {
             ctx.save();
-            ctx.font = 'bold 10px -apple-system, sans-serif';
+            ctx.font = `bold ${Math.max(9, Math.min(11, ringWidth * 0.28))}px -apple-system, sans-serif`;
             ctx.fillStyle = 'rgba(0,0,0,0.8)';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1815,13 +1806,13 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
             ctx.restore();
           }
 
-          // Curved label outside ring — render char by char along arc
-          const labelR = arc.outerRadius + 13;
+          // Curved label outside ring — skip only if arc is really tiny (< 0.15 rad)
+          const labelR = arc.outerRadius + 11;
           const arcLen = Math.abs(arc.endAngle - arc.startAngle) * labelR;
-          const fontSize = 9.5;
+          const fontSize = 9;
           const charWidth = fontSize * 0.58;
           const textWidth = d.label.length * charWidth;
-          if (arcLen < textWidth * 0.85) return;
+          if (arcSpan < 0.15 || arcLen < textWidth * 0.7) return;
 
           // isBottom: verified against actual segment midAngles with real data
           // US Stock 342° → false, Reksa Dana 103° → true,
@@ -1883,8 +1874,8 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
       options: {
         responsive: true,
         maintainAspectRatio: true,
-        cutout: '50%',
-        layout: { padding: 36 },
+        cutout: '38%',
+        layout: { padding: 28 },
         plugins: {
           legend: { display: false },
           tooltip: {
