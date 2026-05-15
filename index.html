@@ -26,7 +26,7 @@
   --font-logo:'DM Sans',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:430px;margin:0 auto;padding-bottom:90px}
+body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;max-width:430px;margin:0 auto;overflow:hidden}
 
 /* HEADER */
 .header{padding:52px 20px 14px;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:0.5px solid var(--border)}
@@ -49,6 +49,14 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 
 .page{display:none;padding:0 20px}
 .page.active{display:block}
+/* Non-home pages need their own scroll since body is overflow:hidden */
+#page-insights.active,#page-input.active,#page-networth.active{
+  display:block;
+  height:calc(100vh - var(--header-height,120px));
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:90px;
+}
 
 /* FORM */
 .form-section{margin-top:16px}
@@ -304,7 +312,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.2.4</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.3</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -552,8 +560,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.2.4';
-const APP_BUILD = '2026-05-15k';
+const APP_VERSION = 'v3.3';
+const APP_BUILD = '2026-05-15l';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
