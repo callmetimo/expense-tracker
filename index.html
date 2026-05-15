@@ -30,16 +30,22 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 
 /* HEADER */
 .header{padding:52px 20px 14px;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:0.5px solid var(--border)}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .app-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px;font-family:var(--font-logo);color:var(--accent)}
 .app-title .dot{color:rgba(200,240,96,0.4)}
 .app-title .app-version{font-size:10px;color:var(--text2);font-weight:400;margin-left:2px;font-family:-apple-system,'SF Pro Display',system-ui,sans-serif}
 .search-icon-btn{background:none;border:none;color:var(--text2);padding:7px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
 .search-icon-btn svg{width:18px;height:18px}
 .search-icon-btn:active{color:var(--accent)}
-.tab-bar{display:flex;background:var(--bg3);border-radius:9px;padding:3px;gap:2px}
+.tab-bar{display:flex;background:var(--bg3);border-radius:9px;padding:3px;gap:2px;margin-top:8px}
 .tab{flex:1;padding:6px 2px;text-align:center;font-size:10px;font-weight:500;border-radius:7px;cursor:pointer;color:var(--text2);transition:all 0.2s;white-space:nowrap}
 .tab.active{background:var(--accent);color:#0f0f0f;font-weight:700}
+/* Toast — inline status text, no pill, no layout shift */
+.toast{height:16px;display:flex;align-items:center;font-size:11px;color:var(--text3);opacity:0;transition:opacity 0.2s}
+.toast.show{opacity:1}
+.toast.success{color:var(--accent)}
+.toast.error{color:var(--red)}
+.toast.loading{color:var(--text3)}
 
 .page{display:none;padding:0 20px}
 .page.active{display:block}
@@ -213,18 +219,12 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .modal-actions{display:flex;gap:7px;margin-top:10px}
 .btn-delete{flex:1;padding:12px;border-radius:var(--radius);border:0.5px solid var(--red);background:var(--red-dim);color:var(--red);font-size:13px;font-weight:600;cursor:pointer}
 .btn-save{flex:2;padding:12px;border-radius:var(--radius);border:none;background:var(--accent);color:#0f0f0f;font-size:13px;font-weight:700;cursor:pointer}
-.toast{display:none;align-items:center;justify-content:center;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);white-space:nowrap;opacity:0;transition:opacity 0.25s;margin:0 0 10px}
-.toast.show{display:flex;opacity:1}
-.toast.success{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-.toast.error{border-color:var(--red);color:var(--red);background:var(--red-dim)}
-.toast.loading{border-color:var(--text3);color:var(--text2);background:var(--bg3)}
-
+.empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
 /* SKELETON */
 .cal-day.skeleton{background:var(--bg3);border:0.5px solid var(--border);cursor:default;pointer-events:none}
 .cal-day.skeleton .cal-day-num{color:var(--text3)}
 .cal-progress-skeleton{flex:1;height:4px;background:var(--bg4);border-radius:2px}
 .cal-label-skeleton{width:60px;height:12px;background:var(--bg4);border-radius:3px}
-.empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
 
 /* ── HOME CALENDAR ─────────────────────────────────────────── */
 /* Added min-height fallback so the scroll container does not collapse */
@@ -304,7 +304,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.2.3</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.2.4</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -552,8 +552,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.2.3';
-const APP_BUILD = '2026-05-15j';
+const APP_VERSION = 'v3.2.4';
+const APP_BUILD = '2026-05-15k';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
