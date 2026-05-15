@@ -275,6 +275,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-tx-dot.income{background:rgba(74,222,128,0.5)}
 .cal-tx-dot.invest{background:rgba(96,160,240,0.5)}
 .cal-tx-info{flex:1;min-width:0}
+.cal-tx-tx{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-tx-meta{font-size:10px;color:var(--text2);margin-top:2px}
 .cal-tx-cat{font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cal-tx-pm{font-size:10px;color:var(--text2);margin-top:1px}
 .cal-tx-amt{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;margin-left:12px}
@@ -1882,9 +1884,22 @@ let calSelectedCell = null;
 function calGetMonthData(year, month) {
   const opex = HIST.opex || [];
   const txByDay = {};
+  
+  // Add HIST.opex data
   opex.forEach(r => {
     if (r.y !== year || r.m !== month) return;
     const key = r.d;
+    if (!txByDay[key]) txByDay[key] = [];
+    txByDay[key].push(r);
+  });
+  
+  // Add txHistory (local transactions) data
+  const local = txHistory || [];
+  local.forEach(r => {
+    if (!r.date) return;
+    const d = new Date(r.date);
+    if (d.getFullYear() !== year || d.getMonth() + 1 !== month) return;
+    const key = d.getDate();
     if (!txByDay[key]) txByDay[key] = [];
     txByDay[key].push(r);
   });
@@ -1975,7 +1990,7 @@ function calBuildMonthHTML(year, month, today) {
       const isFuture = isCur && (year > todayY || (year === todayY && month > todayM) ||
                        (year === todayY && month === todayM && cell.day > todayD));
       const txs      = isCur ? (txByDay[cell.day] || []) : [];
-      const dayTotal = txs.reduce((s, r) => s + (r.exp || 0), 0);
+      const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || 0), 0);
       const hasData  = txs.length > 0;
 
       let cls = 'cal-day';
@@ -1986,8 +2001,11 @@ function calBuildMonthHTML(year, month, today) {
 
       const txJson = hasData
         ? JSON.stringify(txs.map(r => ({
-            cat: r.cat || '', pm: r.pm || '',
-            amt: r.exp || 0, type: r.cat === 'Income' ? 'income' : (r.cat === 'Investment' ? 'invest' : '')
+            tx: r.tx || r.payee || r.mk || '', 
+            cat: r.category || r.cat || '', 
+            pm: r.pm || '',
+            amt: r.amount || r.exp || 0, 
+            type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : '')
           }))).replace(/'/g, '&#39;')
         : '[]';
       const dateStr  = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
@@ -2036,7 +2054,7 @@ function calGetCurrentWeekHTML(year, month, today) {
     const isToday  = (dy === today.getFullYear() && dm === today.getMonth() + 1 && dd === todayD);
     const isFuture = d > today;
     const txs      = isCur ? (txByDay[dd] || []) : [];
-    const dayTotal = txs.reduce((s, r) => s + (r.exp || 0), 0);
+    const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || 0), 0);
     const hasData  = txs.length > 0;
 
     let cls = 'cal-day';
@@ -2047,8 +2065,11 @@ function calGetCurrentWeekHTML(year, month, today) {
 
     const txJson = hasData
       ? JSON.stringify(txs.map(r => ({
-          cat: r.cat||'', pm: r.pm||'',
-          amt: r.exp||0, type: r.cat==='Income'?'income':(r.cat==='Investment'?'invest':'')
+          tx: r.tx || r.payee || r.mk || '',
+          cat: r.category || r.cat || '', 
+          pm: r.pm || '',
+          amt: r.amount || r.exp || 0, 
+          type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : '')
         }))).replace(/'/g,'&#39;')
       : '[]';
     const dateStr  = `${dy}-${String(dm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
@@ -2187,10 +2208,10 @@ function calRevealOlder() {
         if (cell.pad) { weekCells += `<div class="cal-day other-month"></div>`; continue; }
         const isCur  = cell.cur;
         const txs    = isCur ? (txByDay[cell.day] || []) : [];
-        const total  = txs.reduce((s,r)=>s+(r.exp||0),0);
+        const total  = txs.reduce((s,r)=>s+(r.amount||r.exp||0),0);
         const hasData = txs.length > 0;
         let cls = 'cal-day' + (isCur ? (hasData ? ' has-data' : '') : ' other-month');
-        const txJson = hasData ? JSON.stringify(txs.map(r=>({cat:r.cat||'',pm:r.pm||'',amt:r.exp||0,type:r.cat==='Income'?'income':(r.cat==='Investment'?'invest':'')}))).replace(/'/g,'&#39;') : '[]';
+        const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||0,type:(r.category||r.cat)==='Income'?'income':((r.category||r.cat)==='Investment'?'invest':'')}))).replace(/'/g,'&#39;') : '[]';
         const dateStr = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
         const totalStr = total ? fRpS(total) : '';
         const clickAttr = hasData ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
@@ -2259,8 +2280,8 @@ function calSelectDay(cell, dateStr, totalStr) {
       <div class="cal-tx-item">
         <div class="cal-tx-dot ${tx.type||''}"></div>
         <div class="cal-tx-info">
-          <div class="cal-tx-cat">${tx.cat}</div>
-          <div class="cal-tx-pm">${tx.pm}</div>
+          <div class="cal-tx-tx">${tx.tx}</div>
+          <div class="cal-tx-meta">${tx.cat} - ${tx.pm}</div>
         </div>
         <div class="cal-tx-amt ${tx.type||''}">${fRp(tx.amt)}</div>
       </div>`).join('');
