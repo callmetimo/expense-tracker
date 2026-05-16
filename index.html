@@ -308,9 +308,9 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .input-overlay.open{pointer-events:auto}
 .input-overlay::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0);transition:background 0.35s cubic-bezier(0.4,0,0.2,1)}
 .input-overlay.open::before{background:rgba(0,0,0,0.55)}
-.input-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-radius:20px 20px 0 0;border-top:0.5px solid var(--border2);max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 0 40px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
+.input-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-radius:20px 20px 0 0;border-top:0.5px solid var(--border2);max-height:calc(100dvh - var(--header-height,120px));overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
 .input-overlay.open .input-sheet{transform:translateY(0)}
-.input-sheet-handle{width:32px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 0;padding:12px 24px;box-sizing:content-box;cursor:grab;-webkit-tap-highlight-color:transparent}
+.input-sheet-handle-wrap{display:flex;align-items:center;justify-content:center;padding:14px 0 10px;cursor:grab;-webkit-tap-highlight-color:transparent}.input-sheet-handle{width:32px;height:3px;background:var(--border2);border-radius:2px;pointer-events:none}
 /* Hide page-input from tab switching — it lives inside overlay now */
 #page-input{display:block !important;height:auto !important;overflow:visible !important;padding-bottom:0 !important}
 
@@ -326,7 +326,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.5.2</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.5.3</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -370,7 +370,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <!-- INPUT OVERLAY (slide-up) -->
 <div class="input-overlay" id="inputOverlay" onclick="closeInputOverlay()">
   <div class="input-sheet" id="inputSheet" onclick="event.stopPropagation()">
-    <div class="input-sheet-handle" id="inputSheetHandle"></div>
+    <div class="input-sheet-handle-wrap" id="inputSheetHandle"><div class="input-sheet-handle"></div></div>
     <div id="page-input" style="display:block;padding:0 20px">
   <div class="form-section">
     <div class="pill-toggle">
@@ -579,8 +579,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.5.2';
-const APP_BUILD = '2026-05-15p';
+const APP_VERSION = 'v3.5.3';
+const APP_BUILD = '2026-05-15q';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
