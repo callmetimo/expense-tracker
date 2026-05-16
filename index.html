@@ -236,7 +236,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 /* ── HOME CALENDAR ─────────────────────────────────────────── */
 /* Added min-height fallback so the scroll container does not collapse */
-#page-home{display:none;padding:0;flex-direction:column;height:calc(100dvh - var(--header-height,120px));min-height:400px;overflow:hidden}
+#page-home{display:none;padding:0;flex-direction:column;height:calc(100dvh - var(--header-height,120px));min-height:400px;overflow:hidden;position:relative}
 #page-home.active{display:flex}
 
 .cal-scroll{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:150px}
@@ -275,7 +275,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-scroll-hint svg{width:13px;height:13px;stroke-width:2.2}
 
 /* tx panel */
-.cal-tx-panel{background:var(--bg2);border-top:0.5px solid var(--border2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;transition:height 0.26s cubic-bezier(0.4,0,0.2,1)}
+.cal-tx-panel{background:var(--bg2);border-top:0.5px solid var(--border2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;transition:height 0.26s cubic-bezier(0.4,0,0.2,1);margin-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
 .cal-tx-header{height:46px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid var(--border)}
 .cal-tx-date{font-size:13px;font-weight:600}
 .cal-tx-total{font-size:11px;color:var(--text2)}
@@ -299,7 +299,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-tx-empty-text{font-size:13px;color:var(--text2);line-height:1.5}
 
 /* fab */
-.cal-fab-wrap{flex-shrink:0;background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;padding-top:8px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px);min-height:80px}
+.cal-fab-wrap{position:absolute;bottom:0;left:0;right:0;background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;padding-top:8px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px);min-height:80px;z-index:10}
 .cal-fab{width:64px;height:64px;background:var(--accent);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,240,96,0.28);color:#0f0f0f;font-size:30px;font-weight:400;line-height:1;transition:transform 0.16s,box-shadow 0.16s;user-select:none;-webkit-tap-highlight-color:transparent}
 .cal-fab:active{transform:scale(0.90);box-shadow:0 3px 10px rgba(200,240,96,0.18)}
 
@@ -326,7 +326,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.5.3</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.5.4</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -579,8 +579,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.5.3';
-const APP_BUILD = '2026-05-15q';
+const APP_VERSION = 'v3.5.4';
+const APP_BUILD = '2026-05-15r';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
