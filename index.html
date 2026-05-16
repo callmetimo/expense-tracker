@@ -299,7 +299,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-tx-empty-text{font-size:13px;color:var(--text2);line-height:1.5}
 
 /* fab */
-.cal-fab-wrap{flex-shrink:0;height:80px;background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:center}
+.cal-fab-wrap{flex-shrink:0;height:calc(80px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
 .cal-fab{width:64px;height:64px;background:var(--accent);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,240,96,0.28);color:#0f0f0f;font-size:30px;font-weight:400;line-height:1;transition:transform 0.16s,box-shadow 0.16s;user-select:none;-webkit-tap-highlight-color:transparent}
 .cal-fab:active{transform:scale(0.90);box-shadow:0 3px 10px rgba(200,240,96,0.18)}
 
@@ -310,7 +310,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .input-overlay.open::before{background:rgba(0,0,0,0.55)}
 .input-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-radius:20px 20px 0 0;border-top:0.5px solid var(--border2);max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 0 40px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
 .input-overlay.open .input-sheet{transform:translateY(0)}
-.input-sheet-handle{width:32px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 12px}
+.input-sheet-handle{width:32px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 0;padding:12px 24px;box-sizing:content-box;cursor:grab;-webkit-tap-highlight-color:transparent}
 /* Hide page-input from tab switching — it lives inside overlay now */
 #page-input{display:block !important;height:auto !important;overflow:visible !important;padding-bottom:0 !important}
 
@@ -326,7 +326,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.5</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.5.1</span></div>
     <button class="search-icon-btn" onclick="openSearchOverlay()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     </button>
@@ -370,7 +370,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <!-- INPUT OVERLAY (slide-up) -->
 <div class="input-overlay" id="inputOverlay" onclick="closeInputOverlay()">
   <div class="input-sheet" id="inputSheet" onclick="event.stopPropagation()">
-    <div class="input-sheet-handle"></div>
+    <div class="input-sheet-handle" id="inputSheetHandle"></div>
     <div id="page-input" style="display:block;padding:0 20px">
   <div class="form-section">
     <div class="pill-toggle">
@@ -579,8 +579,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 <script>
-const APP_VERSION = 'v3.5';
-const APP_BUILD = '2026-05-15n';
+const APP_VERSION = 'v3.5.1';
+const APP_BUILD = '2026-05-15o';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1037,6 +1037,38 @@ function closeInputOverlay() {
   const ov = document.getElementById('inputOverlay');
   if (ov) ov.classList.remove('open');
 }
+
+// ── Handle bar swipe-down to close ───────────────────────────
+(function() {
+  let touchStartY = 0;
+  let touchStarted = false;
+
+  function onHandleTouchStart(e) {
+    touchStartY = e.touches[0].clientY;
+    touchStarted = true;
+  }
+
+  function onHandleTouchEnd(e) {
+    if (!touchStarted) return;
+    touchStarted = false;
+    const delta = e.changedTouches[0].clientY - touchStartY;
+    if (delta > 60) {
+      closeInputOverlay();
+    }
+  }
+
+  function onHandleTouchCancel() {
+    touchStarted = false;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const handle = document.getElementById('inputSheetHandle');
+    if (!handle) return;
+    handle.addEventListener('touchstart', onHandleTouchStart, { passive: true });
+    handle.addEventListener('touchend', onHandleTouchEnd, { passive: true });
+    handle.addEventListener('touchcancel', onHandleTouchCancel, { passive: true });
+  });
+})();
 
 function openInputFromHome() {
   openInputOverlay();
