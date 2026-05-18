@@ -185,6 +185,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 /* BAR CHART */
 .bar-chart-wrap{width:100%;overflow-x:auto}
 .bar-chart{display:flex;align-items:flex-end;gap:3px;height:140px;padding-bottom:22px;position:relative;min-width:100%}
+.bar-chart-wrap::-webkit-scrollbar { display: none; }
+.bar-chart-wrap { -ms-overflow-style: none; scrollbar-width: none; }
 .bar-col{flex:1;min-width:20px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;cursor:pointer}
 .bar-fill{width:100%;border-radius:3px 3px 0 0;background:var(--accent-dim);border:0.5px solid var(--accent);transition:all 0.25s;opacity:0.6;min-height:2px}
 .bar-col.selected .bar-fill{background:var(--accent);opacity:1}
@@ -260,12 +262,12 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-label-skeleton{width:60px;height:12px;background:var(--bg4);border-radius:3px}
 
 /* ── HOME CALENDAR ─────────────────────────────────────────── */
-/* Added min-height fallback so the scroll container does not collapse */
 #page-home{display:none;padding:0;flex-direction:column;height:calc(100dvh - var(--header-height,80px) - var(--bottom-nav-h,56px));min-height:300px;overflow:hidden;position:relative}
 #page-home.active{display:flex}
 
-/* Calendar segment — top 54% of #page-home */
 .cal-scroll{flex:54 54 0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;border-bottom:0.5px solid var(--border)}
+.cal-scroll::-webkit-scrollbar { display: none; }
+.cal-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
 .cal-month-label{display:flex;align-items:center;gap:10px;padding:10px 16px 8px}
 .cal-month-name{font-size:20px;font-weight:700;letter-spacing:-0.4px;min-width:100px;flex-shrink:0}
@@ -284,7 +286,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-wday{text-align:center;font-size:11px;color:var(--text3);font-weight:500;letter-spacing:0.2px}
 .cal-week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}
 
-/* Flat iOS-style day cells — no card bg, just number + dot */
 .cal-day{background:none;border:none;border-radius:8px;padding:6px 2px 5px;text-align:center;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;user-select:none;cursor:default;transition:background 0.12s,transform 0.12s;-webkit-tap-highlight-color:transparent}
 .cal-day.has-data{cursor:pointer}
 .cal-day.has-data:active{background:var(--bg3);transform:scale(0.92)}
@@ -306,7 +307,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-scroll-hint:active{color:var(--text)}
 .cal-scroll-hint svg{width:13px;height:13px;stroke-width:2.2}
 
-/* ── STATE 4/5: COLLAPSED MONTH ROWS ──────────────────────── */
+/* ── COLLAPSED MONTH ROWS ──────────────────────── */
 .cal-month-collapsed{display:flex;align-items:center;gap:12px;padding:8px 20px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
 .cal-month-collapsed:active{background:var(--bg2)}
 .cal-month-collapsed .cal-month-name{font-size:14px;font-weight:700;letter-spacing:-0.2px;min-width:88px;flex-shrink:0;color:#aaa}
@@ -321,7 +322,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-month-label.clickable{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
 .cal-month-label.clickable:active{background:var(--bg2)}
 
-/* ── STATE 5: YEAR PILLS ───────────────────────────────────── */
+/* ── YEAR PILLS ───────────────────────────────────── */
 #calYearPills{padding:4px 0}
 .cal-year-pill{background:#141414;border:0.5px solid #2a2a2a;border-radius:10px;margin:6px 20px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .cal-year-pill.expanded{border-color:var(--accent)}
@@ -345,12 +346,14 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-year-month-row.expanded .cal-chevron{transform:rotate(90deg);color:var(--accent)}
 .cal-year-month-expanded{overflow:hidden;border-top:0.5px solid #2a2a2a}
 
-/* Transaction segment — bottom 46% of #page-home, always static */
+/* Transaction panel segment — bottom 46% of #page-home */
 .cal-tx-panel{flex:46 46 0;min-height:0;background:var(--bg);border-top:0.5px solid var(--border2);display:flex;flex-direction:column;overflow:hidden}
 .cal-tx-header{height:52px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid var(--border)}
 .cal-tx-date{font-size:17px;font-weight:600;letter-spacing:-0.3px}
 .cal-tx-total{font-size:14px;font-weight:600;color:var(--text2)}
 .cal-tx-list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.cal-tx-list::-webkit-scrollbar { display: none; }
+.cal-tx-list { -ms-overflow-style: none; scrollbar-width: none; }
 .cal-tx-item{display:flex;align-items:center;padding:13px 20px;border-bottom:0.5px solid var(--border);gap:12px;cursor:pointer;transition:background 0.12s}
 .cal-tx-item:last-child{border-bottom:none}
 .cal-tx-item:active{background:var(--bg3)}
@@ -378,10 +381,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .input-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-radius:20px 20px 0 0;border-top:0.5px solid var(--border2);max-height:calc(100dvh - var(--header-height,120px));overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
 .input-overlay.open .input-sheet{transform:translateY(0)}
 .input-sheet-handle-wrap{display:flex;align-items:center;justify-content:center;padding:14px 0 10px;cursor:grab;-webkit-tap-highlight-color:transparent}.input-sheet-handle{width:32px;height:3px;background:var(--border2);border-radius:2px;pointer-events:none}
-/* Hide page-input from tab switching — it lives inside overlay now */
 #page-input{display:block !important;height:auto !important;overflow:visible !important;padding-bottom:0 !important}
 
-/* Toast update for 'Updated!' success state */
 .toast.updated{color:var(--accent);font-weight:600}
 
 @media(min-width:769px){
@@ -403,7 +404,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
-<!-- HOME (CALENDAR) -->
 <div class="page active" id="page-home">
   <div class="cal-scroll" id="calScroll">
     <div class="cal-scroll-hint" id="calScrollHint" onclick="calRevealOlder()">
@@ -431,7 +431,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
-<!-- INPUT OVERLAY (slide-up) -->
 <div class="input-overlay" id="inputOverlay" onclick="closeInputOverlay()">
   <div class="input-sheet" id="inputSheet" onclick="event.stopPropagation()">
     <div class="input-sheet-handle-wrap" id="inputSheetHandle"><div class="input-sheet-handle"></div></div>
@@ -443,7 +442,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div class="pill-toggle-btn invest" data-mode="invest" onclick="setInputMode('invest',this)">Invest</div>
     </div>
 
-    <!-- Expense / Income form -->
     <div id="form-opex">
       <div class="form-group" style="position:relative">
         <label class="form-label">Date</label>
@@ -492,7 +490,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <button class="delete-btn" id="deleteOpexBtn" onclick="deleteSheetTransaction()" style="display:none">Delete Transaction</button>
     </div>
 
-    <!-- Invest form -->
     <div id="form-invest" style="display:none">
       <div class="form-group" style="position:relative">
         <label class="form-label">Date</label>
@@ -538,12 +535,10 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <button class="submit-btn invest" onclick="submitInvest()">Save Investment</button>
     </div>
   </div>
-</div><!-- /page-input -->
-  </div><!-- /input-sheet -->
-</div><!-- /inputOverlay -->
+</div>
+  </div>
+</div>
 
-
-<!-- Search Modal -->
 <div class="modal-overlay" id="searchModal">
   <div class="modal search-modal">
     <div class="modal-handle"></div>
@@ -558,7 +553,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
-<!-- INSIGHTS -->
 <div class="page" id="page-insights">
   <div class="chart-page-section">
     <div class="insights-sticky">
@@ -622,7 +616,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
-<!-- NET WORTH -->
 <div class="page" id="page-networth">
   <div class="form-section">
     <div class="nw-mode-toggle">
@@ -637,7 +630,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
-<!-- GOALS PAGE -->
 <div class="page" id="page-goals">
   <div style="padding:24px 0 14px;display:flex;align-items:center;justify-content:space-between">
     <div style="font-size:28px;font-weight:700;letter-spacing:-0.5px">Goals</div>
@@ -645,7 +637,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   <div id="goalsListContainer"><div class="chart-loading">Loading…</div></div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav" id="bottomNav">
   <button class="nav-btn active" id="nav-home" onclick="switchTab('home',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -664,7 +655,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </button>
 </nav>
 
-<!-- Edit Modal -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -676,7 +666,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     </div>
   </div>
 </div>
-<!-- GOALS INPUT OVERLAY -->
 <div class="input-overlay" id="goalsOverlay" onclick="closeGoalsOverlay()">
   <div class="input-sheet" onclick="event.stopPropagation()">
     <div class="input-sheet-handle-wrap"><div class="input-sheet-handle"></div></div>
@@ -722,7 +711,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <script>
 const APP_VERSION = 'v3.6';
-const APP_BUILD = '2026-05-18b';
+const APP_BUILD = '2026-05-18a';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -742,18 +731,13 @@ const CAT_COLORS = {
 const STOCK_TYPE = {'Star Stable Income Fund':'Reksa Dana','USDIDR':'Forex','CHFIDR':'Forex',
   'QQQ':'US Stock','JNJ':'US Stock','VYM':'US Stock','AAPL':'US Stock'};
 
-// ── LOCAL DATA (historical) ───────────────────────────────────
 const HIST = {opex:[], invest:[], txCat:{}, txPm:{}, stockType:{}, cashBalance:0, jhtBase:null};
 
-// ── JHT (Jaminan Hari Tua) ────────────────────────────────────
 function calcJHT() {
   const base = HIST.jhtBase;
   if (!base) return 0;
-  // base: { date: "2026-05-13", amount: 28302979, monthlyAddition: 940500 }
   const baseDate = new Date(base.date);
   const today = new Date();
-  // Count how many 13ths have passed AFTER baseDate
-  // baseDate itself (13 May 2026) already includes that month's iuran
   let increments = 0;
   let check = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 13);
   while (check <= today) {
@@ -770,20 +754,18 @@ function onHistLoaded(cb) {
   histLoadCallbacks.push(cb);
 }
 
-// ── STATE ─────────────────────────────────────────────────────
 let inputMode = 'expense';
 let investAction = 'Buy';
 let editingIndex = null;
-let overlayEditRowIndex = null; // non-null = edit mode; holds sheet rowIndex
-let calCurrentTxns = [];        // txns for the currently selected calendar day
-let calCurrentDateStr = '';     // ISO date of the selected calendar day
+let overlayEditRowIndex = null; 
+let calCurrentTxns = [];        
+let calCurrentDateStr = '';     
 let queue = JSON.parse(localStorage.getItem('nota_queue_v2') || '[]');
 let txHistory = JSON.parse(localStorage.getItem('nota_history_v2') || '[]');
 let investHistory = JSON.parse(localStorage.getItem('nota_invest_v2') || '[]');
 let fxRates = JSON.parse(localStorage.getItem('nota_fx') || '{}');
 let fxLastFetch = parseInt(localStorage.getItem('nota_fx_ts') || '0');
 let stockPrices = JSON.parse(localStorage.getItem('nota_prices') || '{}');
-
 let sheetPricesLastFetch = parseInt(localStorage.getItem('nota_sp_ts') || '0');
 
 function parsePrice(str) {
@@ -795,7 +777,6 @@ async function fetchSheetPrices(force) {
   const now = Date.now();
   const cached = localStorage.getItem('nota_prices');
   const statusEl = document.getElementById('nwPricesLabel');
-  // Use cache if < 30 min and not forced
   if (!force && cached && (now - sheetPricesLastFetch) < 1800000) {
     stockPrices = JSON.parse(cached);
     if (statusEl) {
@@ -809,7 +790,6 @@ async function fetchSheetPrices(force) {
     const res = await fetch(APPS_SCRIPT_URL + '?type=prices', {method:'GET'});
     const j = await res.json();
     if (j.prices) {
-      // j.prices: { AAPL: 298.21, JNJ: 230.80, VYM: 157.24, QQQ: 719.79, CHFIDR: 22425, USDIDR: 17599, StarStable: 2205 }
       Object.assign(stockPrices, j.prices);
       localStorage.setItem('nota_prices', JSON.stringify(stockPrices));
       sheetPricesLastFetch = now;
@@ -818,13 +798,11 @@ async function fetchSheetPrices(force) {
     } else {
       throw new Error('no prices');
     }
-    // cashBalance dari Apps Script v11 (Opex sheet col H last row)
     if (j.cashBalance !== undefined) {
       HIST.cashBalance = j.cashBalance;
       localStorage.setItem('nota_cashBalance', String(j.cashBalance));
     }
   } catch(e) {
-    // Fallback to HIST.currentPrices if available
     if (HIST.currentPrices) {
       const cp = HIST.currentPrices;
       ['StarStable','AAPL','JNJ','VYM','QQQ','CHFIDR','USDIDR'].forEach(k => {
@@ -837,20 +815,15 @@ async function fetchSheetPrices(force) {
 
 function saveAndRenderNW() { renderNetWorth(); }
 
-// ── FETCH CURRENT MONTH FROM SHEET (v12) ─────────────────────
-// Fetches real-time opex rows for current month from Apps Script.
-// Merges into HIST.opex, overwriting any existing rows for that month.
-// Cache: localStorage nota_curMonth_YYYY_M, expires after 5 minutes.
 let curMonthLastFetch = 0;
 
 async function fetchCurrentMonth(force) {
   const now = Date.now();
   const today = new Date();
   const y = today.getFullYear();
-  const m = today.getMonth() + 1; // 1-indexed
+  const m = today.getMonth() + 1;
   const cacheKey = `nota_curMonth_${y}_${m}`;
 
-  // Use cache if < 5 min and not forced
   if (!force && (now - curMonthLastFetch) < 300000) {
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
@@ -866,7 +839,6 @@ async function fetchCurrentMonth(force) {
     if (j.status === 'ok' && Array.isArray(j.rows)) {
       localStorage.setItem(cacheKey, JSON.stringify(j.rows));
       curMonthLastFetch = now;
-      // Wait for histLoaded before merging, to avoid race with loadHistData
       if (histLoaded) {
         _applyCurrentMonthRows(j.rows, y, m);
       } else {
@@ -879,30 +851,44 @@ async function fetchCurrentMonth(force) {
 }
 
 function _applyCurrentMonthRows(rows, y, m) {
-  // m is 1-indexed; HIST.opex uses 0-indexed m
   const mIdx = m - 1;
   const mk = `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mIdx]} ${y}`;
 
-  // Remove existing HIST.opex rows for this month (from old data.json snapshot)
   HIST.opex = (HIST.opex || []).filter(r => !(r.y === y && r.m === mIdx));
 
-  // Append fresh rows from sheet
-  rows.forEach(r => {
-    HIST.opex.push({ y, m: mIdx, d: r.d, mk, cat: r.cat, tx: r.tx, pm: r.pm,
-      ...(r.inc      ? { inc: r.inc }           : {}),
-      ...(r.exp      ? { exp: r.exp }           : {}),
-      ...(r.notes    ? { notes: r.notes }       : {}),
-      ...(r.rowIndex ? { rowIndex: r.rowIndex } : {})
+  rows.forEach((r, idx) => {
+    let rawDay = r.d;
+    if (!rawDay && r.date) {
+      const spl = String(r.date).split('-');
+      if (spl.length === 3) rawDay = parseInt(spl[2], 10);
+      else rawDay = parseInt(String(r.date).trim().split(' ')[0], 10);
+    }
+
+    const incAmt = Number(r.inc) || Number(r.income) || 0;
+    const expAmt = Number(r.exp) || Number(r.expense) || 0;
+
+    HIST.opex.push({ 
+      y, 
+      m: mIdx, 
+      d: rawDay || 1, 
+      mk, 
+      cat: r.cat || r.category || '', 
+      tx: r.tx || r.transaction || '', 
+      pm: r.pm || '',
+      ...(incAmt ? { inc: incAmt } : {}),
+      ...(expAmt ? { exp: expAmt } : {}),
+      ...(r.notes ? { notes: r.notes } : {}),
+      rowIndex: r.rowIndex || r.row || (idx + 2)
     });
   });
 }
+
 let insightsMode = 'monthly';
 let nwMode = 'holdings';
 let mView='all', mRange=3, mSelMonth=null, mSelCat=null;
 let yView='all', yRange=3, ySelYear=null, ySelCat=null;
 let cView='all', cRange=3, cSelCat=null;
 
-// ── COMBINED DATA ROWS ────────────────────────────────────────
 function getAllOpexRows() {
   const hist = (HIST.opex || []).map(r => ({
     ...r, source:'hist',
@@ -952,7 +938,6 @@ function getAllInvestRows() {
   return [...hist, ...local];
 }
 
-// ── DATE ──────────────────────────────────────────────────────
 function todayISO(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function isoDisp(iso){if(!iso)return'';const[y,m,d]=iso.split('-');return`${parseInt(d)} ${MO[parseInt(m)-1]} ${y}`}
 function isoSheetDate(iso){const[,m,d]=iso.split('-');return`${parseInt(d)} ${MO[parseInt(m)-1]}`}
@@ -967,7 +952,6 @@ function initDatePicker(rawId, dispId, txtId) {
   raw.addEventListener('change',()=>{txt.textContent=raw.value?isoDisp(raw.value):'Select date...'});
 }
 
-// ── INPUT MODE ────────────────────────────────────────────────
 function setInputMode(mode, el) {
   inputMode = mode;
   document.querySelectorAll('.pill-toggle-btn').forEach(b => b.classList.remove('active'));
@@ -989,7 +973,6 @@ function setInvestAction(action, el) {
   el.classList.add('active');
 }
 
-// ── AUTOCOMPLETE ──────────────────────────────────────────────
 function showAC(fid, list) {
   const inp=document.getElementById(fid),dd=document.getElementById('ac-'+fid);
   if(!dd)return;
@@ -1013,7 +996,6 @@ document.addEventListener('click',e=>{
     document.querySelectorAll('.autocomplete-list').forEach(d=>d.style.display='none');
 });
 
-// ── TX SMART SUGGESTIONS ──────────────────────────────────────
 function getRecentMonths(n) {
   const now = new Date();
   const months = [];
@@ -1101,7 +1083,6 @@ function selectSmartPm(pm) {
   });
 }
 
-// ── INVEST HELPERS ────────────────────────────────────────────
 function onStockSelect(stock) {
   const type = STOCK_TYPE[stock] || '';
   const isUSD = type === 'US Stock';
@@ -1123,7 +1104,6 @@ function calcTotal() {
   }
 }
 
-// ── FORMAT ────────────────────────────────────────────────────
 function fRp(n){if(!n&&n!==0)return'';return'Rp'+Number(n).toLocaleString('id-ID')}
 function fRpS(n){
   if(!n)return'Rp0';
@@ -1133,7 +1113,6 @@ function fRpS(n){
   return'Rp'+n;
 }
 
-// ── TABS ──────────────────────────────────────────────────────
 function switchTab(tab, el) {
   closeInputOverlay();
   closeGoalsOverlay();
@@ -1168,16 +1147,13 @@ function switchTab(tab, el) {
 }
 
 function openInputOverlay() {
-  // Reset edit state
   overlayEditRowIndex = null;
   const submitBtn = document.getElementById('submitOpexBtn');
   if (submitBtn) submitBtn.textContent = 'Save Transaction';
   const delBtn = document.getElementById('deleteOpexBtn');
   if (delBtn) delBtn.style.display = 'none';
-  // Reset to expense mode
   const expBtn = document.querySelector('.pill-toggle-btn[data-mode="expense"]');
   if (expBtn) setInputMode('expense', expBtn);
-  // Reset date to today, constrained to current month
   const t = todayISO();
   const rawEl = document.getElementById('inputDateRaw');
   if (rawEl) {
@@ -1185,11 +1161,8 @@ function openInputOverlay() {
     rawEl.min = b.min; rawEl.max = b.max;
     rawEl.value = t; document.getElementById('inputDateText').textContent = isoDisp(t);
   }
-  // Clear fields
   ['inputTx','inputAmount','inputNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-  if (typeof buildSmartPills === 'function') buildSmartPills();
   document.getElementById('inputOverlay').classList.add('open');
-  // Focus first input after slide animation completes
   setTimeout(() => {
     const f = document.getElementById('inputTx');
     if (f) f.focus();
@@ -1199,7 +1172,6 @@ function openInputOverlay() {
 function closeInputOverlay() {
   const ov = document.getElementById('inputOverlay');
   if (ov) ov.classList.remove('open');
-  // Reset edit state
   overlayEditRowIndex = null;
   const submitBtn = document.getElementById('submitOpexBtn');
   if (submitBtn) submitBtn.textContent = 'Save Transaction';
@@ -1207,8 +1179,6 @@ function closeInputOverlay() {
   if (delBtn) delBtn.style.display = 'none';
 }
 
-// ── Handle bar swipe-down to close ───────────────────────────
-// Attach directly — script runs after DOM is parsed, no DOMContentLoaded needed
 (function() {
   let touchStartY = 0;
   let touchStarted = false;
@@ -1237,7 +1207,6 @@ function openInputFromHome() {
   openInputOverlay();
 }
 
-// ── SUBMIT OPEX ───────────────────────────────────────────────
 function submitOpex() {
   if (overlayEditRowIndex !== null) { updateTransaction(); return; }
   const date=document.getElementById('inputDateRaw').value;
@@ -1252,7 +1221,6 @@ function submitOpex() {
   txHistory.unshift(r);
   queue.push({...r, action:inputMode});
   saveLocal();updateStatus();
-  // Navigate back to Home immediately, with Saving toast
   switchTab('home', null);
   showToast('Saving transaction…', 'loading', 0);
   syncOpex(r).then(ok=>{
@@ -1275,18 +1243,15 @@ function resetOpexForm() {
   document.getElementById('pmPills').innerHTML='';
 }
 
-// ── EDIT / DELETE TRANSACTION ─────────────────────────────────
 function openEditOverlay(idx) {
   const tx = calCurrentTxns[idx];
   if (!tx || !tx.rowIndex) return;
   overlayEditRowIndex = tx.rowIndex;
 
-  // Set mode pill (income vs expense)
-  const mode = tx.inc > 0 ? 'income' : 'expense';
+  const mode = (tx.type === 'income' || tx.inc > 0) ? 'income' : 'expense';
   const modeBtn = document.querySelector(`.pill-toggle-btn[data-mode="${mode}"]`);
   if (modeBtn) setInputMode(mode, modeBtn);
 
-  // Pre-fill date from the selected day, constrained to current month
   const rawEl = document.getElementById('inputDateRaw');
   if (rawEl) {
     const b = curMonthBounds();
@@ -1297,14 +1262,12 @@ function openEditOverlay(idx) {
     }
   }
 
-  // Pre-fill fields
   document.getElementById('inputTx').value     = tx.tx    || '';
   document.getElementById('inputAmount').value = tx.amt   || '';
   document.getElementById('inputCat').value    = tx.cat   || '';
   document.getElementById('inputPm').value     = tx.pm    || '';
   document.getElementById('inputNotes').value  = tx.notes || '';
 
-  // Switch button labels
   document.getElementById('submitOpexBtn').textContent = 'Update Transaction';
   document.getElementById('deleteOpexBtn').style.display = 'block';
 
@@ -1369,7 +1332,6 @@ async function deleteSheetTransaction() {
   } catch(e) { showToast('Delete failed', 'error'); }
 }
 
-// ── SUBMIT INVEST ─────────────────────────────────────────────
 function submitInvest() {
   const date=document.getElementById('inputDateRawI').value;
   const stock=document.getElementById('inputStock').value.trim();
@@ -1394,7 +1356,6 @@ function submitInvest() {
   document.getElementById('inputTotal').value='';
 }
 
-// ── SYNC ──────────────────────────────────────────────────────
 async function syncOpex(r) {
   try {
     const sheetDate = isoSheetDate(r.date);
@@ -1424,7 +1385,6 @@ async function syncInvest(r) {
   } catch(e){return false}
 }
 
-// ── HISTORY ───────────────────────────────────────────────────
 function renderHistory() {
   const filter = document.getElementById('historyFilter').value;
   const list = document.getElementById('historyList');
@@ -1463,7 +1423,6 @@ function renderHistory() {
   }).join('');
 }
 
-// ── EDIT MODALS ───────────────────────────────────────────────
 function openEdit(idx) {
   if(idx<0||idx>=txHistory.length)return;
   editingIndex = {src:'opex', idx};
@@ -1546,7 +1505,6 @@ function deleteTransaction() {
 function closeModal(){document.getElementById('editModal').classList.remove('open');editingIndex=null}
 document.getElementById('editModal').addEventListener('click',e=>{if(e.target===document.getElementById('editModal'))closeModal()});
 
-// ── LOCAL STORAGE ─────────────────────────────────────────────
 function saveLocal(){
   localStorage.setItem('nota_queue_v2',JSON.stringify(queue));
   localStorage.setItem('nota_history_v2',JSON.stringify(txHistory));
@@ -1556,14 +1514,13 @@ function updateStatus(){}
 function showToast(msg,type,duration){
   const t=document.getElementById('toast');t.textContent=msg;
   t.className='toast show'+(type?' '+type:'');
-  if(duration===0)return; // persistent — caller must dismiss
+  if(duration===0)return; 
   setTimeout(()=>t.className='toast',duration||3000);
 }
 function hideToast(){
   const t=document.getElementById('toast');t.className='toast';
 }
 
-// ── INSIGHTS ──────────────────────────────────────────────────
 function setIM(mode,el){
   insightsMode=mode;
   document.querySelectorAll('#insightsModeToggle .toggle-btn').forEach(b=>b.classList.remove('active'));
@@ -1853,7 +1810,6 @@ function buildDonut(data,size){
   </svg>`;
 }
 
-// ── NET WORTH ─────────────────────────────────────────────────
 function setNWMode(mode,el){
   nwMode=mode;
   document.querySelectorAll('.nw-mode-btn').forEach(b=>b.classList.remove('active'));
@@ -1862,8 +1818,6 @@ function setNWMode(mode,el){
   else renderNetWorth();
 }
 function initNetWorth() {
-  // Pastikan histLoaded dulu, baru fetch prices, baru render
-  // Ini menghindari race condition antara loadHistData dan fetchSheetPrices
   if (!histLoaded) {
     onHistLoaded(() => {
       fetchSheetPrices(false).then(() => renderNetWorth());
@@ -1877,9 +1831,6 @@ async function fetchFxRates(){
   const now=Date.now();
   if(fxRates.USD && (now-fxLastFetch)<3600000)return; 
   try {
-    const res=await fetch('https://api.frankfurter.app/latest?from=USD,CHF&to=IDR');
-    const j=await res.json();
-    fxRates.USD = j.rates?.USD?.IDR || j.rates?.IDR;
     const [usdRes, chfRes] = await Promise.all([
       fetch('https://api.frankfurter.app/latest?from=USD&to=IDR'),
       fetch('https://api.frankfurter.app/latest?from=CHF&to=IDR'),
@@ -1943,7 +1894,6 @@ async function renderNetWorth(){
     return {stock, type, netLot, costBasis, currentValue, avgCostPerUnit};
   }).filter(Boolean);
 
-  // cashBalance dari data.json field (sudah dihitung sebagai running balance di sheet Opex)
   const cashBal = HIST.cashBalance || 0;
   const lastBalance = cashBal;
 
@@ -2032,7 +1982,6 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
 
   function fRpFull(n){ return 'Rp ' + Math.round(n).toLocaleString('id-ID'); }
 
-  // Dynamic "as of" date
   const todayObj = new Date();
   const asOfStr = `${todayObj.getDate()} ${MO[todayObj.getMonth()]} ${todayObj.getFullYear()}`;
 
@@ -2093,12 +2042,11 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
 
   document.getElementById('nwContent').innerHTML = html;
 
-  // Init donut chart after DOM is set
+  // Init Portfolio doughnut chart allocation layout
   requestAnimationFrame(() => {
     const canvas = document.getElementById(canvasId);
     if (!canvas || typeof Chart === 'undefined') return;
 
-    // Destroy previous instance if exists
     const prev = Chart.getChart(canvas);
     if (prev) prev.destroy();
 
@@ -2109,7 +2057,6 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
     }));
     const total = grandTotal;
 
-    // Custom plugin: % inside ring + curved label outside ring
     const arcLabelPlugin = {
       id: 'arcLabels',
       afterDraw(chart) {
@@ -2122,8 +2069,6 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           const midAngle = (arc.startAngle + arc.endAngle) / 2;
           const midRadius = (arc.innerRadius + arc.outerRadius) / 2;
 
-          // % inside ring — threshold in radians so it works on any canvas size
-          // 0.20 rad ≈ 11.5° which covers Forex at 4% (≈0.25 rad)
           const ix = arc.x + Math.cos(midAngle) * midRadius;
           const iy = arc.y + Math.sin(midAngle) * midRadius;
           const ringWidth = arc.outerRadius - arc.innerRadius;
@@ -2138,7 +2083,6 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
             ctx.restore();
           }
 
-          // Curved label outside ring — skip only if arc is really tiny (< 0.15 rad)
           const labelR = arc.outerRadius + 11;
           const arcLen = Math.abs(arc.endAngle - arc.startAngle) * labelR;
           const fontSize = 9;
@@ -2146,9 +2090,6 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           const textWidth = d.label.length * charWidth;
           if (arcSpan < 0.15 || arcLen < textWidth * 0.7) return;
 
-          // isBottom: verified against actual segment midAngles with real data
-          // US Stock 342° → false, Reksa Dana 103° → true,
-          // Cash 188° → true, JHT 240° → false, Forex 263° → false
           const normalMid = ((midAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
           const isBottom = normalMid > Math.PI / 3 && normalMid < 7 * Math.PI / 6;
 
@@ -2161,7 +2102,6 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
           ctx.textBaseline = 'middle';
 
           if (!isBottom) {
-            // Top half: draw L→R clockwise along outer edge
             const startA = midAngle - (d.label.length - 1) * anglePerChar / 2;
             for (let j = 0; j < d.label.length; j++) {
               const a = startA + j * anglePerChar;
@@ -2172,8 +2112,6 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
               ctx.restore();
             }
           } else {
-            // Bottom half: draw L→R counter-clockwise so text is not upside-down
-            // Start from the right end of the label arc and go left
             const startA = midAngle + (d.label.length - 1) * anglePerChar / 2;
             for (let j = 0; j < d.label.length; j++) {
               const a = startA - j * anglePerChar;
@@ -2184,7 +2122,6 @@ function renderOverview(holdings, usdRate, chfRate, cashBalance){
               ctx.restore();
             }
           }
-
           ctx.restore();
         });
       }
@@ -2239,7 +2176,6 @@ function updateHeaderHeight(){
   if(h)document.documentElement.style.setProperty('--header-height',h.offsetHeight+'px');
 }
 
-// ── SEARCH FUNCTIONS ──────────────────────────────────────────
 let searchTimeout;
 let searchCurrentResults = [];
 let searchPageIndex = 0;
@@ -2401,12 +2337,6 @@ async function loadHistData() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const d = await res.json();
     Object.assign(HIST, d);
-    // Re-apply cached live month rows so data.json doesn't clobber them
-    // (race condition: fetchCurrentMonthFresh may have completed first)
-    const _nt = new Date();
-    const _nck = `nota_curMonth_${_nt.getFullYear()}_${_nt.getMonth()+1}`;
-    const _ncr = JSON.parse(localStorage.getItem(_nck) || 'null');
-    if (_ncr && _ncr.length > 0) _applyCurrentMonthRows(_ncr, _nt.getFullYear(), _nt.getMonth()+1);
     localStorage.setItem('nota_txCat', JSON.stringify(d.txCat||{}));
     localStorage.setItem('nota_txPm',  JSON.stringify(d.txPm||{}));
     if (d.currentPrices) {
@@ -2437,8 +2367,7 @@ async function loadHistData() {
   if (cachedPm)  HIST.txPm  = JSON.parse(cachedPm);
 })();
 
-// ── HOME CALENDAR ─────────────────────────────────────────────
-
+/* ── HOME CALENDAR RENDERING ─────────────────────────────────── */
 const CAL_TX_HEADER_H  = 46;
 const CAL_TX_ITEM_H    = 44;
 const CAL_TX_EMPTY_H   = 110;
@@ -2447,22 +2376,20 @@ const CAL_TX_MAX_FRAC  = 0.50;
 let calInited       = false;
 let calOlderShown   = false;
 let calSelectedCell = null;
-let calCollapsedShown = false;  // State 4: collapsed months injected
-let calYearPillsShown = false;  // State 5: year pills injected
-let cal2026Collapsed  = false;  // whether 2026 months are collapsed into pill
-let calExpandedMonths = {};     // tracks which collapsed month rows are expanded
-let calExpandedYears  = {};     // tracks which year pills are expanded
+let calCollapsedShown = false;  
+let calYearPillsShown = false;  
+let cal2026Collapsed  = false;  
+let calExpandedMonths = {};     
+let calExpandedYears  = {};     
 let calOlderCollapsed = {};
 let calFutureCollapsed = {};
 let calCurrentMonthCollapsed = false;
-let calExpandedYearMonths = {}; // tracks which year-month rows are expanded
+let calExpandedYearMonths = {}; 
 
 function calGetMonthData(year, month) {
   const opex = HIST.opex || [];
   const txByDay = {};
   
-  // Add HIST.opex data
-  // NOTE: r.m in data.json is 0-indexed (Jan=0), but `month` param here is 1-indexed (Jan=1)
   opex.forEach(r => {
     if (r.y !== year || r.m !== month - 1) return;
     const key = r.d;
@@ -2470,7 +2397,6 @@ function calGetMonthData(year, month) {
     txByDay[key].push(r);
   });
   
-  // Add txHistory (local transactions) data
   const local = txHistory || [];
   local.forEach(r => {
     if (!r.date) return;
@@ -2482,7 +2408,7 @@ function calGetMonthData(year, month) {
   });
 
   const total = opex
-    .filter(r => r.y === year && r.m === month - 1 && r.cat !== 'Income' && r.cat !== 'Investment')
+    .filter(r => r.y === year && r.m === month - 1 && r.cat !== 'Income' && r.cat !== 'Investment' && !r.inc)
     .reduce((s, r) => s + (r.exp || 0), 0);
 
   const localIncome = (txHistory || [])
@@ -2493,7 +2419,7 @@ function calGetMonthData(year, month) {
     })
     .reduce((s, r) => s + (r.amount || 0), 0);
   const totalIncome = opex
-    .filter(r => r.y === year && r.m === month - 1 && r.cat === 'Income')
+    .filter(r => r.y === year && r.m === month - 1 && (r.cat === 'Income' || r.inc > 0))
     .reduce((s, r) => s + (r.inc || 0), 0) + localIncome;
 
   const incPct  = totalIncome > 0 ? Math.min(Math.round((total / totalIncome) * 100), 100) : 0;
@@ -2584,7 +2510,7 @@ function calBuildMonthHTML(year, month, today, collapseBtn = '') {
             cat: r.category || r.cat || '',
             pm: r.pm || '',
             amt: r.amount || r.exp || r.inc || 0,
-            type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : ''),
+            type: (r.category || r.cat) === 'Income' || r.inc > 0 ? 'income' : (((r.category || r.cat) === 'Investment') ? 'invest' : ''),
             rowIndex: r.rowIndex || null,
             notes: r.notes || '',
             inc: r.inc || 0
@@ -2679,7 +2605,7 @@ function calGetCurrentWeekHTML(year, month, today) {
           cat: r.category || r.cat || '',
           pm: r.pm || '',
           amt: r.amount || r.exp || r.inc || 0,
-          type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : ''),
+          type: (r.category || r.cat) === 'Income' || r.inc > 0 ? 'income' : (((r.category || r.cat) === 'Investment') ? 'invest' : ''),
           rowIndex: r.rowIndex || null,
           notes: r.notes || '',
           inc: r.inc || 0
@@ -2705,8 +2631,7 @@ function initCalendarSkeleton() {
   const month = today.getMonth() + 1;
   const mName = `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month-1]} ${year}`;
 
-  // Build full month grid (skeleton — no data, just day numbers)
-  const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7; // Mon=0
+  const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7; 
   const daysInMonth = new Date(year, month, 0).getDate();
   const daysInPrev  = new Date(year, month - 1, 0).getDate();
   const todayD = today.getDate();
@@ -2752,7 +2677,6 @@ function initCalendarSkeleton() {
       ${weeksHTML}
     </div>`;
 
-  // Scroll to today's week
   setTimeout(() => {
     const cs = document.getElementById('calScroll');
     if (cs) cs.scrollTop = cs.scrollHeight;
@@ -2815,12 +2739,8 @@ function initCalendar() {
   
   setTimeout(() => {
     if (cs) {
-      const _wasOlderShown = calOlderShown;
       calRevealOlder();
       calPopulateFutureMonths();
-      // If calRevealOlder was a no-op (calOlderShown already true), the newly-created
-      // #calHiddenWeekRows (from the innerHTML replace above) is empty — re-build it.
-      if (_wasOlderShown) calBuildCurrentMonthHiddenWeeks();
     }
   }, 50);
 
@@ -2844,12 +2764,8 @@ function initCalendar() {
 
 function calOnScroll() {
   const cs = document.getElementById('calScroll');
-  // Snapshot BEFORE calRevealOlder mutates calOlderShown, so State 4 only fires
-  // on a subsequent scroll (not the same event that first triggers State 3).
   const wasOlderShown = calOlderShown;
-  // State 3: reveal full months (existing)
   if (cs.scrollTop < 28) calRevealOlder();
-  // State 4+5: when scrollTop reaches top of calOlderMonths
   if (wasOlderShown && !calCollapsedShown) {
     const olderEl = document.getElementById('calOlderMonths');
     if (olderEl && olderEl.offsetHeight > 0 && cs.scrollTop < olderEl.offsetTop + 32) {
@@ -2858,19 +2774,19 @@ function calOnScroll() {
   }
 }
 
-// Builds and injects the hidden past-weeks rows for the current month.
-// Called both from calRevealOlder() (first time) and initCalendar() on re-render
-// (when calOlderShown is already true, so calRevealOlder would no-op).
-function calBuildCurrentMonthHiddenWeeks() {
+function calRevealOlder() {
+  if (calOlderShown) return;
+  calOlderShown = true;
+
   const today  = new Date();
   const year   = today.getFullYear();
   const month  = today.getMonth() + 1;
-  const todayDow = (today.getDay() + 6) % 7;
+  const todayDow = (today.getDay() + 6) % 7; 
   const monOfCurWeek = new Date(today);
   monOfCurWeek.setDate(today.getDate() - todayDow);
 
   let hiddenRowsHTML = '';
-
+  
   if (monOfCurWeek.getFullYear() === year && monOfCurWeek.getMonth() + 1 === month) {
     const { txByDay } = calGetMonthData(year, month);
     const firstDay = new Date(year, month - 1, 1).getDay();
@@ -2880,7 +2796,7 @@ function calBuildCurrentMonthHiddenWeeks() {
     let cells = [];
     for (let i = offset - 1; i >= 0; i--) cells.push({day: daysInPrev - i, cur: false});
     for (let d = 1; d < monOfCurWeek.getDate(); d++) cells.push({day: d, cur: true});
-
+    
     const rem = cells.length % 7;
     if (rem > 0) { for (let i = 0; i < 7 - rem; i++) cells.push({day:0,cur:false,pad:true}); }
 
@@ -2895,7 +2811,7 @@ function calBuildCurrentMonthHiddenWeeks() {
         const total  = txs.reduce((s,r)=>s+(r.amount||r.exp||r.inc||0),0);
         const hasData = txs.length > 0;
         let cls = 'cal-day' + (isCur ? (hasData ? ' has-data' : '') : ' other-month') + (d >= 5 ? ' weekend' : '');
-        const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||r.inc||0,type:(r.category||r.cat)==='Income'?'income':((r.category||r.cat)==='Investment'?'invest':''),rowIndex:r.rowIndex||null,notes:r.notes||'',inc:r.inc||0}))).replace(/'/g,'&#39;') : '[]';
+        const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||r.inc||0,type:(r.category||r.cat)==='Income' || r.inc > 0 ? 'income':((r.category||r.cat)==='Investment'?'invest':''),rowIndex:r.rowIndex||null,notes:r.notes||'',inc:r.inc||0}))).replace(/'/g,'&#39;') : '[]';
         const dateStr = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
         const totalStr = total ? fRpS(total) : '';
         const clickAttr = (isCur && dateStr) ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
@@ -2907,24 +2823,11 @@ function calBuildCurrentMonthHiddenWeeks() {
       hiddenRowsHTML += `<div class="cal-week-row">${weekCells}</div>`;
     }
   }
-
-  const hwRows = document.getElementById('calHiddenWeekRows');
-  if (hwRows) hwRows.innerHTML = hiddenRowsHTML;
-  const hw = document.getElementById('calHiddenWeeks');
-  if (hw) hw.style.display = 'block';
+  
+  document.getElementById('calHiddenWeekRows').innerHTML = hiddenRowsHTML;
+  document.getElementById('calHiddenWeeks').style.display = 'block';
   const cwr = document.getElementById('calCurWdayRow');
   if (cwr) cwr.style.display = 'none';
-}
-
-function calRevealOlder() {
-  if (calOlderShown) return;
-  calOlderShown = true;
-
-  calBuildCurrentMonthHiddenWeeks();
-
-  const today  = new Date();
-  const year   = today.getFullYear();
-  const month  = today.getMonth() + 1;
 
   let olderHTML = '';
   for (let i = 2; i >= 1; i--) {
@@ -2936,7 +2839,6 @@ function calRevealOlder() {
   }
   document.getElementById('calOlderMonths').innerHTML = olderHTML;
   document.getElementById('calScrollHint').style.display = 'none';
-  // Collapse all older months except the most recent one (i=1)
   for (let i = 2; i >= 1; i--) {
     let oy = year, om = month - i;
     if (om <= 0) { om += 12; oy -= 1; }
@@ -2949,7 +2851,6 @@ function calRevealOlder() {
   }, 10);
 }
 
-// ── STATE 4: Collapsed month rows above Apr/May ───────────────
 function calRevealCollapsed() {
   if (calCollapsedShown) return;
   calCollapsedShown = true;
@@ -2957,8 +2858,6 @@ function calRevealCollapsed() {
   const today = new Date();
   const curYear = today.getFullYear();
   const curMonth = today.getMonth() + 1;
-  // calOlderMonths shows: (curMonth-2) and (curMonth-1)
-  // Collapsed = Jan through (curMonth-3) of current year, if any
   const oldestFullMonth = curMonth - 2;
   const collapsed = [];
   for (let m = 1; m < oldestFullMonth; m++) {
@@ -2970,8 +2869,6 @@ function calRevealCollapsed() {
     el.style.display = 'block';
     calRenderCollapsedMonths(collapsed, el, 'state4');
   }
-
-  // State 5 always follows State 4 — inject year pills above
   calRevealYearPills();
 }
 
@@ -3010,7 +2907,6 @@ function calCollapsedMonthRowHTML(y, m, isExpanded, ctx) {
     ${progressHTML}
     <span class="cal-month-collapse-btn">›</span>
   </div>`;
-
 }
 
 function calToggleCurrentMonth() {
@@ -3058,14 +2954,12 @@ function calToggleCollapsedMonth(key, ctx) {
   calRenderCollapsedMonths(collapsed, el, ctx);
 }
 
-// ── STATE 5: Year pills above collapsed months ────────────────
 function calRevealYearPills() {
   if (calYearPillsShown) return;
   calYearPillsShown = true;
 
   const curYear = new Date().getFullYear();
   const opex = (HIST.opex || []);
-  // Years BEFORE current year only — current year gets its own special pill
   const yearSet = new Set(opex.map(r => r.y));
   yearSet.delete(curYear);
   const pastYears = [...yearSet].sort((a, b) => a - b);
@@ -3084,17 +2978,14 @@ function calGetYearsForPills() {
 }
 
 function calRenderYearPills(pastYears, curYear, container) {
-  const today = new Date();
-  const curMonth = today.getMonth() + 1;
   const opex = (HIST.opex || []);
 
-  // Build current year (2026) pill — always first, special behavior
   const curYearTotal = opex
-    .filter(r => r.y === curYear && r.cat !== 'Income' && r.cat !== 'Investment')
+    .filter(r => r.y === curYear && r.cat !== 'Income' && r.cat !== 'Investment' && !r.inc)
     .reduce((s, r) => s + (r.exp || 0), 0);
   const curYearFmt = curYearTotal ? fRpS(curYearTotal) : 'Rp 0';
   const curExpCls = cal2026Collapsed ? '' : ' expanded';
-  const curChevron = '›';
+  
   const curPillHTML = `<div class="cal-year-pill${curExpCls}" data-year="${curYear}" onclick="calToggle2026()">
     <div class="cal-year-pill-header">
       <div class="cal-year-pill-label">${curYear} <span style="font-size:9px;color:#666;font-weight:400;margin-left:4px">current</span></div>
@@ -3103,20 +2994,18 @@ function calRenderYearPills(pastYears, curYear, container) {
           <div class="cal-year-pill-total">${curYearFmt}</div>
           <div class="cal-year-pill-sublabel">total opex</div>
         </div>
-        <div class="cal-year-pill-chevron">${curChevron}</div>
+        <div class="cal-year-pill-chevron">›</div>
       </div>
     </div>
   </div>`;
 
-  // Build past year pills (2025, 2024, …)
   const pastPillsHTML = pastYears.map(y => {
     const isExpanded = !!calExpandedYears[y];
     const yearTotal = opex
-      .filter(r => r.y === y && r.cat !== 'Income' && r.cat !== 'Investment')
+      .filter(r => r.y === y && r.cat !== 'Income' && r.cat !== 'Investment' && !r.inc)
       .reduce((s, r) => s + (r.exp || 0), 0);
     const yearTotalFmt = yearTotal ? fRpS(yearTotal) : 'Rp 0';
     const expCls = isExpanded ? ' expanded' : '';
-    const chevron = '›';
 
     let monthsHTML = '';
     if (isExpanded) {
@@ -3137,7 +3026,7 @@ function calRenderYearPills(pastYears, curYear, container) {
             <div class="cal-year-pill-total">${yearTotalFmt}</div>
             <div class="cal-year-pill-sublabel">total opex</div>
           </div>
-          <div class="cal-year-pill-chevron">${chevron}</div>
+          <div class="cal-year-pill-chevron">›</div>
         </div>
       </div>
       ${monthsHTML}
@@ -3147,10 +3036,8 @@ function calRenderYearPills(pastYears, curYear, container) {
   container.innerHTML = pastPillsHTML + curPillHTML;
 }
 
-// Tap 2026 pill: toggle collapse/expand of all 2026 content below
 function calToggle2026() {
   cal2026Collapsed = !cal2026Collapsed;
-  // Show/hide the 2026 months (calCollapsedMonths + calOlderMonths + calCurrentMonth)
   const hide = cal2026Collapsed;
   const colEl = document.getElementById('calCollapsedMonths');
   const oldEl = document.getElementById('calOlderMonths');
@@ -3160,7 +3047,6 @@ function calToggle2026() {
   if (oldEl) oldEl.style.display = hide ? 'none' : 'block';
   if (curEl) curEl.style.display = hide ? 'none' : 'block';
   if (futEl) futEl.style.display = hide ? 'none' : 'block';
-  // Re-render year pills to update chevron state
   const pastYears = calGetYearsForPills();
   calRenderYearPills(pastYears, new Date().getFullYear(), document.getElementById('calYearPills'));
 }
@@ -3179,10 +3065,7 @@ function calToggleYearMonth(key, e) {
   calRenderYearPills(pastYears, new Date().getFullYear(), document.getElementById('calYearPills'));
 }
 
-function calSetPanelH(txCount) {
-  // No-op: transaction panel is now a static flex segment (46% of page-home).
-  // Dynamic height sizing removed as part of two-segment static layout redesign.
-}
+function calSetPanelH(txCount) {}
 
 function calSelectDay(cell, dateStr, totalStr) {
   if (calSelectedCell) calSelectedCell.classList.remove('selected');
@@ -3192,8 +3075,7 @@ function calSelectDay(cell, dateStr, totalStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   const dateObj = new Date(y, m - 1, d);
   const isToday = dateStr === new Date().toISOString().slice(0,10);
-  const dateLabel = dateObj.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'})
-    + (isToday ? ' — Today' : '');
+  const dateLabel = dateObj.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'}) + (isToday ? ' — Today' : '');
 
   document.getElementById('calTxDate').textContent  = dateLabel;
 
@@ -3210,7 +3092,6 @@ function calSelectDay(cell, dateStr, totalStr) {
         <div class="cal-tx-empty-icon">📭</div>
         <div class="cal-tx-empty-text">No transactions this day.<br>Tap + to add one.</div>
       </div>`;
-    calSetPanelH(0);
   } else {
     document.getElementById('calTxTotal').textContent = totalStr + ' total';
     document.getElementById('calTxList').innerHTML = txns.map((tx, idx) => {
@@ -3225,31 +3106,23 @@ function calSelectDay(cell, dateStr, totalStr) {
         ${canEdit ? '<div class="cal-tx-edit-chevron">›</div>' : ''}
       </div>`;
     }).join('');
-    calSetPanelH(txns.length);
   }
 
   const row = cell.closest('.cal-week-row');
   if (row) {
-    // Wait for panel transition to complete (260ms) before checking visibility
     setTimeout(() => {
       const cs = document.getElementById('calScroll');
-      const panel = document.getElementById('calTxPanel');
-      const panelH = panel ? panel.offsetHeight : 0;
-      // Visible area in calScroll is clientHeight (panel is sibling, not inside calScroll)
-      // Row position relative to calScroll scroll container
       const rowTop = row.offsetTop;
       const rowBot = rowTop + row.offsetHeight;
       const visTop = cs.scrollTop;
       const visBot = visTop + cs.clientHeight;
 
-      // If row bottom is hidden (below visible area), scroll so row is fully visible
-      // Add small padding (8px) so row doesn't sit right at the edge
       if (rowBot > visBot) {
         cs.scrollTo({ top: rowBot - cs.clientHeight + 8, behavior: 'smooth' });
       } else if (rowTop < visTop) {
         cs.scrollTo({ top: rowTop - 8, behavior: 'smooth' });
       }
-    }, 280); // after panel transition (260ms) + buffer
+    }, 280);
   }
 }
 
@@ -3264,7 +3137,6 @@ function calPopulateFutureMonths() {
     html += `<div class="cal-month-divider"></div><div class="cal-future-month" data-key="${futureKey}">${calBuildMonthHTML(curYear, m, today, futureBtn)}</div>`;
   }
   document.getElementById('calFutureMonths').innerHTML = html;
-  // Collapse all future months except the nearest one (curMonth+1)
   for (let m = curMonth + 2; m <= 12; m++) {
     calToggleFutureMonth(`${curYear}-${m}`);
   }
@@ -3293,20 +3165,16 @@ function calReinit() {
   initCalendar();
 }
 
-// ── INIT ──────────────────────────────────────────────────────
 updateHeaderHeight();
 window.addEventListener('resize',updateHeaderHeight);
 initDatePicker('inputDateRaw','inputDateDisplay','inputDateText');
 initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
 
-// ── INIT v3.5: Render from cache instantly, fetch in background ──
 window.addEventListener('DOMContentLoaded', async () => {
   const isHome = () => document.getElementById('page-home').classList.contains('active');
 
-  // Step 1: Show skeleton instantly
   if (isHome()) initCalendarSkeleton();
 
-  // Step 2: Try rendering from localStorage cache for instant display
   const cachedCurMonth = (() => {
     const today = new Date();
     const y = today.getFullYear(), m = today.getMonth() + 1;
@@ -3316,7 +3184,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   const cachedHistLoaded = !!(localStorage.getItem('nota_txCat'));
 
   if (cachedHistLoaded && cachedCurMonth) {
-    // Render from cache — near-instant
     const cachedCat = localStorage.getItem('nota_txCat');
     const cachedPm  = localStorage.getItem('nota_txPm');
     if (cachedCat) HIST.txCat = JSON.parse(cachedCat);
@@ -3328,7 +3195,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     _applyCurrentMonthRows(cachedCurMonth, today.getFullYear(), today.getMonth() + 1);
     calInited = false;
     if (isHome()) initCalendar();
-    // Show loading toast then fetch fresh in background
     showToast('Loading data…', 'loading', 0);
     const [,freshMonth] = await Promise.all([
       loadHistData(),
@@ -3346,11 +3212,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       hideToast();
     }
   } else {
-    // No cache — sequential load (first visit)
     showToast('Loading data…', 'loading', 0);
     await loadHistData();
-    // Race fetchCurrentMonth against a 8s timeout so a hung network never
-    // prevents initCalendar from running (e.g. no internet, sandboxed preview).
     await Promise.race([fetchCurrentMonth(), new Promise(r => setTimeout(r, 8000))]);
     hideToast();
     calInited = false;
@@ -3358,7 +3221,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// ── GOALS ─────────────────────────────────────────────────────
+/* ── GOALS ───────────────────────────────────────────────────── */
 let GOALS = JSON.parse(localStorage.getItem('goals') || '[]');
 let goalsEditId = null;
 
@@ -3525,7 +3388,6 @@ function openFABAction() {
   }
 }
 
-// Fetch current month and return true if data changed vs cache
 async function fetchCurrentMonthFresh() {
   const now = Date.now();
   const today = new Date();
