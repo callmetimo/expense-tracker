@@ -885,10 +885,13 @@ function _applyCurrentMonthRows(rows, y, m) {
   const mIdx = m - 1;
   const mk = `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mIdx]} ${y}`;
 
-  // Only remove past/today rows — future-dated data.json rows (e.g. scheduled income
-  // for May 25, 28) are not yet in the live sheet and must be preserved.
-  const todayD = new Date().getDate();
-  HIST.opex = (HIST.opex || []).filter(r => !(r.y === y && r.m === mIdx && r.d <= todayD));
+  // Only remove data.json rows for days the live sheet actually covers.
+  // The sheet may not return every past day (e.g. only the last 2 entries), so
+  // removing by date range would wipe data.json rows that have no live replacement.
+  // Future-dated rows (e.g. scheduled income May 25, 28) are never in the live
+  // sheet and are therefore never in liveDays — they are preserved automatically.
+  const liveDays = new Set(rows.map(r => r.d));
+  HIST.opex = (HIST.opex || []).filter(r => !(r.y === y && r.m === mIdx && liveDays.has(r.d)));
 
   // Append fresh rows from sheet
   rows.forEach(r => {
