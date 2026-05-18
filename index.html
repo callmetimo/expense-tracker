@@ -15,31 +15,39 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--bg4:#2e2e2e;
-  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
-  --text:#f0f0f0;--text2:#999;--text3:#777;
-  --accent:#c8f060;--accent-dim:rgba(200,240,96,0.11);
+  --bg:#000;--bg2:#111;--bg3:#1c1c1e;--bg4:#2c2c2e;
+  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.18);
+  --text:#f0f0f0;--text2:#8e8e93;--text3:#636366;
+  --accent:#c8f060;--accent-dim:rgba(200,240,96,0.12);
   --red:#ff6b6b;--red-dim:rgba(255,107,107,0.11);
   --blue:#60a0f0;--blue-dim:rgba(96,160,240,0.11);
   --green:#4ade80;--green-dim:rgba(74,222,128,0.11);
   --radius:14px;--radius-sm:8px;
   --font-logo:'DM Sans',system-ui,sans-serif;
+  --bottom-nav-h:calc(56px + env(safe-area-inset-bottom,0px));
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;max-width:430px;margin:0 auto;overflow:hidden}
+body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100dvh;max-width:430px;margin:0 auto;overflow:hidden}
 
 /* HEADER */
-.header{padding:52px 20px 14px;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:0.5px solid var(--border)}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.header{padding:env(safe-area-inset-top,44px) 20px 10px;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:0.5px solid var(--border)}
+.header-top{display:flex;align-items:center;justify-content:space-between}
 .app-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px;font-family:var(--font-logo);color:var(--accent)}
 .app-title .dot{color:rgba(200,240,96,0.4)}
 .app-title .app-version{font-size:10px;color:var(--text2);font-weight:400;margin-left:2px;font-family:-apple-system,'SF Pro Display',system-ui,sans-serif}
-.search-icon-btn{background:none;border:none;color:var(--text2);padding:7px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
-.search-icon-btn svg{width:18px;height:18px}
+.header-right{display:flex;align-items:center;gap:4px}
+.search-icon-btn{background:none;border:none;color:var(--text2);padding:7px 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
+.search-icon-btn svg{width:20px;height:20px}
 .search-icon-btn:active{color:var(--accent)}
-.tab-bar{display:flex;background:var(--bg3);border-radius:9px;padding:3px;gap:2px;margin-top:8px}
-.tab{flex:1;padding:6px 2px;text-align:center;font-size:10px;font-weight:500;border-radius:7px;cursor:pointer;color:var(--text2);transition:all 0.2s;white-space:nowrap}
-.tab.active{background:var(--accent);color:#0f0f0f;font-weight:700}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-around;height:var(--bottom-nav-h);padding-bottom:env(safe-area-inset-bottom,0px);z-index:200}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:56px;border:none;background:none;cursor:pointer;color:var(--text3);transition:color 0.2s;-webkit-tap-highlight-color:transparent;padding:0}
+.nav-btn.active{color:var(--text)}
+.nav-btn svg{width:24px;height:24px;stroke-width:1.8}
+.nav-fab-wrap{flex:1;display:flex;align-items:center;justify-content:center;height:56px}
+.nav-fab{width:48px;height:48px;background:var(--accent);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#000;font-size:28px;font-weight:300;line-height:1;box-shadow:0 4px 18px rgba(200,240,96,0.32);transition:transform 0.15s,box-shadow 0.15s;-webkit-tap-highlight-color:transparent}
+.nav-fab:active{transform:scale(0.88);box-shadow:0 2px 8px rgba(200,240,96,0.2)}
 /* Toast — inline status text, no pill, no layout shift */
 .toast{height:16px;display:flex;align-items:center;font-size:11px;color:var(--text3);opacity:0;transition:opacity 0.2s}
 .toast.show{opacity:1}
@@ -50,13 +58,28 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 .page{display:none;padding:0 20px}
 .page.active{display:block}
 /* Non-home pages need their own scroll since body is overflow:hidden */
-#page-insights.active,#page-networth.active{
+#page-insights.active,#page-networth.active,#page-goals.active{
   display:block;
-  height:calc(100vh - var(--header-height,120px));
+  height:calc(100dvh - var(--header-height,80px) - var(--bottom-nav-h,56px));
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
-  padding-bottom:90px;
+  padding-bottom:24px;
 }
+
+/* GOALS */
+.goal-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;cursor:pointer;transition:border-color 0.2s;-webkit-tap-highlight-color:transparent}
+.goal-card:active{border-color:var(--accent)}
+.goal-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.goal-card-name{font-size:16px;font-weight:600}
+.goal-progress-wrap{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin:8px 0 4px}
+.goal-progress-fill{height:100%;background:var(--accent);border-radius:3px;transition:width 0.4s}
+.goal-source-list{display:flex;flex-direction:column}
+.goal-source-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
+.goal-source-row:last-child{border-bottom:none}
+.goal-source-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);flex-shrink:0}
+.goal-complete-btn{width:100%;border:0.5px solid rgba(74,222,128,0.3);border-radius:var(--radius);padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;background:var(--green-dim);color:var(--green);transition:opacity 0.2s,transform 0.1s}
+.goal-complete-btn:active{transform:scale(0.98);opacity:0.9}
+.goal-complete-btn.done{border-color:var(--border);background:transparent;color:var(--text2)}
 
 /* FORM */
 .form-section{margin-top:16px}
@@ -83,6 +106,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .submit-btn.income{background:var(--green);color:#0f0f0f}
 .submit-btn.invest{background:var(--blue);color:#0f0f0f}
 .submit-btn:active{transform:scale(0.98);opacity:0.9}
+.delete-btn{width:100%;border:0.5px solid rgba(255,107,107,0.3);border-radius:var(--radius);padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;background:var(--red-dim);color:var(--red);transition:opacity 0.2s,transform 0.1s}
+.delete-btn:active{transform:scale(0.98);opacity:0.9}
 
 /* Toggle pills */
 .pill-toggle{display:flex;gap:6px;margin-bottom:14px}
@@ -229,79 +254,121 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .btn-save{flex:2;padding:12px;border-radius:var(--radius);border:none;background:var(--accent);color:#0f0f0f;font-size:13px;font-weight:700;cursor:pointer}
 .empty-state{text-align:center;padding:36px 20px;color:var(--text2);font-size:13px}
 /* SKELETON */
-.cal-day.skeleton{background:var(--bg3);border:0.5px solid var(--border);cursor:default;pointer-events:none}
+.cal-day.skeleton{background:var(--bg3);border-radius:8px;cursor:default;pointer-events:none}
 .cal-day.skeleton .cal-day-num{color:var(--text3)}
 .cal-progress-skeleton{flex:1;height:4px;background:var(--bg4);border-radius:2px}
 .cal-label-skeleton{width:60px;height:12px;background:var(--bg4);border-radius:3px}
 
 /* ── HOME CALENDAR ─────────────────────────────────────────── */
 /* Added min-height fallback so the scroll container does not collapse */
-#page-home{display:none;padding:0;flex-direction:column;height:calc(100dvh - var(--header-height,120px));min-height:400px;overflow:hidden;position:relative}
+#page-home{display:none;padding:0;flex-direction:column;height:calc(100dvh - var(--header-height,80px) - var(--bottom-nav-h,56px));min-height:300px;overflow:hidden;position:relative}
 #page-home.active{display:flex}
 
-.cal-scroll{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:150px}
+/* Calendar segment — top 54% of #page-home */
+.cal-scroll{flex:54 54 0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;border-bottom:0.5px solid var(--border)}
 
-.cal-month-label{display:flex;align-items:center;gap:12px;padding:14px 20px 12px}
-.cal-month-name{font-size:14px;font-weight:700;letter-spacing:-0.2px;min-width:88px;flex-shrink:0}
+.cal-month-label{display:flex;align-items:center;gap:10px;padding:10px 16px 8px}
+.cal-month-name{font-size:20px;font-weight:700;letter-spacing:-0.4px;min-width:100px;flex-shrink:0}
 .cal-progress-wrap{flex:1;display:flex;align-items:center;gap:8px}
-.cal-progress-bar{flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;min-width:40px}
+.cal-progress-bar{flex:1;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;min-width:30px}
 .cal-progress-fill{height:100%;background:var(--accent);border-radius:2px}
 .cal-progress-fill.over{background:var(--red)}
-.cal-progress-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;min-width:68px}
-.cal-progress-amount{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap}
-.cal-progress-avg{font-size:9px;color:var(--text2);white-space:nowrap}
+.cal-progress-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;min-width:64px}
+.cal-progress-amount{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap}
+.cal-progress-avg{font-size:10px;color:var(--text2);white-space:nowrap}
 
-.cal-month-divider{height:0.5px;background:var(--border);margin:0 20px 2px}
+.cal-month-divider{height:0.5px;background:var(--border);margin:0 16px 2px}
 
-.cal-week-section{padding:8px 20px 4px}
-.cal-wday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding-bottom:6px}
-.cal-wday{text-align:center;font-size:10px;color:var(--text2);font-weight:500}
-.cal-week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
+.cal-week-section{padding:6px 14px 2px}
+.cal-wday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding-bottom:4px}
+.cal-wday{text-align:center;font-size:11px;color:var(--text3);font-weight:500;letter-spacing:0.2px}
+.cal-week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}
 
-.cal-day{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 4px 7px;text-align:center;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;user-select:none;cursor:default;transition:background 0.15s,transform 0.12s;-webkit-tap-highlight-color:transparent}
+/* Flat iOS-style day cells — no card bg, just number + dot */
+.cal-day{background:none;border:none;border-radius:8px;padding:6px 2px 5px;text-align:center;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;user-select:none;cursor:default;transition:background 0.12s,transform 0.12s;-webkit-tap-highlight-color:transparent}
 .cal-day.has-data{cursor:pointer}
-.cal-day.has-data:active{background:var(--bg3);transform:scale(0.94)}
-.cal-day.selected{border:1.5px solid var(--text2);background:var(--bg3)}
-.cal-day.today{border:1.5px solid var(--accent)}
-.cal-day.today .cal-day-num{color:var(--accent);font-weight:700}
-.cal-day.today.selected{border:1.5px solid var(--accent);background:var(--bg3)}
-.cal-day.other-month{opacity:0.3;pointer-events:none}
-.cal-day.future{opacity:0.35;pointer-events:none}
-.cal-day-num{font-size:13px;font-weight:600;line-height:1;color:var(--text)}
-.cal-day-total{font-size:10px;font-weight:500;color:var(--text2);line-height:1}
+.cal-day.has-data:active{background:var(--bg3);transform:scale(0.92)}
+.cal-day.selected{background:rgba(255,255,255,0.09)}
+.cal-day.today .cal-day-num{background:var(--accent);color:#000;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto}
+.cal-day.today.selected .cal-day-num{background:var(--text);color:#000}
+.cal-day.other-month{opacity:0.25;pointer-events:none}
+.cal-day.future{pointer-events:none}
+.cal-day-num{font-size:16px;font-weight:500;line-height:1;color:var(--text)}
+.cal-day.weekend:not(.today):not(.other-month):not(.future) .cal-day-num{color:#999}
+.cal-day.future .cal-day-num{color:#666}
+.cal-day.future.weekend .cal-day-num{color:#444}
+.cal-wday-row .cal-wday:nth-child(6),.cal-wday-row .cal-wday:nth-child(7){color:#444}
+.cal-day-total{font-size:10px;font-weight:500;color:var(--text3);line-height:1}
+.cal-day.skeleton{background:var(--bg3);border-radius:8px;pointer-events:none}
+.cal-day.skeleton .cal-day-num{color:var(--text3);font-size:16px}
 
-.cal-scroll-hint{display:flex;align-items:center;justify-content:center;gap:6px;padding:16px 20px;color:var(--text2);font-size:11px;cursor:pointer;user-select:none;border-bottom:0.5px solid var(--border);transition:color 0.15s;-webkit-tap-highlight-color:transparent}
+.cal-scroll-hint{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;color:var(--text2);font-size:12px;cursor:pointer;user-select:none;border-bottom:0.5px solid var(--border);transition:color 0.15s;-webkit-tap-highlight-color:transparent}
 .cal-scroll-hint:active{color:var(--text)}
 .cal-scroll-hint svg{width:13px;height:13px;stroke-width:2.2}
 
-/* tx panel */
-.cal-tx-panel{background:var(--bg2);border-top:0.5px solid var(--border2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;transition:height 0.26s cubic-bezier(0.4,0,0.2,1);margin-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
-.cal-tx-header{height:46px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid var(--border)}
-.cal-tx-date{font-size:13px;font-weight:600}
-.cal-tx-total{font-size:11px;color:var(--text2)}
-.cal-tx-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.cal-tx-item{display:flex;align-items:center;padding:11px 20px;border-bottom:0.5px solid var(--border);gap:10px;cursor:pointer;transition:background 0.12s}
+/* ── STATE 4/5: COLLAPSED MONTH ROWS ──────────────────────── */
+.cal-month-collapsed{display:flex;align-items:center;gap:12px;padding:8px 20px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
+.cal-month-collapsed:active{background:var(--bg2)}
+.cal-month-collapsed .cal-month-name{font-size:14px;font-weight:700;letter-spacing:-0.2px;min-width:88px;flex-shrink:0;color:#aaa}
+.cal-month-collapsed .cal-progress-amount{font-size:12px;font-weight:500;color:#777;flex:1}
+.cal-month-collapsed .cal-chevron{font-size:13px;color:#555;flex-shrink:0;transition:transform 0.2s}
+.cal-month-collapsed.expanded .cal-month-name{color:var(--accent)}
+.cal-month-collapsed.expanded .cal-chevron{transform:rotate(90deg);color:var(--accent)}
+.cal-month-expanded-grid{overflow:hidden;border-top:0.5px solid #2a2a2a}
+.cal-month-collapse-btn{background:none;border:none;color:var(--text3);font-size:18px;padding:2px 8px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;line-height:1;transition:transform 0.2s,color 0.15s;display:inline-block}
+.cal-month-collapse-btn.open{transform:rotate(90deg)}
+.cal-month-collapse-btn:active{color:var(--accent)}
+.cal-month-label.clickable{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
+.cal-month-label.clickable:active{background:var(--bg2)}
+
+/* ── STATE 5: YEAR PILLS ───────────────────────────────────── */
+#calYearPills{padding:4px 0}
+.cal-year-pill{background:#141414;border:0.5px solid #2a2a2a;border-radius:10px;margin:6px 20px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cal-year-pill.expanded{border-color:var(--accent)}
+.cal-year-pill-header{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;user-select:none}
+.cal-year-pill-label{font-size:14px;font-weight:700;color:#aaa}
+.cal-year-pill.expanded .cal-year-pill-label{color:var(--accent)}
+.cal-year-pill-meta{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.cal-year-pill-total{font-size:12px;font-weight:600;color:#aaa}
+.cal-year-pill.expanded .cal-year-pill-total{color:var(--accent)}
+.cal-year-pill-sublabel{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:0.3px}
+.cal-year-pill-chevron{font-size:12px;color:#555;margin-left:8px;transition:transform 0.2s;flex-shrink:0}
+.cal-year-pill.expanded .cal-year-pill-chevron{transform:rotate(90deg);color:var(--accent)}
+.cal-year-pill-months{border-top:0.5px solid #2a2a2a}
+.cal-year-month-row{display:flex;align-items:center;gap:12px;padding:8px 12px 8px 26px;border-left:1px solid #2a2a2a;margin-left:12px;margin-right:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.15s;position:relative}
+.cal-year-month-row:active{background:rgba(200,240,96,0.05)}
+.cal-year-month-row .cal-month-name{font-size:13px;font-weight:600;min-width:80px;flex-shrink:0;color:#aaa}
+.cal-year-month-row .cal-progress-amount{font-size:12px;font-weight:500;color:#666;flex:1}
+.cal-year-month-row .cal-chevron{font-size:12px;color:#444;flex-shrink:0;transition:transform 0.2s}
+.cal-year-month-row.current-month .cal-month-name::after{content:'current';font-size:9px;color:#666;font-weight:400;margin-left:6px;vertical-align:middle;text-transform:lowercase}
+.cal-year-month-row.expanded .cal-month-name{color:var(--accent)}
+.cal-year-month-row.expanded .cal-chevron{transform:rotate(90deg);color:var(--accent)}
+.cal-year-month-expanded{overflow:hidden;border-top:0.5px solid #2a2a2a}
+
+/* Transaction segment — bottom 46% of #page-home, always static */
+.cal-tx-panel{flex:46 46 0;min-height:0;background:var(--bg);border-top:0.5px solid var(--border2);display:flex;flex-direction:column;overflow:hidden}
+.cal-tx-header{height:52px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:0.5px solid var(--border)}
+.cal-tx-date{font-size:17px;font-weight:600;letter-spacing:-0.3px}
+.cal-tx-total{font-size:14px;font-weight:600;color:var(--text2)}
+.cal-tx-list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.cal-tx-item{display:flex;align-items:center;padding:13px 20px;border-bottom:0.5px solid var(--border);gap:12px;cursor:pointer;transition:background 0.12s}
 .cal-tx-item:last-child{border-bottom:none}
 .cal-tx-item:active{background:var(--bg3)}
-.cal-tx-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,0.14)}
-.cal-tx-dot.income{background:rgba(74,222,128,0.5)}
-.cal-tx-dot.invest{background:rgba(96,160,240,0.5)}
+.cal-tx-edit-chevron{color:var(--text3);font-size:18px;flex-shrink:0;padding-left:4px}
+.cal-tx-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,0.18)}
+.cal-tx-dot.income{background:rgba(74,222,128,0.6)}
+.cal-tx-dot.invest{background:rgba(96,160,240,0.6)}
 .cal-tx-info{flex:1;min-width:0}
-.cal-tx-tx{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cal-tx-meta{font-size:10px;color:var(--text2);margin-top:2px}
-.cal-tx-cat{font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cal-tx-pm{font-size:10px;color:var(--text2);margin-top:1px}
-.cal-tx-amt{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;margin-left:12px}
+.cal-tx-tx{font-size:16px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-tx-meta{font-size:12px;color:var(--text2);margin-top:2px}
+.cal-tx-cat{font-size:15px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-tx-pm{font-size:12px;color:var(--text2);margin-top:2px}
+.cal-tx-amt{font-size:16px;font-weight:700;color:var(--text);white-space:nowrap;margin-left:12px}
 .cal-tx-amt.income{color:var(--green)}
 .cal-tx-amt.invest{color:var(--blue)}
-.cal-tx-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:7px;padding:20px;text-align:center}
-.cal-tx-empty-icon{font-size:24px;opacity:0.2}
-.cal-tx-empty-text{font-size:13px;color:var(--text2);line-height:1.5}
-
-/* fab */
-.cal-fab-wrap{position:absolute;bottom:0;left:0;right:0;background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;padding-top:8px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px);min-height:80px;z-index:10}
-.cal-fab{width:64px;height:64px;background:var(--accent);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(200,240,96,0.28);color:#0f0f0f;font-size:30px;font-weight:400;line-height:1;transition:transform 0.16s,box-shadow 0.16s;user-select:none;-webkit-tap-highlight-color:transparent}
-.cal-fab:active{transform:scale(0.90);box-shadow:0 3px 10px rgba(200,240,96,0.18)}
+.cal-tx-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;padding:24px;text-align:center}
+.cal-tx-empty-icon{font-size:28px;opacity:0.25}
+.cal-tx-empty-text{font-size:15px;color:var(--text2);line-height:1.5}
 
 /* INPUT SLIDE-UP OVERLAY */
 .input-overlay{position:fixed;inset:0;z-index:400;pointer-events:none}
@@ -318,24 +385,21 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .toast.updated{color:var(--accent);font-weight:600}
 
 @media(min-width:769px){
-  .cal-fab{width:72px;height:72px;font-size:34px}
+  .nav-fab{width:54px;height:54px;font-size:30px}
 }
 </style>
 </head>
 <body>
 
-<div class="header">
+<div class="header" id="appHeader">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.5.4</span></div>
-    <button class="search-icon-btn" onclick="openSearchOverlay()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    </button>
-  </div>
-  <div id="toast" class="toast"></div>
-  <div class="tab-bar">
-    <div class="tab active" onclick="switchTab('home',this)">Home</div>
-    <div class="tab" onclick="switchTab('insights',this)">Insights</div>
-    <div class="tab" onclick="switchTab('networth',this)">Net Worth</div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.6</span></div>
+    <div class="header-right">
+      <div id="toast" class="toast"></div>
+      <button class="search-icon-btn" onclick="openSearchOverlay()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -346,8 +410,11 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 15l-6-6-6 6"/></svg>
       Scroll up for previous weeks
     </div>
+    <div id="calYearPills" style="display:none"></div>
+    <div id="calCollapsedMonths" style="display:none"></div>
     <div id="calOlderMonths"></div>
     <div id="calCurrentMonth"></div>
+    <div id="calFutureMonths"></div>
     <div style="height:8px"></div>
   </div>
   <div class="cal-tx-panel" id="calTxPanel">
@@ -361,9 +428,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
         <div class="cal-tx-empty-text">Tap a day to see transactions</div>
       </div>
     </div>
-  </div>
-  <div class="cal-fab-wrap">
-    <button class="cal-fab" onclick="openInputOverlay()">+</button>
   </div>
 </div>
 
@@ -389,38 +453,43 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
       </div>
-      <div class="form-group autocomplete-wrapper">
-        <label class="form-label">Transaction</label>
-        <input type="text" class="form-input" id="inputTx" placeholder="Payee or transaction name..." autocomplete="off"
-          oninput="onTxInput()" onfocus="onTxFocus()">
-        <div class="autocomplete-list" id="ac-inputTx" style="display:none"></div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Amount</label>
-        <div class="amount-wrapper">
-          <span class="amount-prefix">Rp</span>
-          <input type="number" class="form-input amount-input" id="inputAmount" placeholder="0" inputmode="numeric">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group autocomplete-wrapper">
+          <label class="form-label">Transaction</label>
+          <input type="text" class="form-input" id="inputTx" placeholder="Payee or transaction name..." autocomplete="off"
+            oninput="onTxInput()" onfocus="onTxFocus()">
+          <div class="autocomplete-list" id="ac-inputTx" style="display:none"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input type="text" class="form-input" id="inputCat" placeholder="Category..." autocomplete="off"
+            oninput="showAC('inputCat', allCategories)" onfocus="showAC('inputCat', allCategories)">
+          <div class="autocomplete-list" id="ac-inputCat" style="display:none"></div>
+          <div class="smart-pills" id="catPills" style="margin-top:6px;margin-bottom:0"></div>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Category</label>
-        <div class="smart-pills" id="catPills"></div>
-        <input type="text" class="form-input" id="inputCat" placeholder="Select or type category..." autocomplete="off"
-          oninput="showAC('inputCat', allCategories)" onfocus="showAC('inputCat', allCategories)">
-        <div class="autocomplete-list" id="ac-inputCat" style="display:none"></div>
-      </div>
-      <div class="form-group autocomplete-wrapper">
-        <label class="form-label">Payment Method</label>
-        <div class="smart-pills" id="pmPills"></div>
-        <input type="text" class="form-input" id="inputPm" placeholder="Or type payment method..." autocomplete="off"
-          oninput="showAC('inputPm', allPMs)" onfocus="showAC('inputPm', allPMs)">
-        <div class="autocomplete-list" id="ac-inputPm" style="display:none"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <div class="amount-wrapper">
+            <span class="amount-prefix">Rp</span>
+            <input type="number" class="form-input amount-input" id="inputAmount" placeholder="0" inputmode="numeric">
+          </div>
+        </div>
+        <div class="form-group autocomplete-wrapper">
+          <label class="form-label">Payment Method</label>
+          <input type="text" class="form-input" id="inputPm" placeholder="Method..." autocomplete="off"
+            oninput="showAC('inputPm', allPMs)" onfocus="showAC('inputPm', allPMs)">
+          <div class="autocomplete-list" id="ac-inputPm" style="display:none"></div>
+          <div class="smart-pills" id="pmPills" style="margin-top:6px;margin-bottom:0"></div>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label">Notes</label>
         <input type="text" class="form-input" id="inputNotes" placeholder="Add a note…" autocomplete="off">
       </div>
       <button class="submit-btn expense" id="submitOpexBtn" onclick="submitOpex()">Save Transaction</button>
+      <button class="delete-btn" id="deleteOpexBtn" onclick="deleteSheetTransaction()" style="display:none">Delete Transaction</button>
     </div>
 
     <!-- Invest form -->
@@ -446,15 +515,17 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
           <div class="action-btn sell" data-action="Sell" onclick="setInvestAction('Sell',this)">Sell</div>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Lot / Units</label>
-        <input type="number" class="form-input" id="inputLot" placeholder="0" inputmode="decimal" oninput="calcTotal()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Price per Unit</label>
-        <div class="amount-wrapper">
-          <span class="amount-prefix" id="investPricePrefix">Rp</span>
-          <input type="number" class="form-input amount-input" id="inputPrice" placeholder="0" inputmode="decimal" oninput="calcTotal()">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group">
+          <label class="form-label">Lot / Units</label>
+          <input type="number" class="form-input" id="inputLot" placeholder="0" inputmode="decimal" oninput="calcTotal()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price per Unit</label>
+          <div class="amount-wrapper">
+            <span class="amount-prefix" id="investPricePrefix">Rp</span>
+            <input type="number" class="form-input amount-input" id="inputPrice" placeholder="0" inputmode="decimal" oninput="calcTotal()">
+          </div>
         </div>
       </div>
       <div class="form-group">
@@ -566,6 +637,33 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   </div>
 </div>
 
+<!-- GOALS PAGE -->
+<div class="page" id="page-goals">
+  <div style="padding:24px 0 14px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:28px;font-weight:700;letter-spacing:-0.5px">Goals</div>
+  </div>
+  <div id="goalsListContainer"><div class="chart-loading">Loading…</div></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-btn active" id="nav-home" onclick="switchTab('home',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  </button>
+  <button class="nav-btn" id="nav-insights" onclick="switchTab('insights',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+  </button>
+  <div class="nav-fab-wrap">
+    <button class="nav-fab" onclick="openFABAction()">+</button>
+  </div>
+  <button class="nav-btn" id="nav-networth" onclick="switchTab('networth',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+  </button>
+  <button class="nav-btn" id="nav-goals" onclick="switchTab('goals',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+  </button>
+</nav>
+
 <!-- Edit Modal -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
@@ -578,9 +676,53 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
     </div>
   </div>
 </div>
+<!-- GOALS INPUT OVERLAY -->
+<div class="input-overlay" id="goalsOverlay" onclick="closeGoalsOverlay()">
+  <div class="input-sheet" onclick="event.stopPropagation()">
+    <div class="input-sheet-handle-wrap"><div class="input-sheet-handle"></div></div>
+    <div style="padding:0 20px 20px">
+      <div style="font-size:20px;font-weight:700;letter-spacing:-0.3px;margin-bottom:18px" id="goalsOverlayTitle">New Goal</div>
+      <div class="form-group">
+        <label class="form-label">Goal Name</label>
+        <input type="text" class="form-input" id="goalName" placeholder="e.g. Beli MacBook">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Start Date</label>
+        <div class="date-display" onclick="document.getElementById('goalStartDateRaw').showPicker?document.getElementById('goalStartDateRaw').showPicker():document.getElementById('goalStartDateRaw').click()">
+          <span id="goalStartDateText">Today</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <input type="date" class="date-input-hidden" id="goalStartDateRaw" onchange="document.getElementById('goalStartDateText').textContent=isoDisp(this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">End Date</label>
+        <div class="date-display" onclick="document.getElementById('goalEndDateRaw').showPicker?document.getElementById('goalEndDateRaw').showPicker():document.getElementById('goalEndDateRaw').click()">
+          <span id="goalEndDateText">Select date</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <input type="date" class="date-input-hidden" id="goalEndDateRaw" onchange="document.getElementById('goalEndDateText').textContent=isoDisp(this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Amount</label>
+        <div class="amount-wrapper">
+          <span class="amount-prefix">Rp</span>
+          <input type="number" class="form-input amount-input" id="goalTargetAmount" placeholder="0" inputmode="numeric" min="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Source Fund</label>
+        <div class="goal-source-list" id="goalSourceFundList"></div>
+      </div>
+      <button class="submit-btn expense" onclick="saveGoal()" style="margin-top:14px">Save Goal</button>
+      <button class="goal-complete-btn" id="goalMarkCompleteBtn" onclick="toggleGoalComplete()" style="display:none">Mark Complete</button>
+      <button class="delete-btn" id="goalDeleteBtn" onclick="deleteGoal()" style="display:none">Delete Goal</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const APP_VERSION = 'v3.5.4';
-const APP_BUILD = '2026-05-15r';
+const APP_VERSION = 'v3.6';
+const APP_BUILD = '2026-05-18a';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -632,6 +774,9 @@ function onHistLoaded(cb) {
 let inputMode = 'expense';
 let investAction = 'Buy';
 let editingIndex = null;
+let overlayEditRowIndex = null; // non-null = edit mode; holds sheet rowIndex
+let calCurrentTxns = [];        // txns for the currently selected calendar day
+let calCurrentDateStr = '';     // ISO date of the selected calendar day
 let queue = JSON.parse(localStorage.getItem('nota_queue_v2') || '[]');
 let txHistory = JSON.parse(localStorage.getItem('nota_history_v2') || '[]');
 let investHistory = JSON.parse(localStorage.getItem('nota_invest_v2') || '[]');
@@ -744,9 +889,10 @@ function _applyCurrentMonthRows(rows, y, m) {
   // Append fresh rows from sheet
   rows.forEach(r => {
     HIST.opex.push({ y, m: mIdx, d: r.d, mk, cat: r.cat, tx: r.tx, pm: r.pm,
-      ...(r.inc ? { inc: r.inc } : {}),
-      ...(r.exp ? { exp: r.exp } : {}),
-      ...(r.notes ? { notes: r.notes } : {})
+      ...(r.inc      ? { inc: r.inc }           : {}),
+      ...(r.exp      ? { exp: r.exp }           : {}),
+      ...(r.notes    ? { notes: r.notes }       : {}),
+      ...(r.rowIndex ? { rowIndex: r.rowIndex } : {})
     });
   });
 }
@@ -811,6 +957,7 @@ function todayISO(){const d=new Date();return`${d.getFullYear()}-${String(d.getM
 function isoDisp(iso){if(!iso)return'';const[y,m,d]=iso.split('-');return`${parseInt(d)} ${MO[parseInt(m)-1]} ${y}`}
 function isoSheetDate(iso){const[,m,d]=iso.split('-');return`${parseInt(d)} ${MO[parseInt(m)-1]}`}
 function isoMonthKey(iso){const[y,m]=iso.split('-');return`${MO[parseInt(m)-1]} ${y}`}
+function curMonthBounds(){const n=new Date(),y=n.getFullYear(),m=n.getMonth()+1,pad=v=>String(v).padStart(2,'0');const last=new Date(y,m,0).getDate();return{min:`${y}-${pad(m)}-01`,max:`${y}-${pad(m)}-${pad(last)}`}}
 
 function initDatePicker(rawId, dispId, txtId) {
   const raw=document.getElementById(rawId),disp=document.getElementById(dispId),txt=document.getElementById(txtId);
@@ -989,11 +1136,13 @@ function fRpS(n){
 // ── TABS ──────────────────────────────────────────────────────
 function switchTab(tab, el) {
   closeInputOverlay();
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  closeGoalsOverlay();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  if(el && el.classList) el.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const navBtn = document.getElementById('nav-'+tab);
+  if(navBtn) navBtn.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
-  
+
   if(tab==='home'){
     if(!histLoaded) onHistLoaded(()=>fetchCurrentMonth().then(()=>{ calInited=false; initCalendar(); }));
     else fetchCurrentMonth().then(()=>{ calInited=false; initCalendar(); });
@@ -1012,16 +1161,30 @@ function switchTab(tab, el) {
     if(!histLoaded) onHistLoaded(()=>initNetWorth());
     else initNetWorth();
   }
+  if(tab==='goals'){
+    if(!histLoaded) onHistLoaded(()=>renderGoals());
+    else renderGoals();
+  }
 }
 
 function openInputOverlay() {
+  // Reset edit state
+  overlayEditRowIndex = null;
+  const submitBtn = document.getElementById('submitOpexBtn');
+  if (submitBtn) submitBtn.textContent = 'Save Transaction';
+  const delBtn = document.getElementById('deleteOpexBtn');
+  if (delBtn) delBtn.style.display = 'none';
   // Reset to expense mode
   const expBtn = document.querySelector('.pill-toggle-btn[data-mode="expense"]');
   if (expBtn) setInputMode('expense', expBtn);
-  // Reset date to today
+  // Reset date to today, constrained to current month
   const t = todayISO();
   const rawEl = document.getElementById('inputDateRaw');
-  if (rawEl) { rawEl.value = t; document.getElementById('inputDateText').textContent = isoDisp(t); }
+  if (rawEl) {
+    const b = curMonthBounds();
+    rawEl.min = b.min; rawEl.max = b.max;
+    rawEl.value = t; document.getElementById('inputDateText').textContent = isoDisp(t);
+  }
   // Clear fields
   ['inputTx','inputAmount','inputNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
   if (typeof buildSmartPills === 'function') buildSmartPills();
@@ -1036,6 +1199,12 @@ function openInputOverlay() {
 function closeInputOverlay() {
   const ov = document.getElementById('inputOverlay');
   if (ov) ov.classList.remove('open');
+  // Reset edit state
+  overlayEditRowIndex = null;
+  const submitBtn = document.getElementById('submitOpexBtn');
+  if (submitBtn) submitBtn.textContent = 'Save Transaction';
+  const delBtn = document.getElementById('deleteOpexBtn');
+  if (delBtn) delBtn.style.display = 'none';
 }
 
 // ── Handle bar swipe-down to close ───────────────────────────
@@ -1070,6 +1239,7 @@ function openInputFromHome() {
 
 // ── SUBMIT OPEX ───────────────────────────────────────────────
 function submitOpex() {
+  if (overlayEditRowIndex !== null) { updateTransaction(); return; }
   const date=document.getElementById('inputDateRaw').value;
   const tx=document.getElementById('inputTx').value.trim();
   const amount=parseInt(document.getElementById('inputAmount').value)||0;
@@ -1077,13 +1247,13 @@ function submitOpex() {
   const pm=document.getElementById('inputPm').value.trim();
   const notes=document.getElementById('inputNotes').value.trim();
   if(!date||!tx||!amount||!cat||!pm){showToast('All fields required','error');return}
+  const _b=curMonthBounds();if(date<_b.min||date>_b.max){showToast('Date must be within the current month','error');return}
   const r = {id:Date.now(),date,tx,amount,category:cat,pm,notes,type:inputMode,synced:false};
   txHistory.unshift(r);
   queue.push({...r, action:inputMode});
   saveLocal();updateStatus();
   // Navigate back to Home immediately, with Saving toast
-  const homeTab = document.querySelector('.tab[onclick*="home"]');
-  switchTab('home', homeTab);
+  switchTab('home', null);
   showToast('Saving transaction…', 'loading', 0);
   syncOpex(r).then(ok=>{
     if(ok){queue=queue.filter(q=>q.id!==r.id);txHistory=txHistory.map(h=>h.id===r.id?{...h,synced:true}:h);saveLocal();updateStatus();showToast('Saved ✓','success')}
@@ -1103,6 +1273,100 @@ function resetOpexForm() {
   document.getElementById('inputNotes').value='';
   document.getElementById('catPills').innerHTML='';
   document.getElementById('pmPills').innerHTML='';
+}
+
+// ── EDIT / DELETE TRANSACTION ─────────────────────────────────
+function openEditOverlay(idx) {
+  const tx = calCurrentTxns[idx];
+  if (!tx || !tx.rowIndex) return;
+  overlayEditRowIndex = tx.rowIndex;
+
+  // Set mode pill (income vs expense)
+  const mode = tx.inc > 0 ? 'income' : 'expense';
+  const modeBtn = document.querySelector(`.pill-toggle-btn[data-mode="${mode}"]`);
+  if (modeBtn) setInputMode(mode, modeBtn);
+
+  // Pre-fill date from the selected day, constrained to current month
+  const rawEl = document.getElementById('inputDateRaw');
+  if (rawEl) {
+    const b = curMonthBounds();
+    rawEl.min = b.min; rawEl.max = b.max;
+    if (calCurrentDateStr) {
+      rawEl.value = calCurrentDateStr;
+      document.getElementById('inputDateText').textContent = isoDisp(calCurrentDateStr);
+    }
+  }
+
+  // Pre-fill fields
+  document.getElementById('inputTx').value     = tx.tx    || '';
+  document.getElementById('inputAmount').value = tx.amt   || '';
+  document.getElementById('inputCat').value    = tx.cat   || '';
+  document.getElementById('inputPm').value     = tx.pm    || '';
+  document.getElementById('inputNotes').value  = tx.notes || '';
+
+  // Switch button labels
+  document.getElementById('submitOpexBtn').textContent = 'Update Transaction';
+  document.getElementById('deleteOpexBtn').style.display = 'block';
+
+  document.getElementById('inputOverlay').classList.add('open');
+}
+
+async function updateTransaction() {
+  const rowIndex = overlayEditRowIndex;
+  const date   = document.getElementById('inputDateRaw').value;
+  const tx     = document.getElementById('inputTx').value.trim();
+  const amount = parseInt(document.getElementById('inputAmount').value) || 0;
+  const cat    = document.getElementById('inputCat').value.trim();
+  const pm     = document.getElementById('inputPm').value.trim();
+  const notes  = document.getElementById('inputNotes').value.trim();
+  if (!date || !tx || !amount || !cat || !pm) { showToast('All fields required', 'error'); return; }
+
+  closeInputOverlay();
+  showToast('Updating…', 'loading', 0);
+
+  const payload = {
+    type: 'opex', action: 'edit', rowIndex,
+    date: isoSheetDate(date), month: isoMonthKey(date),
+    cat, tx, pm, amount, notes,
+    isIncome: inputMode === 'income'
+  };
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
+    const j = await res.json().catch(() => ({}));
+    if (j.status === 'ok') {
+      const today = new Date();
+      localStorage.removeItem(`nota_curMonth_${today.getFullYear()}_${today.getMonth()+1}`);
+      await fetchCurrentMonth(true);
+      calInited = false; initCalendar();
+      showToast('Updated ✓', 'success');
+    } else {
+      showToast('Update failed', 'error');
+    }
+  } catch(e) { showToast('Update failed', 'error'); }
+}
+
+async function deleteSheetTransaction() {
+  if (!overlayEditRowIndex) return;
+  if (!confirm('Delete this transaction?')) return;
+  const rowIndex = overlayEditRowIndex;
+
+  closeInputOverlay();
+  showToast('Deleting…', 'loading', 0);
+
+  const payload = { type: 'opex', action: 'delete', rowIndex };
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
+    const j = await res.json().catch(() => ({}));
+    if (j.status === 'ok') {
+      const today = new Date();
+      localStorage.removeItem(`nota_curMonth_${today.getFullYear()}_${today.getMonth()+1}`);
+      await fetchCurrentMonth(true);
+      calInited = false; initCalendar();
+      showToast('Deleted ✓', 'success');
+    } else {
+      showToast('Delete failed', 'error');
+    }
+  } catch(e) { showToast('Delete failed', 'error'); }
 }
 
 // ── SUBMIT INVEST ─────────────────────────────────────────────
@@ -2177,6 +2441,15 @@ const CAL_TX_MAX_FRAC  = 0.50;
 let calInited       = false;
 let calOlderShown   = false;
 let calSelectedCell = null;
+let calCollapsedShown = false;  // State 4: collapsed months injected
+let calYearPillsShown = false;  // State 5: year pills injected
+let cal2026Collapsed  = false;  // whether 2026 months are collapsed into pill
+let calExpandedMonths = {};     // tracks which collapsed month rows are expanded
+let calExpandedYears  = {};     // tracks which year pills are expanded
+let calOlderCollapsed = {};
+let calFutureCollapsed = {};
+let calCurrentMonthCollapsed = false;
+let calExpandedYearMonths = {}; // tracks which year-month rows are expanded
 
 function calGetMonthData(year, month) {
   const opex = HIST.opex || [];
@@ -2206,20 +2479,21 @@ function calGetMonthData(year, month) {
     .filter(r => r.y === year && r.m === month - 1 && r.cat !== 'Income' && r.cat !== 'Investment')
     .reduce((s, r) => s + (r.exp || 0), 0);
 
-  let avgTotal = 0, avgCount = 0;
-  for (let i = 1; i <= 3; i++) {
-    let ay = year, am = month - 1 - i; // am is now 0-indexed
-    if (am < 0) { am += 12; ay -= 1; }
-    const mt = opex
-      .filter(r => r.y === ay && r.m === am && r.cat !== 'Income' && r.cat !== 'Investment')
-      .reduce((s, r) => s + (r.exp || 0), 0);
-    if (mt > 0) { avgTotal += mt; avgCount++; }
-  }
-  const avg = avgCount > 0 ? Math.round(avgTotal / avgCount) : 0;
-  const pct = avg > 0 ? Math.min(Math.round((total / avg) * 100), 100) : 0;
-  const isOver = avg > 0 && total > avg;
+  const localIncome = (txHistory || [])
+    .filter(r => {
+      if (!r.date) return false;
+      const d = new Date(r.date);
+      return d.getFullYear() === year && d.getMonth() + 1 === month && r.type === 'income';
+    })
+    .reduce((s, r) => s + (r.amount || 0), 0);
+  const totalIncome = opex
+    .filter(r => r.y === year && r.m === month - 1 && r.cat === 'Income')
+    .reduce((s, r) => s + (r.inc || 0), 0) + localIncome;
 
-  return { total, avg, pct, isOver, txByDay };
+  const incPct  = totalIncome > 0 ? Math.min(Math.round((total / totalIncome) * 100), 100) : 0;
+  const isOver  = totalIncome > 0 && total > totalIncome;
+
+  return { total, totalIncome, incPct, isOver, txByDay };
 }
 
 function calFormatAmount(n) {
@@ -2233,20 +2507,20 @@ function calMonthName(y, m) {
   return new Date(y, m - 1, 1).toLocaleDateString('en-US', {month:'long', year:'numeric'});
 }
 
-function calBuildMonthHTML(year, month, today) {
-  const { total, avg, pct, isOver, txByDay } = calGetMonthData(year, month);
+function calBuildMonthHTML(year, month, today, collapseBtn = '') {
+  const { total, totalIncome, incPct, isOver, txByDay } = calGetMonthData(year, month);
   const mName   = calMonthName(year, month);
-  const totalFmt = total ? fRpS(total) : 'Rp 0';
-  const avgFmt   = avg   ? fRpS(avg)   : '';
-  const fillPct  = pct + '%';
+  const totalFmt = total       ? fRpS(total)       : 'Rp 0';
+  const incFmt   = totalIncome ? fRpS(totalIncome) : '';
+  const fillPct  = incPct + '%';
   const overCls  = isOver ? ' over' : '';
 
-  const progressHTML = avg > 0
+  const progressHTML = totalIncome > 0
     ? `<div class="cal-progress-wrap">
         <div class="cal-progress-bar"><div class="cal-progress-fill${overCls}" style="width:${fillPct}"></div></div>
         <div class="cal-progress-right">
           <div class="cal-progress-amount">${totalFmt}</div>
-          <div class="cal-progress-avg">3mo avg ${avgFmt}</div>
+          <div class="cal-progress-avg">income ${incFmt}</div>
         </div>
       </div>`
     : `<div class="cal-progress-wrap">
@@ -2296,14 +2570,18 @@ function calBuildMonthHTML(year, month, today) {
       else if (isFuture) cls += ' future';
       else if (hasData)  cls += ' has-data';
       if (isToday)   cls += ' today';
+      if (d >= 5)    cls += ' weekend';
 
       const txJson = hasData
         ? JSON.stringify(txs.map(r => ({
-            tx: r.tx || r.payee || r.mk || '', 
-            cat: r.category || r.cat || '', 
+            tx: r.tx || r.payee || r.mk || '',
+            cat: r.category || r.cat || '',
             pm: r.pm || '',
-            amt: r.amount || r.exp || 0, 
-            type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : '')
+            amt: r.amount || r.exp || 0,
+            type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : ''),
+            rowIndex: r.rowIndex || null,
+            notes: r.notes || '',
+            inc: r.inc || 0
           }))).replace(/'/g, '&#39;')
         : '[]';
       const dateStr  = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
@@ -2326,6 +2604,7 @@ function calBuildMonthHTML(year, month, today) {
     <div class="cal-month-label">
       <div class="cal-month-name">${mName}</div>
       ${progressHTML}
+      ${collapseBtn}
     </div>
     <div class="cal-week-section">
       <div class="cal-wday-row">
@@ -2334,6 +2613,32 @@ function calBuildMonthHTML(year, month, today) {
       </div>
       ${weeksHTML}
     </div>`;
+}
+
+function calGetRemainingWeeksHTML(year, month, today) {
+  const todayDow = (today.getDay() + 6) % 7;
+  const nextMon = new Date(today);
+  nextMon.setDate(today.getDate() - todayDow + 7);
+
+  let weeksHTML = '';
+  const cur = new Date(nextMon);
+  while (true) {
+    const wy = cur.getFullYear(), wm = cur.getMonth() + 1;
+    if (wy > year || (wy === year && wm > month)) break;
+    let cells = '';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(cur);
+      d.setDate(cur.getDate() + i);
+      const dy = d.getFullYear(), dm = d.getMonth() + 1, dd = d.getDate();
+      const isCur = (dy === year && dm === month);
+      let cls = 'cal-day' + (isCur ? ' future' : ' other-month');
+      if (i >= 5) cls += ' weekend';
+      cells += `<div class="${cls}" data-txns='[]'><div class="cal-day-num">${dd}</div></div>`;
+    }
+    weeksHTML += `<div class="cal-week-row">${cells}</div>`;
+    cur.setDate(cur.getDate() + 7);
+  }
+  return weeksHTML;
 }
 
 function calGetCurrentWeekHTML(year, month, today) {
@@ -2360,14 +2665,18 @@ function calGetCurrentWeekHTML(year, month, today) {
     else if (isFuture)  cls += ' future';
     else if (hasData)   cls += ' has-data';
     if (isToday)    cls += ' today';
+    if (i >= 5)     cls += ' weekend';
 
     const txJson = hasData
       ? JSON.stringify(txs.map(r => ({
           tx: r.tx || r.payee || r.mk || '',
-          cat: r.category || r.cat || '', 
+          cat: r.category || r.cat || '',
           pm: r.pm || '',
-          amt: r.amount || r.exp || 0, 
-          type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : '')
+          amt: r.amount || r.exp || 0,
+          type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : ''),
+          rowIndex: r.rowIndex || null,
+          notes: r.notes || '',
+          inc: r.inc || 0
         }))).replace(/'/g,'&#39;')
       : '[]';
     const dateStr  = `${dy}-${String(dm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
@@ -2408,10 +2717,11 @@ function initCalendarSkeleton() {
     for (let d = 0; d < 7; d++) {
       const cell = cells[w * 7 + d];
       if (!cell) continue;
-      if (cell.pad) { row += `<div class="cal-day other-month"></div>`; continue; }
-      if (!cell.cur) { row += `<div class="cal-day other-month"><div class="cal-day-num">${cell.day}</div></div>`; continue; }
+      const wkd = d >= 5 ? ' weekend' : '';
+      if (cell.pad) { row += `<div class="cal-day other-month${wkd}"></div>`; continue; }
+      if (!cell.cur) { row += `<div class="cal-day other-month${wkd}"><div class="cal-day-num">${cell.day}</div></div>`; continue; }
       const isToday = cell.day === todayD;
-      const cls = 'cal-day skeleton' + (isToday ? ' today' : '');
+      const cls = 'cal-day skeleton' + (isToday ? ' today' : '') + wkd;
       const label = isToday ? '<div class="cal-day-total">Today</div>' : '';
       row += `<div class="${cls}"><div class="cal-day-num">${cell.day}</div>${label}</div>`;
     }
@@ -2450,19 +2760,19 @@ function initCalendar() {
   const today  = new Date();
   const year   = today.getFullYear();
   const month  = today.getMonth() + 1;
-  const { total, avg, pct, isOver } = calGetMonthData(year, month);
+  const { total, totalIncome, incPct, isOver } = calGetMonthData(year, month);
 
-  const totalFmt = total ? fRpS(total) : 'Rp 0';
-  const avgFmt   = avg   ? fRpS(avg)   : '';
-  const fillPct  = (avg > 0 ? Math.min(Math.round((total/avg)*100),100) : 0) + '%';
+  const totalFmt = total       ? fRpS(total)       : 'Rp 0';
+  const incFmt   = totalIncome ? fRpS(totalIncome) : '';
+  const fillPct  = incPct + '%';
   const overCls  = isOver ? ' over' : '';
 
-  const progressHTML = avg > 0
+  const progressHTML = totalIncome > 0
     ? `<div class="cal-progress-wrap">
         <div class="cal-progress-bar"><div class="cal-progress-fill${overCls}" style="width:${fillPct}"></div></div>
         <div class="cal-progress-right">
           <div class="cal-progress-amount">${totalFmt}</div>
-          <div class="cal-progress-avg">3mo avg ${avgFmt}</div>
+          <div class="cal-progress-avg">income ${incFmt}</div>
         </div>
       </div>`
     : `<div class="cal-progress-wrap">
@@ -2477,6 +2787,7 @@ function initCalendar() {
     <div class="cal-month-label">
       <div class="cal-month-name">${calMonthName(year, month)}</div>
       ${progressHTML}
+      <button class="cal-month-collapse-btn open" onclick="calToggleCurrentMonth()">›</button>
     </div>
     <div class="cal-week-section" id="calHiddenWeeks" style="display:none">
       <div class="cal-wday-row">
@@ -2491,19 +2802,15 @@ function initCalendar() {
         <div class="cal-wday">Thu</div><div class="cal-wday">Fri</div><div class="cal-wday">Sat</div><div class="cal-wday">Sun</div>
       </div>
       ${curWeekHTML}
+      ${calGetRemainingWeeksHTML(year, month, today)}
     </div>`;
 
   const cs = document.getElementById('calScroll');
   
-  // Set timeout to accurately read scrollHeight after DOM renders
   setTimeout(() => {
     if (cs) {
-      cs.scrollTop = cs.scrollHeight;
-      // DEBUG FIX: Force reveal older months if the screen has no scroll overflow
-      if (cs.scrollHeight <= cs.clientHeight + 10) {
-         calRevealOlder();
-         setTimeout(() => { cs.scrollTop = cs.scrollHeight; }, 50);
-      }
+      calRevealOlder();
+      calPopulateFutureMonths();
     }
   }, 50);
 
@@ -2527,7 +2834,18 @@ function initCalendar() {
 
 function calOnScroll() {
   const cs = document.getElementById('calScroll');
+  // Snapshot BEFORE calRevealOlder mutates calOlderShown, so State 4 only fires
+  // on a subsequent scroll (not the same event that first triggers State 3).
+  const wasOlderShown = calOlderShown;
+  // State 3: reveal full months (existing)
   if (cs.scrollTop < 28) calRevealOlder();
+  // State 4+5: when scrollTop reaches top of calOlderMonths
+  if (wasOlderShown && !calCollapsedShown) {
+    const olderEl = document.getElementById('calOlderMonths');
+    if (olderEl && olderEl.offsetHeight > 0 && cs.scrollTop < olderEl.offsetTop + 32) {
+      calRevealCollapsed();
+    }
+  }
 }
 
 function calRevealOlder() {
@@ -2567,8 +2885,8 @@ function calRevealOlder() {
         const txs    = isCur ? (txByDay[cell.day] || []) : [];
         const total  = txs.reduce((s,r)=>s+(r.amount||r.exp||0),0);
         const hasData = txs.length > 0;
-        let cls = 'cal-day' + (isCur ? (hasData ? ' has-data' : '') : ' other-month');
-        const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||0,type:(r.category||r.cat)==='Income'?'income':((r.category||r.cat)==='Investment'?'invest':'')}))).replace(/'/g,'&#39;') : '[]';
+        let cls = 'cal-day' + (isCur ? (hasData ? ' has-data' : '') : ' other-month') + (d >= 5 ? ' weekend' : '');
+        const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||0,type:(r.category||r.cat)==='Income'?'income':((r.category||r.cat)==='Investment'?'invest':''),rowIndex:r.rowIndex||null,notes:r.notes||'',inc:r.inc||0}))).replace(/'/g,'&#39;') : '[]';
         const dateStr = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
         const totalStr = total ? fRpS(total) : '';
         const clickAttr = (isCur && dateStr) ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
@@ -2590,10 +2908,18 @@ function calRevealOlder() {
   for (let i = 2; i >= 1; i--) {
     let oy = year, om = month - i;
     if (om <= 0) { om += 12; oy -= 1; }
-    olderHTML += `<div class="cal-month-divider"></div>` + calBuildMonthHTML(oy, om, today);
+    const olderKey = `${oy}-${om}`;
+    const olderBtn = `<button class="cal-month-collapse-btn open" onclick="calToggleOlderMonth('${olderKey}')">›</button>`;
+    olderHTML += `<div class="cal-month-divider"></div><div class="cal-older-month" data-key="${olderKey}">${calBuildMonthHTML(oy, om, today, olderBtn)}</div>`;
   }
   document.getElementById('calOlderMonths').innerHTML = olderHTML;
   document.getElementById('calScrollHint').style.display = 'none';
+  // Collapse all older months except the most recent one (i=1)
+  for (let i = 2; i >= 1; i--) {
+    let oy = year, om = month - i;
+    if (om <= 0) { om += 12; oy -= 1; }
+    if (i > 1) calToggleOlderMonth(`${oy}-${om}`);
+  }
 
   setTimeout(() => {
     const curSec = document.getElementById('calCurWeekSection');
@@ -2601,11 +2927,239 @@ function calRevealOlder() {
   }, 10);
 }
 
+// ── STATE 4: Collapsed month rows above Apr/May ───────────────
+function calRevealCollapsed() {
+  if (calCollapsedShown) return;
+  calCollapsedShown = true;
+
+  const today = new Date();
+  const curYear = today.getFullYear();
+  const curMonth = today.getMonth() + 1;
+  // calOlderMonths shows: (curMonth-2) and (curMonth-1)
+  // Collapsed = Jan through (curMonth-3) of current year, if any
+  const oldestFullMonth = curMonth - 2;
+  const collapsed = [];
+  for (let m = 1; m < oldestFullMonth; m++) {
+    collapsed.push({y: curYear, m});
+  }
+
+  const el = document.getElementById('calCollapsedMonths');
+  if (collapsed.length > 0) {
+    el.style.display = 'block';
+    calRenderCollapsedMonths(collapsed, el, 'state4');
+  }
+
+  // State 5 always follows State 4 — inject year pills above
+  calRevealYearPills();
+}
+
+function calRenderCollapsedMonths(months, container, ctx) {
+  container.innerHTML = months.map(({y, m}) => {
+    const key = `${y}-${m}`;
+    const isExpanded = ctx === 'state4' ? !!calExpandedMonths[key] : !!calExpandedYearMonths[key];
+    return calCollapsedMonthRowHTML(y, m, isExpanded, ctx);
+  }).join('');
+}
+
+function calCollapsedMonthRowHTML(y, m, isExpanded, ctx) {
+  const key = `${y}-${m}`;
+  const fn = ctx === 'state4'
+    ? `calToggleCollapsedMonth('${key}','${ctx}')`
+    : `calToggleYearMonth('${key}',event)`;
+
+  if (isExpanded) {
+    const today = new Date();
+    const collapseBtn = `<button class="cal-month-collapse-btn open" onclick="${fn}">›</button>`;
+    return `<div class="cal-month-expanded-grid">${calBuildMonthHTML(y, m, today, collapseBtn)}</div>`;
+  }
+
+  const { total, totalIncome, incPct, isOver } = calGetMonthData(y, m);
+  const mName = calMonthName(y, m);
+  const totalFmt = total       ? fRpS(total)       : 'Rp 0';
+  const incFmt   = totalIncome ? fRpS(totalIncome) : '';
+  const fillPct  = incPct + '%';
+  const overCls  = isOver ? ' over' : '';
+  const progressHTML = totalIncome > 0
+    ? `<div class="cal-progress-wrap"><div class="cal-progress-bar"><div class="cal-progress-fill${overCls}" style="width:${fillPct}"></div></div><div class="cal-progress-right"><div class="cal-progress-amount">${totalFmt}</div><div class="cal-progress-avg">income ${incFmt}</div></div></div>`
+    : `<div class="cal-progress-wrap"><div class="cal-progress-bar"><div class="cal-progress-fill" style="width:0%"></div></div><div class="cal-progress-right"><div class="cal-progress-amount">${totalFmt}</div></div></div>`;
+
+  return `<div class="cal-month-label clickable" onclick="${fn}" data-key="${key}">
+    <div class="cal-month-name">${mName}</div>
+    ${progressHTML}
+    <span class="cal-month-collapse-btn">›</span>
+  </div>`;
+
+}
+
+function calToggleCurrentMonth() {
+  calCurrentMonthCollapsed = !calCurrentMonthCollapsed;
+  const el = document.getElementById('calCurrentMonth');
+  const sections = el.querySelectorAll('.cal-week-section');
+  const btn = el.querySelector('.cal-month-collapse-btn');
+  sections.forEach(s => s.style.display = calCurrentMonthCollapsed ? 'none' : '');
+  if (btn) btn.classList.toggle('open', !calCurrentMonthCollapsed);
+}
+
+function calToggleOlderMonth(key) {
+  calOlderCollapsed[key] = !calOlderCollapsed[key];
+  const container = document.querySelector(`#calOlderMonths .cal-older-month[data-key="${key}"]`);
+  if (!container) return;
+  const sections = container.querySelectorAll('.cal-week-section');
+  const btn = container.querySelector('.cal-month-collapse-btn');
+  const isCollapsed = calOlderCollapsed[key];
+  sections.forEach(s => s.style.display = isCollapsed ? 'none' : '');
+  if (btn) btn.classList.toggle('open', !isCollapsed);
+}
+
+function calToggleFutureMonth(key) {
+  calFutureCollapsed[key] = !calFutureCollapsed[key];
+  const container = document.querySelector(`#calFutureMonths .cal-future-month[data-key="${key}"]`);
+  if (!container) return;
+  const sections = container.querySelectorAll('.cal-week-section');
+  const btn = container.querySelector('.cal-month-collapse-btn');
+  const isCollapsed = calFutureCollapsed[key];
+  sections.forEach(s => s.style.display = isCollapsed ? 'none' : '');
+  if (btn) btn.classList.toggle('open', !isCollapsed);
+}
+
+function calToggleCollapsedMonth(key, ctx) {
+  calExpandedMonths[key] = !calExpandedMonths[key];
+  const el = document.getElementById('calCollapsedMonths');
+  const today = new Date();
+  const curYear = today.getFullYear();
+  const curMonth = today.getMonth() + 1;
+  const oldestFullMonth = curMonth - 2;
+  const collapsed = [];
+  for (let m = 1; m < oldestFullMonth; m++) {
+    if (m > 0) collapsed.push({y: curYear, m});
+  }
+  calRenderCollapsedMonths(collapsed, el, ctx);
+}
+
+// ── STATE 5: Year pills above collapsed months ────────────────
+function calRevealYearPills() {
+  if (calYearPillsShown) return;
+  calYearPillsShown = true;
+
+  const curYear = new Date().getFullYear();
+  const opex = (HIST.opex || []);
+  // Years BEFORE current year only — current year gets its own special pill
+  const yearSet = new Set(opex.map(r => r.y));
+  yearSet.delete(curYear);
+  const pastYears = [...yearSet].sort((a, b) => a - b);
+
+  const el = document.getElementById('calYearPills');
+  el.style.display = 'block';
+  calRenderYearPills(pastYears, curYear, el);
+}
+
+function calGetYearsForPills() {
+  const curYear = new Date().getFullYear();
+  const opex = (HIST.opex || []);
+  const yearSet = new Set(opex.map(r => r.y));
+  yearSet.delete(curYear);
+  return [...yearSet].sort((a, b) => a - b);
+}
+
+function calRenderYearPills(pastYears, curYear, container) {
+  const today = new Date();
+  const curMonth = today.getMonth() + 1;
+  const opex = (HIST.opex || []);
+
+  // Build current year (2026) pill — always first, special behavior
+  const curYearTotal = opex
+    .filter(r => r.y === curYear && r.cat !== 'Income' && r.cat !== 'Investment')
+    .reduce((s, r) => s + (r.exp || 0), 0);
+  const curYearFmt = curYearTotal ? fRpS(curYearTotal) : 'Rp 0';
+  const curExpCls = cal2026Collapsed ? '' : ' expanded';
+  const curChevron = '›';
+  const curPillHTML = `<div class="cal-year-pill${curExpCls}" data-year="${curYear}" onclick="calToggle2026()">
+    <div class="cal-year-pill-header">
+      <div class="cal-year-pill-label">${curYear} <span style="font-size:9px;color:#666;font-weight:400;margin-left:4px">current</span></div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <div class="cal-year-pill-meta">
+          <div class="cal-year-pill-total">${curYearFmt}</div>
+          <div class="cal-year-pill-sublabel">total opex</div>
+        </div>
+        <div class="cal-year-pill-chevron">${curChevron}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Build past year pills (2025, 2024, …)
+  const pastPillsHTML = pastYears.map(y => {
+    const isExpanded = !!calExpandedYears[y];
+    const yearTotal = opex
+      .filter(r => r.y === y && r.cat !== 'Income' && r.cat !== 'Investment')
+      .reduce((s, r) => s + (r.exp || 0), 0);
+    const yearTotalFmt = yearTotal ? fRpS(yearTotal) : 'Rp 0';
+    const expCls = isExpanded ? ' expanded' : '';
+    const chevron = '›';
+
+    let monthsHTML = '';
+    if (isExpanded) {
+      monthsHTML = `<div class="cal-year-pill-months">` +
+        Array.from({length: 12}, (_, i) => i + 1).map(m => {
+          const key = `${y}-${m}`;
+          const isMonthExp = !!calExpandedYearMonths[key];
+          return calCollapsedMonthRowHTML(y, m, isMonthExp, 'year');
+        }).join('') +
+      `</div>`;
+    }
+
+    return `<div class="cal-year-pill${expCls}" data-year="${y}" onclick="calToggleYearPill(${y}, event)">
+      <div class="cal-year-pill-header">
+        <div class="cal-year-pill-label">${y}</div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <div class="cal-year-pill-meta">
+            <div class="cal-year-pill-total">${yearTotalFmt}</div>
+            <div class="cal-year-pill-sublabel">total opex</div>
+          </div>
+          <div class="cal-year-pill-chevron">${chevron}</div>
+        </div>
+      </div>
+      ${monthsHTML}
+    </div>`;
+  }).join('');
+
+  container.innerHTML = pastPillsHTML + curPillHTML;
+}
+
+// Tap 2026 pill: toggle collapse/expand of all 2026 content below
+function calToggle2026() {
+  cal2026Collapsed = !cal2026Collapsed;
+  // Show/hide the 2026 months (calCollapsedMonths + calOlderMonths + calCurrentMonth)
+  const hide = cal2026Collapsed;
+  const colEl = document.getElementById('calCollapsedMonths');
+  const oldEl = document.getElementById('calOlderMonths');
+  const curEl = document.getElementById('calCurrentMonth');
+  const futEl = document.getElementById('calFutureMonths');
+  if (colEl) colEl.style.display = hide ? 'none' : (colEl.innerHTML ? 'block' : 'none');
+  if (oldEl) oldEl.style.display = hide ? 'none' : 'block';
+  if (curEl) curEl.style.display = hide ? 'none' : 'block';
+  if (futEl) futEl.style.display = hide ? 'none' : 'block';
+  // Re-render year pills to update chevron state
+  const pastYears = calGetYearsForPills();
+  calRenderYearPills(pastYears, new Date().getFullYear(), document.getElementById('calYearPills'));
+}
+
+function calToggleYearPill(year, e) {
+  if (e && e.target && (e.target.closest('.cal-year-month-row') || e.target.closest('.cal-month-label') || e.target.closest('.cal-month-expanded-grid'))) return;
+  calExpandedYears[year] = !calExpandedYears[year];
+  const pastYears = calGetYearsForPills();
+  calRenderYearPills(pastYears, new Date().getFullYear(), document.getElementById('calYearPills'));
+}
+
+function calToggleYearMonth(key, e) {
+  if (e) e.stopPropagation();
+  calExpandedYearMonths[key] = !calExpandedYearMonths[key];
+  const pastYears = calGetYearsForPills();
+  calRenderYearPills(pastYears, new Date().getFullYear(), document.getElementById('calYearPills'));
+}
+
 function calSetPanelH(txCount) {
-  const maxH    = Math.floor(window.innerHeight * CAL_TX_MAX_FRAC);
-  const listH   = txCount === 0 ? CAL_TX_EMPTY_H : txCount * CAL_TX_ITEM_H + 8;
-  const targetH = Math.min(CAL_TX_HEADER_H + listH, maxH);
-  document.getElementById('calTxPanel').style.height = targetH + 'px';
+  // No-op: transaction panel is now a static flex segment (46% of page-home).
+  // Dynamic height sizing removed as part of two-segment static layout redesign.
 }
 
 function calSelectDay(cell, dateStr, totalStr) {
@@ -2622,6 +3176,10 @@ function calSelectDay(cell, dateStr, totalStr) {
   document.getElementById('calTxDate').textContent  = dateLabel;
 
   const txns = JSON.parse(cell.dataset.txns || '[]');
+  calCurrentTxns    = txns;
+  calCurrentDateStr = dateStr;
+  const today2 = new Date();
+  const isCurrentMonth = (y === today2.getFullYear() && m === today2.getMonth() + 1);
 
   if (txns.length === 0) {
     document.getElementById('calTxTotal').textContent = 'No transactions';
@@ -2633,15 +3191,18 @@ function calSelectDay(cell, dateStr, totalStr) {
     calSetPanelH(0);
   } else {
     document.getElementById('calTxTotal').textContent = totalStr + ' total';
-    document.getElementById('calTxList').innerHTML = txns.map(tx => `
-      <div class="cal-tx-item">
+    document.getElementById('calTxList').innerHTML = txns.map((tx, idx) => {
+      const canEdit = isCurrentMonth && tx.rowIndex;
+      return `<div class="cal-tx-item${canEdit ? ' editable' : ''}" ${canEdit ? `onclick="openEditOverlay(${idx})"` : ''}>
         <div class="cal-tx-dot ${tx.type||''}"></div>
         <div class="cal-tx-info">
           <div class="cal-tx-tx">${tx.tx}</div>
           <div class="cal-tx-meta">${tx.cat} - ${tx.pm}</div>
         </div>
         <div class="cal-tx-amt ${tx.type||''}">${fRp(tx.amt)}</div>
-      </div>`).join('');
+        ${canEdit ? '<div class="cal-tx-edit-chevron">›</div>' : ''}
+      </div>`;
+    }).join('');
     calSetPanelH(txns.length);
   }
 
@@ -2670,13 +3231,43 @@ function calSelectDay(cell, dateStr, totalStr) {
   }
 }
 
+function calPopulateFutureMonths() {
+  const today = new Date();
+  const curYear = today.getFullYear();
+  const curMonth = today.getMonth() + 1;
+  let html = '';
+  for (let m = curMonth + 1; m <= 12; m++) {
+    const futureKey = `${curYear}-${m}`;
+    const futureBtn = `<button class="cal-month-collapse-btn open" onclick="calToggleFutureMonth('${futureKey}')">›</button>`;
+    html += `<div class="cal-month-divider"></div><div class="cal-future-month" data-key="${futureKey}">${calBuildMonthHTML(curYear, m, today, futureBtn)}</div>`;
+  }
+  document.getElementById('calFutureMonths').innerHTML = html;
+  // Collapse all future months except the nearest one (curMonth+1)
+  for (let m = curMonth + 2; m <= 12; m++) {
+    calToggleFutureMonth(`${curYear}-${m}`);
+  }
+}
+
 function calReinit() {
   calInited = false;
   calOlderShown = false;
+  calCollapsedShown = false;
+  calYearPillsShown = false;
+  cal2026Collapsed = false;
+  calExpandedMonths = {};
+  calExpandedYears = {};
+  calExpandedYearMonths = {};
   calSelectedCell = null;
   document.getElementById('calOlderMonths').innerHTML = '';
+  document.getElementById('calOlderMonths').style.display = 'block';
   document.getElementById('calCurrentMonth').innerHTML = '';
+  document.getElementById('calCurrentMonth').style.display = 'block';
+  document.getElementById('calCollapsedMonths').innerHTML = '';
+  document.getElementById('calCollapsedMonths').style.display = 'none';
+  document.getElementById('calYearPills').innerHTML = '';
+  document.getElementById('calYearPills').style.display = 'none';
   document.getElementById('calScrollHint').style.display = 'flex';
+  document.getElementById('calFutureMonths').innerHTML = '';
   initCalendar();
 }
 
@@ -2736,12 +3327,181 @@ window.addEventListener('DOMContentLoaded', async () => {
     // No cache — sequential load (first visit)
     showToast('Loading data…', 'loading', 0);
     await loadHistData();
-    await fetchCurrentMonth();
+    // Race fetchCurrentMonth against a 8s timeout so a hung network never
+    // prevents initCalendar from running (e.g. no internet, sandboxed preview).
+    await Promise.race([fetchCurrentMonth(), new Promise(r => setTimeout(r, 8000))]);
     hideToast();
     calInited = false;
     if (isHome()) initCalendar();
   }
 });
+
+// ── GOALS ─────────────────────────────────────────────────────
+let GOALS = JSON.parse(localStorage.getItem('goals') || '[]');
+let goalsEditId = null;
+
+function saveGoalsLocal() {
+  localStorage.setItem('goals', JSON.stringify(GOALS));
+}
+
+function getGoalAssetList() {
+  const allInvest = getAllInvestRows();
+  const stocks = new Set();
+  allInvest.forEach(r => stocks.add(r.stock));
+  return ['Cash', ...Array.from(stocks)];
+}
+
+function getGoalCurrentValue(goal) {
+  const allInvest = getAllInvestRows();
+  const buyLots = {}, sellLots = {};
+  allInvest.forEach(r => {
+    const s = r.stock;
+    if (!buyLots[s]) { buyLots[s] = 0; sellLots[s] = 0; }
+    if (r.action === 'Buy') buyLots[s] += r.lot;
+    else sellLots[s] += r.lot;
+  });
+  const usdRate = parsePrice(stockPrices['USDIDR']) || fxRates.USD || 16500;
+  const chfRate = parsePrice(stockPrices['CHFIDR']) || fxRates.CHF || 19000;
+  let total = 0;
+  (goal.sources || []).forEach(source => {
+    if (source === 'Cash') { total += HIST.cashBalance || 0; return; }
+    const netLot = (buyLots[source] || 0) - (sellLots[source] || 0);
+    if (netLot <= 0) return;
+    if (source === 'Star Stable Income Fund') {
+      const nav = parsePrice(stockPrices['StarStable']);
+      total += nav > 0 ? netLot * nav : 0;
+    } else if (source === 'USDIDR') {
+      total += netLot * usdRate;
+    } else if (source === 'CHFIDR') {
+      total += netLot * chfRate;
+    } else {
+      const price = parsePrice(stockPrices[source]);
+      total += price > 0 ? netLot * price * usdRate : 0;
+    }
+  });
+  return total;
+}
+
+function renderGoals() {
+  const container = document.getElementById('goalsListContainer');
+  if (!container) return;
+  if (!GOALS.length) {
+    container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--text2);font-size:14px;line-height:1.6">No goals yet.<br>Tap <strong style="color:var(--accent)">+</strong> to add your first goal.</div>';
+    return;
+  }
+  const active = GOALS.filter(g => !g.completed);
+  const done   = GOALS.filter(g =>  g.completed);
+  let html = '';
+  const renderCard = g => {
+    const current = getGoalCurrentValue(g);
+    const pct = Math.min(100, g.targetAmount > 0 ? (current / g.targetAmount * 100) : 0);
+    const opacity = g.completed ? '0.45' : '1';
+    return `<div class="goal-card" style="opacity:${opacity}" onclick="openGoalsOverlay('edit','${g.id}')">
+      <div class="goal-card-header">
+        <div class="goal-card-name">${g.name}</div>
+        ${g.completed ? '<span style="font-size:10px;color:var(--green);font-weight:600;background:var(--green-dim);padding:2px 8px;border-radius:20px">Done</span>' : ''}
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px">${g.startDate} – ${g.endDate||'…'}</div>
+      <div class="goal-progress-wrap"><div class="goal-progress-fill" style="width:${pct.toFixed(1)}%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px">
+        <span style="color:var(--text2)">${fRpS(Math.round(current))} of ${fRpS(g.targetAmount)}</span>
+        <span style="color:var(--accent);font-weight:600">${pct.toFixed(0)}%</span>
+      </div>
+    </div>`;
+  };
+  active.forEach(g => { html += renderCard(g); });
+  if (done.length) {
+    html += `<div class="section-header" style="margin-top:8px"><span class="section-title">Completed</span></div>`;
+    done.forEach(g => { html += renderCard(g); });
+  }
+  container.innerHTML = html;
+}
+
+function openGoalsOverlay(mode, goalId) {
+  goalsEditId = mode === 'edit' ? goalId : null;
+  const goal = goalsEditId ? GOALS.find(g => g.id === goalsEditId) : null;
+  document.getElementById('goalsOverlayTitle').textContent = mode === 'new' ? 'New Goal' : 'Edit Goal';
+  document.getElementById('goalDeleteBtn').style.display = mode === 'edit' ? 'block' : 'none';
+  const completeBtn = document.getElementById('goalMarkCompleteBtn');
+  completeBtn.style.display = mode === 'edit' ? 'block' : 'none';
+
+  document.getElementById('goalName').value = goal ? goal.name : '';
+  const startDate = goal ? goal.startDate : todayISO();
+  document.getElementById('goalStartDateRaw').value = startDate;
+  document.getElementById('goalStartDateText').textContent = isoDisp(startDate);
+  const endDate = goal ? (goal.endDate || '') : '';
+  document.getElementById('goalEndDateRaw').value = endDate;
+  document.getElementById('goalEndDateText').textContent = endDate ? isoDisp(endDate) : 'Select date';
+  document.getElementById('goalTargetAmount').value = goal ? goal.targetAmount : '';
+
+  const selectedSources = goal ? (goal.sources || []) : [];
+  const assets = getGoalAssetList();
+  document.getElementById('goalSourceFundList').innerHTML = assets.map(asset =>
+    `<label class="goal-source-row">
+      <input type="checkbox" value="${asset}" ${selectedSources.includes(asset) ? 'checked' : ''}>
+      <span style="font-size:14px">${asset}</span>
+    </label>`
+  ).join('');
+
+  if (goal) {
+    completeBtn.textContent = goal.completed ? 'Mark Incomplete' : 'Mark Complete';
+    completeBtn.className = 'goal-complete-btn' + (goal.completed ? ' done' : '');
+  }
+  document.getElementById('goalsOverlay').classList.add('open');
+}
+
+function closeGoalsOverlay() {
+  const ov = document.getElementById('goalsOverlay');
+  if (ov) ov.classList.remove('open');
+  goalsEditId = null;
+}
+
+function saveGoal() {
+  const name = document.getElementById('goalName').value.trim();
+  const startDate = document.getElementById('goalStartDateRaw').value;
+  const endDate = document.getElementById('goalEndDateRaw').value;
+  const targetAmount = parseInt(document.getElementById('goalTargetAmount').value) || 0;
+  const sources = Array.from(document.querySelectorAll('#goalSourceFundList input[type=checkbox]:checked')).map(cb => cb.value);
+  if (!name || !targetAmount) return;
+  if (goalsEditId) {
+    const idx = GOALS.findIndex(g => g.id === goalsEditId);
+    if (idx >= 0) GOALS[idx] = { ...GOALS[idx], name, startDate, endDate, targetAmount, sources };
+  } else {
+    GOALS.push({ id: 'goal_' + Date.now(), name, startDate, endDate, targetAmount, sources, completed: false, completedDate: null });
+  }
+  saveGoalsLocal();
+  closeGoalsOverlay();
+  renderGoals();
+}
+
+function deleteGoal() {
+  if (!goalsEditId) return;
+  GOALS = GOALS.filter(g => g.id !== goalsEditId);
+  saveGoalsLocal();
+  closeGoalsOverlay();
+  renderGoals();
+}
+
+function toggleGoalComplete() {
+  if (!goalsEditId) return;
+  const goal = GOALS.find(g => g.id === goalsEditId);
+  if (!goal) return;
+  goal.completed = !goal.completed;
+  goal.completedDate = goal.completed ? todayISO() : null;
+  saveGoalsLocal();
+  const completeBtn = document.getElementById('goalMarkCompleteBtn');
+  completeBtn.textContent = goal.completed ? 'Mark Incomplete' : 'Mark Complete';
+  completeBtn.className = 'goal-complete-btn' + (goal.completed ? ' done' : '');
+}
+
+function openFABAction() {
+  const activeNav = document.querySelector('.nav-btn.active');
+  if (activeNav && activeNav.id === 'nav-goals') {
+    openGoalsOverlay('new', null);
+  } else {
+    openInputOverlay();
+  }
+}
 
 // Fetch current month and return true if data changed vs cache
 async function fetchCurrentMonthFresh() {
