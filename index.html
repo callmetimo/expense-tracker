@@ -722,7 +722,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <script>
 const APP_VERSION = 'v3.6';
-const APP_BUILD = '2026-05-18a';
+const APP_BUILD = '2026-05-18b';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -2401,6 +2401,12 @@ async function loadHistData() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const d = await res.json();
     Object.assign(HIST, d);
+    // Re-apply cached live month rows so data.json doesn't clobber them
+    // (race condition: fetchCurrentMonthFresh may have completed first)
+    const _nt = new Date();
+    const _nck = `nota_curMonth_${_nt.getFullYear()}_${_nt.getMonth()+1}`;
+    const _ncr = JSON.parse(localStorage.getItem(_nck) || 'null');
+    if (_ncr && _ncr.length > 0) _applyCurrentMonthRows(_ncr, _nt.getFullYear(), _nt.getMonth()+1);
     localStorage.setItem('nota_txCat', JSON.stringify(d.txCat||{}));
     localStorage.setItem('nota_txPm',  JSON.stringify(d.txPm||{}));
     if (d.currentPrices) {
@@ -2562,7 +2568,7 @@ function calBuildMonthHTML(year, month, today, collapseBtn = '') {
       const isFuture = isCur && (year > todayY || (year === todayY && month > todayM) ||
                        (year === todayY && month === todayM && cell.day > todayD));
       const txs      = isCur ? (txByDay[cell.day] || []) : [];
-      const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || 0), 0);
+      const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || r.inc || 0), 0);
       const hasData  = txs.length > 0;
 
       let cls = 'cal-day';
@@ -2577,7 +2583,7 @@ function calBuildMonthHTML(year, month, today, collapseBtn = '') {
             tx: r.tx || r.payee || r.mk || '',
             cat: r.category || r.cat || '',
             pm: r.pm || '',
-            amt: r.amount || r.exp || 0,
+            amt: r.amount || r.exp || r.inc || 0,
             type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : ''),
             rowIndex: r.rowIndex || null,
             notes: r.notes || '',
@@ -2657,7 +2663,7 @@ function calGetCurrentWeekHTML(year, month, today) {
     const isToday  = (dy === today.getFullYear() && dm === today.getMonth() + 1 && dd === todayD);
     const isFuture = d > today;
     const txs      = isCur ? (txByDay[dd] || []) : [];
-    const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || 0), 0);
+    const dayTotal = txs.reduce((s, r) => s + (r.amount || r.exp || r.inc || 0), 0);
     const hasData  = txs.length > 0;
 
     let cls = 'cal-day';
@@ -2672,7 +2678,7 @@ function calGetCurrentWeekHTML(year, month, today) {
           tx: r.tx || r.payee || r.mk || '',
           cat: r.category || r.cat || '',
           pm: r.pm || '',
-          amt: r.amount || r.exp || 0,
+          amt: r.amount || r.exp || r.inc || 0,
           type: (r.category || r.cat) === 'Income' ? 'income' : ((r.category || r.cat) === 'Investment' ? 'invest' : ''),
           rowIndex: r.rowIndex || null,
           notes: r.notes || '',
@@ -2809,8 +2815,12 @@ function initCalendar() {
   
   setTimeout(() => {
     if (cs) {
+      const _wasOlderShown = calOlderShown;
       calRevealOlder();
       calPopulateFutureMonths();
+      // If calRevealOlder was a no-op (calOlderShown already true), the newly-created
+      // #calHiddenWeekRows (from the innerHTML replace above) is empty — re-build it.
+      if (_wasOlderShown) calBuildCurrentMonthHiddenWeeks();
     }
   }, 50);
 
@@ -2848,20 +2858,19 @@ function calOnScroll() {
   }
 }
 
-function calRevealOlder() {
-  if (calOlderShown) return;
-  calOlderShown = true;
-
+// Builds and injects the hidden past-weeks rows for the current month.
+// Called both from calRevealOlder() (first time) and initCalendar() on re-render
+// (when calOlderShown is already true, so calRevealOlder would no-op).
+function calBuildCurrentMonthHiddenWeeks() {
   const today  = new Date();
   const year   = today.getFullYear();
   const month  = today.getMonth() + 1;
-  const todayDow = (today.getDay() + 6) % 7; 
+  const todayDow = (today.getDay() + 6) % 7;
   const monOfCurWeek = new Date(today);
   monOfCurWeek.setDate(today.getDate() - todayDow);
 
   let hiddenRowsHTML = '';
-  
-  // DEBUG FIX: Only build hidden weeks for the current month if monOfCurWeek is within the same month
+
   if (monOfCurWeek.getFullYear() === year && monOfCurWeek.getMonth() + 1 === month) {
     const { txByDay } = calGetMonthData(year, month);
     const firstDay = new Date(year, month - 1, 1).getDay();
@@ -2871,7 +2880,7 @@ function calRevealOlder() {
     let cells = [];
     for (let i = offset - 1; i >= 0; i--) cells.push({day: daysInPrev - i, cur: false});
     for (let d = 1; d < monOfCurWeek.getDate(); d++) cells.push({day: d, cur: true});
-    
+
     const rem = cells.length % 7;
     if (rem > 0) { for (let i = 0; i < 7 - rem; i++) cells.push({day:0,cur:false,pad:true}); }
 
@@ -2883,10 +2892,10 @@ function calRevealOlder() {
         if (cell.pad) { weekCells += `<div class="cal-day other-month"></div>`; continue; }
         const isCur  = cell.cur;
         const txs    = isCur ? (txByDay[cell.day] || []) : [];
-        const total  = txs.reduce((s,r)=>s+(r.amount||r.exp||0),0);
+        const total  = txs.reduce((s,r)=>s+(r.amount||r.exp||r.inc||0),0);
         const hasData = txs.length > 0;
         let cls = 'cal-day' + (isCur ? (hasData ? ' has-data' : '') : ' other-month') + (d >= 5 ? ' weekend' : '');
-        const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||0,type:(r.category||r.cat)==='Income'?'income':((r.category||r.cat)==='Investment'?'invest':''),rowIndex:r.rowIndex||null,notes:r.notes||'',inc:r.inc||0}))).replace(/'/g,'&#39;') : '[]';
+        const txJson = hasData ? JSON.stringify(txs.map(r=>({tx:r.tx||r.payee||r.mk||'',cat:r.category||r.cat||'',pm:r.pm||'',amt:r.amount||r.exp||r.inc||0,type:(r.category||r.cat)==='Income'?'income':((r.category||r.cat)==='Investment'?'invest':''),rowIndex:r.rowIndex||null,notes:r.notes||'',inc:r.inc||0}))).replace(/'/g,'&#39;') : '[]';
         const dateStr = isCur ? `${year}-${String(month).padStart(2,'0')}-${String(cell.day).padStart(2,'0')}` : '';
         const totalStr = total ? fRpS(total) : '';
         const clickAttr = (isCur && dateStr) ? `onclick="calSelectDay(this,'${dateStr}','${totalStr}')"` : '';
@@ -2898,11 +2907,24 @@ function calRevealOlder() {
       hiddenRowsHTML += `<div class="cal-week-row">${weekCells}</div>`;
     }
   }
-  
-  document.getElementById('calHiddenWeekRows').innerHTML = hiddenRowsHTML;
-  document.getElementById('calHiddenWeeks').style.display = 'block';
+
+  const hwRows = document.getElementById('calHiddenWeekRows');
+  if (hwRows) hwRows.innerHTML = hiddenRowsHTML;
+  const hw = document.getElementById('calHiddenWeeks');
+  if (hw) hw.style.display = 'block';
   const cwr = document.getElementById('calCurWdayRow');
   if (cwr) cwr.style.display = 'none';
+}
+
+function calRevealOlder() {
+  if (calOlderShown) return;
+  calOlderShown = true;
+
+  calBuildCurrentMonthHiddenWeeks();
+
+  const today  = new Date();
+  const year   = today.getFullYear();
+  const month  = today.getMonth() + 1;
 
   let olderHTML = '';
   for (let i = 2; i >= 1; i--) {
