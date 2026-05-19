@@ -331,7 +331,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 /* ── STATE 5: YEAR PILLS ───────────────────────────────────── */
 #calYearPills{padding:4px 0}
-.cal-year-pill{background:#141414;border:0.5px solid #2a2a2a;border-radius:10px;margin:6px 20px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cal-year-pill{background:#141414;border:0.5px solid #2a2a2a;border-radius:10px;margin:6px 20px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent;scroll-snap-align:start}
 .cal-year-pill.expanded{border-color:var(--accent)}
 .cal-year-pill-header{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;user-select:none}
 .cal-year-pill-label{font-size:14px;font-weight:700;color:#aaa}
@@ -2926,6 +2926,39 @@ function calOnScroll() {
   }
 }
 
+// Re-renders #calOlderMonths with current HIST.opex data without resetting scroll.
+// Called after loadHistData() in case calRevealOlder() ran before data.json loaded.
+function calRefreshOlderMonths() {
+  const olderEl = document.getElementById('calOlderMonths');
+  if (!olderEl || !calOlderShown) return;
+  const today = new Date();
+  const year  = today.getFullYear();
+  const month = today.getMonth() + 1;
+  let olderHTML = '';
+  for (let i = 2; i >= 1; i--) {
+    let oy = year, om = month - i;
+    if (om <= 0) { om += 12; oy -= 1; }
+    const olderKey = `${oy}-${om}`;
+    const olderBtn = `<button class="cal-month-collapse-btn open" onclick="calToggleOlderMonth('${olderKey}')">›</button>`;
+    olderHTML += `<div class="cal-month-divider"></div><div class="cal-older-month" data-key="${olderKey}">${calBuildMonthHTML(oy, om, today, olderBtn)}</div>`;
+  }
+  olderEl.innerHTML = olderHTML;
+  // Re-apply any collapsed states the user toggled
+  for (let i = 2; i >= 1; i--) {
+    let oy = year, om = month - i;
+    if (om <= 0) { om += 12; oy -= 1; }
+    const key = `${oy}-${om}`;
+    if (calOlderCollapsed[key]) {
+      const container = olderEl.querySelector(`.cal-older-month[data-key="${key}"]`);
+      if (container) {
+        container.querySelectorAll('.cal-week-section').forEach(s => s.style.display = 'none');
+        const btn = container.querySelector('.cal-month-collapse-btn');
+        if (btn) btn.classList.remove('open');
+      }
+    }
+  }
+}
+
 // Builds and injects the hidden past-weeks rows for the current month.
 // Called both from calRevealOlder() (first time) and initCalendar() on re-render
 // (when calOlderShown is already true, so calRevealOlder would no-op).
@@ -3422,14 +3455,15 @@ window.addEventListener('DOMContentLoaded', async () => {
       loadHistData(),
       fetchCurrentMonthFresh()
     ]);
-    if (freshMonth) {
-      calInited = false;
-      if (isHome()) {
-        initCalendar();
-        showToast('✓ Updated', 'updated', 3000);
-      } else {
-        hideToast();
-      }
+    // Always re-render: first render used cache-only HIST.opex (no data.json history).
+    // Re-render after both loadHistData + fetchCurrentMonthFresh complete so the
+    // current-month total and any pre-loaded older months reflect full data.
+    calInited = false;
+    if (isHome()) {
+      if (calOlderShown) calRefreshOlderMonths();
+      initCalendar();
+      if (freshMonth) showToast('✓ Updated', 'updated', 3000);
+      else hideToast();
     } else {
       hideToast();
     }
