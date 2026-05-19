@@ -359,7 +359,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-tx-date{font-size:17px;font-weight:600;letter-spacing:-0.3px}
 .cal-tx-total{font-size:14px;font-weight:600;color:var(--text2)}
 .cal-tx-list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.cal-tx-item{display:flex;align-items:center;padding:13px 20px;border-bottom:0.5px solid var(--border);gap:12px;cursor:pointer;transition:background 0.12s}
+.cal-tx-item{display:flex;align-items:center;padding:13px 20px;border-bottom:0.5px solid var(--border);gap:12px;cursor:pointer;transition:background 0.12s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .cal-tx-item:last-child{border-bottom:none}
 .cal-tx-item:active{background:var(--bg3)}
 .cal-tx-edit-chevron{color:var(--text3);font-size:18px;flex-shrink:0;padding-left:4px}
@@ -1527,7 +1527,8 @@ async function syncOpex(r) {
     };
     const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
     const j = await res.json().catch(()=>({}));
-    return j.status === 'ok';
+    // Guard: doGet fallback returns {status:'ok', version:N} — not a real write
+    return j.status === 'ok' && !j.version;
   } catch(e){return false}
 }
 async function syncInvest(r) {
@@ -1540,7 +1541,7 @@ async function syncInvest(r) {
     };
     const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
     const j = await res.json().catch(()=>({}));
-    return j.status === 'ok';
+    return j.status === 'ok' && !j.version;
   } catch(e){return false}
 }
 
@@ -3556,7 +3557,36 @@ window.addEventListener('DOMContentLoaded', async () => {
     calInited = false;
     if (isHome()) initCalendar();
   }
+
+  // Retry any locally-queued transactions that failed to sync previously
+  retryPendingQueue();
 });
+
+async function retryPendingQueue() {
+  if (!queue.length) return;
+  const pending = [...queue];
+  let synced = 0;
+  for (const r of pending) {
+    const isInvest = r.type === 'invest' || r.action === 'invest';
+    const ok = isInvest ? await syncInvest(r) : await syncOpex(r);
+    if (ok) {
+      queue = queue.filter(q => q.id !== r.id);
+      txHistory = txHistory.map(h => h.id === r.id ? {...h, synced:true} : h);
+      synced++;
+    }
+  }
+  if (synced > 0) {
+    saveLocal();
+    updateStatus();
+    const _t = new Date();
+    localStorage.removeItem(`nota_curMonth_${_t.getFullYear()}_${_t.getMonth()+1}`);
+    fetchCurrentMonth(true).then(() => {
+      calInited = false;
+      if (document.getElementById('page-home').classList.contains('active')) initCalendar();
+    });
+    showToast(`${synced} pending transaction${synced>1?'s':''} synced ✓`, 'success', 4000);
+  }
+}
 
 // ── GOALS ─────────────────────────────────────────────────────
 let GOALS = [];
