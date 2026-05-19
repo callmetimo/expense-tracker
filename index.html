@@ -36,9 +36,17 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 .app-title .dot{color:rgba(200,240,96,0.4)}
 .app-title .app-version{font-size:10px;color:var(--text2);font-weight:400;margin-left:2px;font-family:-apple-system,'SF Pro Display',system-ui,sans-serif}
 .header-right{display:flex;align-items:center;gap:4px}
-.search-icon-btn{background:none;border:none;color:var(--text2);padding:7px 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
-.search-icon-btn svg{width:20px;height:20px}
-.search-icon-btn:active{color:var(--accent)}
+.nav-search-btn svg{width:20px;height:20px}
+.nav-more-btn svg{width:22px;height:22px}
+.nav-more-btn.sub-active{color:var(--text)}
+.more-menu-backdrop{display:none;position:fixed;inset:0;z-index:195}
+.more-menu-backdrop.open{display:block}
+.more-menu{position:fixed;bottom:calc(var(--bottom-nav-h) + 8px);right:12px;background:rgba(28,28,30,0.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:0.5px solid var(--border2);border-radius:14px;min-width:180px;z-index:196;transform:scale(0.85) translateY(12px);transform-origin:bottom right;opacity:0;pointer-events:none;transition:transform 0.2s cubic-bezier(.34,1.56,.64,1),opacity 0.15s}
+.more-menu.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
+.more-menu-item{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;background:none;border:none;color:var(--text);font-size:15px;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;font-family:inherit}
+.more-menu-item:active{background:var(--accent-dim);color:var(--accent)}
+.more-menu-item svg{width:20px;height:20px;flex-shrink:0;color:var(--text2)}
+.more-menu-divider{height:0.5px;background:var(--border);margin:0}
 
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-around;height:var(--bottom-nav-h);padding-bottom:env(safe-area-inset-bottom,0px);z-index:200}
@@ -265,9 +273,9 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 #page-home.active{display:flex}
 
 /* Calendar segment — top 54% of #page-home */
-.cal-scroll{flex:54 54 0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;border-bottom:0.5px solid var(--border)}
+.cal-scroll{flex:54 54 0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;border-bottom:0.5px solid var(--border);scroll-snap-type:y mandatory;scroll-behavior:smooth}
 
-.cal-month-label{display:flex;align-items:center;gap:10px;padding:10px 16px 8px}
+.cal-month-label{display:flex;align-items:center;gap:10px;padding:10px 16px 8px;scroll-snap-align:start}
 .cal-month-name{font-size:20px;font-weight:700;letter-spacing:-0.4px;min-width:100px;flex-shrink:0}
 .cal-progress-wrap{flex:1;display:flex;align-items:center;gap:8px}
 .cal-progress-bar{flex:1;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;min-width:30px}
@@ -393,12 +401,9 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header" id="appHeader">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.6</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.7</span></div>
     <div class="header-right">
       <div id="toast" class="toast"></div>
-      <button class="search-icon-btn" onclick="openSearchOverlay()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      </button>
     </div>
   </div>
 </div>
@@ -640,7 +645,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <!-- GOALS PAGE -->
 <div class="page" id="page-goals">
   <div style="padding:24px 0 14px;display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:28px;font-weight:700;letter-spacing:-0.5px">Goals</div>
+    <div style="font-size:28px;font-weight:700;letter-spacing:-0.5px">Financial Goals</div>
   </div>
   <div id="goalsListContainer"><div class="chart-loading">Loading…</div></div>
 </div>
@@ -656,13 +661,27 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
   <div class="nav-fab-wrap">
     <button class="nav-fab" onclick="openFABAction()">+</button>
   </div>
-  <button class="nav-btn" id="nav-networth" onclick="switchTab('networth',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+  <button class="nav-btn nav-search-btn" id="nav-search" onclick="openSearchOverlay()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
   </button>
-  <button class="nav-btn" id="nav-goals" onclick="switchTab('goals',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+  <button class="nav-btn nav-more-btn" id="nav-more" onclick="toggleMoreMenu()">
+    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
   </button>
 </nav>
+
+<!-- MORE MENU -->
+<div class="more-menu-backdrop" id="moreBackdrop" onclick="closeMoreMenu()"></div>
+<div class="more-menu" id="moreMenu">
+  <button class="more-menu-item" onclick="switchTabFromMore('networth')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    <span>Net Worth</span>
+  </button>
+  <div class="more-menu-divider"></div>
+  <button class="more-menu-item" onclick="switchTabFromMore('goals')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    <span>Goals</span>
+  </button>
+</div>
 
 <!-- Edit Modal -->
 <div class="modal-overlay" id="editModal">
@@ -679,7 +698,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <!-- GOALS INPUT OVERLAY -->
 <div class="input-overlay" id="goalsOverlay" onclick="closeGoalsOverlay()">
   <div class="input-sheet" onclick="event.stopPropagation()">
-    <div class="input-sheet-handle-wrap"><div class="input-sheet-handle"></div></div>
+    <div class="input-sheet-handle-wrap" id="goalsSheetHandle"><div class="input-sheet-handle"></div></div>
     <div style="padding:0 20px 20px">
       <div style="font-size:20px;font-weight:700;letter-spacing:-0.3px;margin-bottom:18px" id="goalsOverlayTitle">New Goal</div>
       <div class="form-group">
@@ -721,8 +740,8 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 </div>
 
 <script>
-const APP_VERSION = 'v3.6';
-const APP_BUILD = '2026-05-18b';
+const APP_VERSION = 'v3.7';
+const APP_BUILD = '2026-05-19';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1146,6 +1165,7 @@ function switchTab(tab, el) {
   closeGoalsOverlay();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-more').classList.remove('sub-active');
   const navBtn = document.getElementById('nav-'+tab);
   if(navBtn) navBtn.classList.add('active');
   document.getElementById('page-'+tab).classList.add('active');
@@ -1234,6 +1254,27 @@ function closeInputOverlay() {
       if (delta > 60) closeInputOverlay();
     }, { passive: true });
 
+    handle.addEventListener('touchcancel', function() {
+      touchStarted = false;
+    }, { passive: true });
+  }
+})();
+
+(function() {
+  let touchStartY = 0;
+  let touchStarted = false;
+  const handle = document.getElementById('goalsSheetHandle');
+  if (handle) {
+    handle.addEventListener('touchstart', function(e) {
+      touchStartY = e.touches[0].clientY;
+      touchStarted = true;
+    }, { passive: true });
+    handle.addEventListener('touchend', function(e) {
+      if (!touchStarted) return;
+      touchStarted = false;
+      const delta = e.changedTouches[0].clientY - touchStartY;
+      if (delta > 60) closeGoalsOverlay();
+    }, { passive: true });
     handle.addEventListener('touchcancel', function() {
       touchStarted = false;
     }, { passive: true });
@@ -2976,6 +3017,24 @@ function calRevealOlder() {
   }, 10);
 }
 
+// ── SNAP SENTINELS: inject page-height snap points into collapsed sections ────
+function calInjectSnapSentinels(containerEl) {
+  const cs = document.getElementById('calScroll');
+  if (!cs || !containerEl) return;
+  const pageH = cs.clientHeight;
+  const rows = containerEl.querySelectorAll('.cal-month-label, .cal-year-pill-header');
+  let accumulated = 0, lastSentinel = 0;
+  rows.forEach(row => {
+    accumulated += row.offsetHeight || 40;
+    if (accumulated - lastSentinel >= pageH) {
+      const s = document.createElement('div');
+      s.style.cssText = 'height:0;pointer-events:none;scroll-snap-align:start';
+      row.parentNode.insertBefore(s, row);
+      lastSentinel = accumulated;
+    }
+  });
+}
+
 // ── STATE 4: Collapsed month rows above Apr/May ───────────────
 function calRevealCollapsed() {
   if (calCollapsedShown) return;
@@ -3008,6 +3067,7 @@ function calRenderCollapsedMonths(months, container, ctx) {
     const isExpanded = ctx === 'state4' ? !!calExpandedMonths[key] : !!calExpandedYearMonths[key];
     return calCollapsedMonthRowHTML(y, m, isExpanded, ctx);
   }).join('');
+  requestAnimationFrame(() => calInjectSnapSentinels(container));
 }
 
 function calCollapsedMonthRowHTML(y, m, isExpanded, ctx) {
@@ -3172,6 +3232,7 @@ function calRenderYearPills(pastYears, curYear, container) {
   }).join('');
 
   container.innerHTML = pastPillsHTML + curPillHTML;
+  requestAnimationFrame(() => calInjectSnapSentinels(container));
 }
 
 // Tap 2026 pill: toggle collapse/expand of all 2026 content below
@@ -3543,9 +3604,27 @@ function toggleGoalComplete() {
   completeBtn.className = 'goal-complete-btn' + (goal.completed ? ' done' : '');
 }
 
+// ── MORE MENU ─────────────────────────────────────────────────
+function toggleMoreMenu() {
+  const menu = document.getElementById('moreMenu');
+  if (menu.classList.contains('open')) { closeMoreMenu(); } else { openMoreMenu(); }
+}
+function openMoreMenu() {
+  document.getElementById('moreMenu').classList.add('open');
+  document.getElementById('moreBackdrop').classList.add('open');
+}
+function closeMoreMenu() {
+  document.getElementById('moreMenu').classList.remove('open');
+  document.getElementById('moreBackdrop').classList.remove('open');
+}
+function switchTabFromMore(tab) {
+  closeMoreMenu();
+  switchTab(tab, null);
+  document.getElementById('nav-more').classList.add('sub-active');
+}
+
 function openFABAction() {
-  const activeNav = document.querySelector('.nav-btn.active');
-  if (activeNav && activeNav.id === 'nav-goals') {
+  if (document.getElementById('page-goals').classList.contains('active')) {
     openGoalsOverlay('new', null);
   } else {
     openInputOverlay();
