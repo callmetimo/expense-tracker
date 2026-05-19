@@ -750,7 +750,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 </div>
 
 <script>
-const APP_VERSION = 'v3.73';
+const APP_VERSION = 'v3.74';
 const APP_BUILD = '2026-05-19';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -847,9 +847,6 @@ async function fetchSheetPrices(force) {
     } else {
       throw new Error('no prices');
     }
-    // cashBalance: use data.json value (includes planned future income).
-    // Live sheet omits future-dated income not yet entered, so we never override
-    // a valid data.json cashBalance with the potentially lower live value.
     if (j.cashBalance !== undefined && !HIST.cashBalance) {
       HIST.cashBalance = j.cashBalance;
       localStorage.setItem('nota_cashBalance', String(j.cashBalance));
@@ -1495,7 +1492,15 @@ function submitInvest() {
   queue.push({...r});
   saveLocal();updateStatus();
   syncInvest(r).then(ok=>{
-    if(ok){queue=queue.filter(q=>q.id!==r.id);investHistory=investHistory.map(h=>h.id===r.id?{...h,synced:true}:h);saveLocal();updateStatus();showToast('Saved ✓','success')}
+    if(ok){
+      queue=queue.filter(q=>q.id!==r.id);
+      investHistory=investHistory.map(h=>h.id===r.id?{...h,synced:true}:h);
+      saveLocal();updateStatus();showToast('Saved ✓','success');
+      // Refresh HIST.opex so the Opex expense row created by the invest sync is included
+      const _t=new Date();
+      localStorage.removeItem(`nota_curMonth_${_t.getFullYear()}_${_t.getMonth()+1}`);
+      fetchCurrentMonth(true);
+    }
     else showToast('Saved locally — sync pending','');
   });
   const t=todayISO();
@@ -1977,8 +1982,6 @@ function setNWMode(mode,el){
   else renderNetWorth();
 }
 function initNetWorth() {
-  // Pastikan histLoaded dulu, baru fetch prices, baru render
-  // Ini menghindari race condition antara loadHistData dan fetchSheetPrices
   if (!histLoaded) {
     onHistLoaded(() => {
       fetchSheetPrices(false).then(() => renderNetWorth());
@@ -2010,6 +2013,19 @@ async function fetchFxRates(){
     fxRates.USD = fxRates.USD || 16500;
     fxRates.CHF = fxRates.CHF || 19000;
   }
+}
+
+function computeCashBalance() {
+  const base = HIST.cashBalance || 0;
+  const cutoff = HIST.cashBalanceAsOf || null; // e.g. '2026-05-18'
+  if (!cutoff) return base;
+  let delta = 0;
+  (txHistory || []).forEach(r => {
+    if (!r.date || r.date <= cutoff) return;
+    if (r.type === 'income')  delta += (r.amount || 0);
+    else if (r.type === 'expense') delta -= (r.amount || 0);
+  });
+  return base + delta;
 }
 
 async function renderNetWorth(){
@@ -2061,8 +2077,7 @@ async function renderNetWorth(){
     return {stock, type, netLot, costBasis, currentValue, avgCostPerUnit, avgNativePrice};
   }).filter(Boolean);
 
-  // cashBalance dari data.json field (sudah dihitung sebagai running balance di sheet Opex)
-  const cashBal = HIST.cashBalance || 0;
+  const cashBal = computeCashBalance();
   const lastBalance = cashBal;
 
   if(nwMode==='holdings'){
@@ -3578,7 +3593,7 @@ function getGoalCurrentValue(goal) {
   const chfRate = parsePrice(stockPrices['CHFIDR']) || fxRates.CHF || 19000;
   let total = 0;
   (goal.sources || []).forEach(source => {
-    if (source === 'Cash') { total += HIST.cashBalance || 0; return; }
+    if (source === 'Cash') { total += computeCashBalance(); return; }
     const netLot = (buyLots[source] || 0) - (sellLots[source] || 0);
     if (netLot <= 0) return;
     if (source === 'Star Stable Income Fund') {
