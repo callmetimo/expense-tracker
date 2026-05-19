@@ -2026,13 +2026,14 @@ async function renderNetWorth(){
   const priceAAPL = parsePrice(stockPrices['AAPL']);
 
   const allInvest = getAllInvestRows();
-  const buyLots={}, sellLots={}, buyTotalIdr={};
+  const buyLots={}, sellLots={}, buyTotalIdr={}, buyPriceWeighted={};
   allInvest.forEach(r=>{
     const s=r.stock;
-    if(!buyLots[s]){buyLots[s]=0;sellLots[s]=0;buyTotalIdr[s]=0;}
+    if(!buyLots[s]){buyLots[s]=0;sellLots[s]=0;buyTotalIdr[s]=0;buyPriceWeighted[s]=0;}
     if(r.action==='Buy'){
       buyLots[s]  += r.lot;
       buyTotalIdr[s] += r.totalIdr||0;
+      buyPriceWeighted[s] += (r.price||0) * r.lot;
     } else {
       sellLots[s] += r.lot;
     }
@@ -2045,6 +2046,8 @@ async function renderNetWorth(){
     const buyRatio = buyLots[stock] > 0 ? netLot / buyLots[stock] : 0;
     const costBasis = buyTotalIdr[stock] * buyRatio;
     const avgCostPerUnit = buyLots[stock] > 0 ? buyTotalIdr[stock] / buyLots[stock] : 0;
+    // avgNativePrice uses r.price×r.lot (native currency) — accurate for USD stocks too
+    const avgNativePrice = buyLots[stock] > 0 ? buyPriceWeighted[stock] / buyLots[stock] : 0;
 
     let currentValue = 0;
     if (stock==='Star Stable Income Fund') currentValue = navStar > 0 ? netLot * navStar : 0;
@@ -2055,7 +2058,7 @@ async function renderNetWorth(){
     else if (stock==='VYM')  currentValue = priceVYM  > 0 ? netLot * priceVYM  * usdRate : 0;
     else if (stock==='AAPL') currentValue = priceAAPL > 0 ? netLot * priceAAPL * usdRate : 0;
 
-    return {stock, type, netLot, costBasis, currentValue, avgCostPerUnit};
+    return {stock, type, netLot, costBasis, currentValue, avgCostPerUnit, avgNativePrice};
   }).filter(Boolean);
 
   // cashBalance dari data.json field (sudah dihitung sebagai running balance di sheet Opex)
@@ -2095,8 +2098,8 @@ function renderHoldings(holdings, usdRate, chfRate){
                      h.stock==='CHFIDR'  ? `${h.netLot} CHF` :
                      `${h.netLot.toLocaleString('id-ID')} units`;
       const avgStr = h.type==='US Stock'
-        ? `Avg $${(h.avgCostPerUnit/usdRate).toFixed(2)}`
-        : `Avg ${fRpS(Math.round(h.avgCostPerUnit))}/unit`;
+        ? `Avg $${Number(Math.round(h.avgNativePrice + 'e2') + 'e-2').toFixed(2)}`
+        : `Avg ${fRp(Math.round(h.avgNativePrice))}/unit`;
 
       html += `<div class="holding-item">
         <div class="holding-header">
@@ -2118,7 +2121,8 @@ function renderHoldings(holdings, usdRate, chfRate){
       </div>`;
     });
     if(items.length > 1 || type==='US Stock'){
-      const gPnl = groupValue > 0 ? groupValue - groupCost : null;
+      const gPnl    = groupValue > 0 ? groupValue - groupCost : null;
+      const gPnlPct = gPnl !== null && groupCost > 0 ? (gPnl / groupCost * 100) : null;
       html += `<div class="holding-item" style="border-color:${color};background:${bg}">
         <div class="holding-header">
           <div style="font-size:12px;font-weight:600;color:${color}">Total ${type}</div>
@@ -2127,7 +2131,7 @@ function renderHoldings(holdings, usdRate, chfRate){
         ${gPnl!==null ? `<div class="holding-details">
           <span>Est. value <strong style="color:${color}">${fRpS(Math.round(groupValue))}</strong></span>
           <span style="color:${gPnl>=0?'var(--green)':'var(--red)'}">
-            ${gPnl>=0?'+':''}${fRpS(Math.round(gPnl))}
+            ${gPnl>=0?'+':''}${fRpS(Math.round(gPnl))} (${gPnlPct>=0?'+':''}${gPnlPct.toFixed(1)}%)
           </span>
         </div>` : ''}
       </div>`;
