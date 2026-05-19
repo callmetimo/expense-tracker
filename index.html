@@ -401,7 +401,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <div class="header" id="appHeader">
   <div class="header-top">
-    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.7</span></div>
+    <div class="app-title">nota<span class="dot">.</span><span class="app-version" id="appVersionLabel">v3.71</span></div>
     <div class="header-right">
       <div id="toast" class="toast"></div>
     </div>
@@ -740,7 +740,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 </div>
 
 <script>
-const APP_VERSION = 'v3.7';
+const APP_VERSION = 'v3.72';
 const APP_BUILD = '2026-05-19';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1189,8 +1189,8 @@ function switchTab(tab, el) {
     else initNetWorth();
   }
   if(tab==='goals'){
-    if(!histLoaded) onHistLoaded(()=>renderGoals());
-    else renderGoals();
+    if(!histLoaded) onHistLoaded(()=>fetchGoals());
+    else fetchGoals();
   }
 }
 
@@ -3481,11 +3481,18 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ── GOALS ─────────────────────────────────────────────────────
-let GOALS = JSON.parse(localStorage.getItem('goals') || '[]');
-let goalsEditId = null;
+let GOALS = [];
+let goalsEditId = null; // sheet rowNum of the goal being edited, or null for new
 
-function saveGoalsLocal() {
-  localStorage.setItem('goals', JSON.stringify(GOALS));
+async function fetchGoals() {
+  const container = document.getElementById('goalsListContainer');
+  if (container) container.innerHTML = '<div class="chart-loading">Loading…</div>';
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?type=goals`, { method: 'GET' });
+    const j = await res.json();
+    if (j.status === 'ok' && Array.isArray(j.goals)) GOALS = j.goals;
+  } catch(e) { /* silently fall through to empty render */ }
+  renderGoals();
 }
 
 function getGoalAssetList() {
@@ -3540,7 +3547,7 @@ function renderGoals() {
     const current = getGoalCurrentValue(g);
     const pct = Math.min(100, g.targetAmount > 0 ? (current / g.targetAmount * 100) : 0);
     const opacity = g.completed ? '0.45' : '1';
-    return `<div class="goal-card" style="opacity:${opacity}" onclick="openGoalsOverlay('edit','${g.id}')">
+    return `<div class="goal-card" style="opacity:${opacity}" onclick="openGoalsOverlay('edit',${g.rowNum})">
       <div class="goal-card-header">
         <div class="goal-card-name">${g.name}</div>
         ${g.completed ? '<span style="font-size:10px;color:var(--green);font-weight:600;background:var(--green-dim);padding:2px 8px;border-radius:20px">Done</span>' : ''}
@@ -3563,7 +3570,7 @@ function renderGoals() {
 
 function openGoalsOverlay(mode, goalId) {
   goalsEditId = mode === 'edit' ? goalId : null;
-  const goal = goalsEditId ? GOALS.find(g => g.id === goalsEditId) : null;
+  const goal = goalsEditId ? GOALS.find(g => g.rowNum === goalsEditId) : null;
   document.getElementById('goalsOverlayTitle').textContent = mode === 'new' ? 'New Goal' : 'Edit Goal';
   document.getElementById('goalDeleteBtn').style.display = mode === 'edit' ? 'block' : 'none';
   const completeBtn = document.getElementById('goalMarkCompleteBtn');
@@ -3600,42 +3607,87 @@ function closeGoalsOverlay() {
   goalsEditId = null;
 }
 
-function saveGoal() {
+async function saveGoal() {
   const name = document.getElementById('goalName').value.trim();
   const startDate = document.getElementById('goalStartDateRaw').value;
   const endDate = document.getElementById('goalEndDateRaw').value;
   const targetAmount = parseInt(document.getElementById('goalTargetAmount').value) || 0;
   const sources = Array.from(document.querySelectorAll('#goalSourceFundList input[type=checkbox]:checked')).map(cb => cb.value);
   if (!name || !targetAmount) return;
-  if (goalsEditId) {
-    const idx = GOALS.findIndex(g => g.id === goalsEditId);
-    if (idx >= 0) GOALS[idx] = { ...GOALS[idx], name, startDate, endDate, targetAmount, sources };
-  } else {
-    GOALS.push({ id: 'goal_' + Date.now(), name, startDate, endDate, targetAmount, sources, completed: false, completedDate: null });
+  const saveBtn = document.querySelector('#goalsOverlay .submit-btn');
+  if (saveBtn) saveBtn.textContent = 'Saving…';
+  const existing = goalsEditId ? GOALS.find(g => g.rowNum === goalsEditId) : null;
+  const payload = {
+    type: 'goals', action: 'save',
+    rowNum: goalsEditId || null,
+    name, startDate, endDate, targetAmount, sources,
+    completed: existing ? existing.completed : false,
+    completedDate: existing ? (existing.completedDate || '') : ''
+  };
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
+    const j = await res.json().catch(() => ({}));
+    if (j.status === 'ok') {
+      if (goalsEditId) {
+        const idx = GOALS.findIndex(g => g.rowNum === goalsEditId);
+        if (idx >= 0) GOALS[idx] = { ...GOALS[idx], name, startDate, endDate, targetAmount, sources };
+      } else {
+        GOALS.push({ rowNum: j.rowNum, name, startDate, endDate, targetAmount, sources, completed: false, completedDate: null });
+      }
+      closeGoalsOverlay();
+      renderGoals();
+    }
+  } finally {
+    if (saveBtn) saveBtn.textContent = 'Save Goal';
   }
-  saveGoalsLocal();
-  closeGoalsOverlay();
-  renderGoals();
 }
 
-function deleteGoal() {
+async function deleteGoal() {
   if (!goalsEditId) return;
-  GOALS = GOALS.filter(g => g.id !== goalsEditId);
-  saveGoalsLocal();
-  closeGoalsOverlay();
-  renderGoals();
+  const delBtn = document.getElementById('goalDeleteBtn');
+  if (delBtn) delBtn.textContent = 'Deleting…';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({ type: 'goals', action: 'delete', rowNum: goalsEditId }) });
+    const j = await res.json().catch(() => ({}));
+    if (j.status === 'ok') {
+      GOALS = GOALS.filter(g => g.rowNum !== goalsEditId);
+      closeGoalsOverlay();
+      renderGoals();
+    }
+  } finally {
+    if (delBtn) delBtn.textContent = 'Delete Goal';
+  }
 }
 
-function toggleGoalComplete() {
+async function toggleGoalComplete() {
   if (!goalsEditId) return;
-  const goal = GOALS.find(g => g.id === goalsEditId);
+  const goal = GOALS.find(g => g.rowNum === goalsEditId);
   if (!goal) return;
-  goal.completed = !goal.completed;
-  goal.completedDate = goal.completed ? todayISO() : null;
-  saveGoalsLocal();
+  const newCompleted = !goal.completed;
+  const newCompletedDate = newCompleted ? todayISO() : null;
   const completeBtn = document.getElementById('goalMarkCompleteBtn');
-  completeBtn.textContent = goal.completed ? 'Mark Incomplete' : 'Mark Complete';
-  completeBtn.className = 'goal-complete-btn' + (goal.completed ? ' done' : '');
+  if (completeBtn) completeBtn.textContent = 'Saving…';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST', headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({
+        type: 'goals', action: 'save', rowNum: goalsEditId,
+        name: goal.name, startDate: goal.startDate, endDate: goal.endDate,
+        targetAmount: goal.targetAmount, sources: goal.sources,
+        completed: newCompleted, completedDate: newCompletedDate || ''
+      })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (j.status === 'ok') {
+      goal.completed = newCompleted;
+      goal.completedDate = newCompletedDate;
+    }
+  } finally {
+    if (completeBtn) {
+      completeBtn.textContent = goal.completed ? 'Mark Incomplete' : 'Mark Complete';
+      completeBtn.className = 'goal-complete-btn' + (goal.completed ? ' done' : '');
+    }
+  }
 }
 
 // ── MORE MENU ─────────────────────────────────────────────────
