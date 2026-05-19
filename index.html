@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -106,7 +106,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .autocomplete-item:last-child{border-bottom:none}
 .autocomplete-item:active{background:var(--accent-dim);color:var(--accent)}
 .ac-hint{font-size:10px;color:var(--text2)}
-.date-input-hidden{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0}
+.date-input-hidden{position:absolute;opacity:0;width:1px;height:1px;top:0;left:0}
 .date-display{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:11px 12px;font-size:16px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s}
 .date-display svg{opacity:0.35;flex-shrink:0}
 .submit-btn{width:100%;border:none;border-radius:var(--radius);padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity 0.2s,transform 0.1s}
@@ -533,6 +533,16 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
           </div>
         </div>
       </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group">
+          <label class="form-label">Current Avg Price</label>
+          <div class="form-input" id="investCurrentAvg" style="color:var(--text2);cursor:default">—</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Avg Price</label>
+          <div class="form-input" id="investNewAvg" style="color:var(--accent);cursor:default">—</div>
+        </div>
+      </div>
       <div class="form-group">
         <label class="form-label">Total (IDR)</label>
         <div class="amount-wrapper">
@@ -707,18 +717,18 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       </div>
       <div class="form-group">
         <label class="form-label">Start Date</label>
-        <div class="date-display" onclick="document.getElementById('goalStartDateRaw').showPicker?document.getElementById('goalStartDateRaw').showPicker():document.getElementById('goalStartDateRaw').click()">
+        <label class="date-display" for="goalStartDateRaw">
           <span id="goalStartDateText">Today</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
+        </label>
         <input type="date" class="date-input-hidden" id="goalStartDateRaw" onchange="document.getElementById('goalStartDateText').textContent=isoDisp(this.value)">
       </div>
       <div class="form-group">
         <label class="form-label">End Date</label>
-        <div class="date-display" onclick="document.getElementById('goalEndDateRaw').showPicker?document.getElementById('goalEndDateRaw').showPicker():document.getElementById('goalEndDateRaw').click()">
+        <label class="date-display" for="goalEndDateRaw">
           <span id="goalEndDateText">Select date</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
+        </label>
         <input type="date" class="date-input-hidden" id="goalEndDateRaw" onchange="document.getElementById('goalEndDateText').textContent=isoDisp(this.value)">
       </div>
       <div class="form-group">
@@ -740,7 +750,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 </div>
 
 <script>
-const APP_VERSION = 'v3.72';
+const APP_VERSION = 'v3.73';
 const APP_BUILD = '2026-05-19';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1013,6 +1023,7 @@ function setInvestAction(action, el) {
   investAction = action;
   document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
+  updateAvgPrices();
 }
 
 // ── AUTOCOMPLETE ──────────────────────────────────────────────
@@ -1132,6 +1143,7 @@ function onStockSelect(stock) {
   const type = STOCK_TYPE[stock] || '';
   const isUSD = type === 'US Stock';
   document.getElementById('investPricePrefix').textContent = isUSD ? '$' : 'Rp';
+  updateAvgPrices();
 }
 function calcTotal() {
   const lot = parseFloat(document.getElementById('inputLot').value) || 0;
@@ -1146,6 +1158,51 @@ function calcTotal() {
       total = Math.round(total * rate);
     }
     document.getElementById('inputTotal').value = Math.round(total);
+  }
+  updateAvgPrices();
+}
+
+function updateAvgPrices() {
+  const stock  = document.getElementById('inputStock').value.trim();
+  const lot    = parseFloat(document.getElementById('inputLot').value) || 0;
+  const price  = parseFloat(document.getElementById('inputPrice').value) || 0;
+  const action = document.querySelector('#form-invest .action-btn.active')?.dataset.action || 'Buy';
+  const isUSD  = (STOCK_TYPE[stock] || '') === 'US Stock';
+
+  const curEl = document.getElementById('investCurrentAvg');
+  const newEl = document.getElementById('investNewAvg');
+  if (!curEl || !newEl) return;
+
+  // Use r.price (native currency: USD for US stocks, IDR for others) × r.lot
+  // so avgPrice = sum(price × lot) / sum(lot) — no fx-rate conversion needed
+  let buyLots = 0, buyPriceWeighted = 0, sellLots = 0;
+  if (stock) {
+    getAllInvestRows().forEach(r => {
+      if (r.stock !== stock) return;
+      if (r.action === 'Buy') { buyLots += r.lot; buyPriceWeighted += r.price * r.lot; }
+      else if (r.action === 'Sell') { sellLots += r.lot; }
+    });
+  }
+  const netLots = buyLots - sellLots;
+  const avgPrice = buyLots > 0 ? buyPriceWeighted / buyLots : 0;
+
+  // String-exponent rounding avoids IEEE 754 half-point errors (e.g. 147.325*100 = 14732.4999...)
+  const fmt = (v) => isUSD ? `$${Number(Math.round(v + 'e2') + 'e-2').toFixed(2)}` : fRp(Math.round(v));
+
+  if (buyLots > 0) {
+    curEl.textContent = fmt(avgPrice);
+  } else {
+    curEl.textContent = '—';
+  }
+
+  if (action === 'Buy' && lot > 0 && price > 0) {
+    // price typed by user is in same native currency as r.price
+    const newAvg = (buyPriceWeighted + price * lot) / (buyLots + lot);
+    newEl.textContent = fmt(newAvg);
+  } else if (action === 'Sell' && lot > 0 && netLots > 0) {
+    newEl.textContent = lot >= netLots ? '—' : curEl.textContent;
+  } else {
+    newEl.textContent = '—';
   }
 }
 
@@ -1448,6 +1505,8 @@ function submitInvest() {
   document.getElementById('inputLot').value='';
   document.getElementById('inputPrice').value='';
   document.getElementById('inputTotal').value='';
+  const _ca=document.getElementById('investCurrentAvg'); if(_ca)_ca.textContent='—';
+  const _na=document.getElementById('investNewAvg'); if(_na)_na.textContent='—';
 }
 
 // ── SYNC ──────────────────────────────────────────────────────
