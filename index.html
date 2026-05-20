@@ -1425,14 +1425,14 @@ function resetOpexForm() {
 
 // ── EDIT / DELETE TRANSACTION ─────────────────────────────────
 function openEditOverlay(idx) {
-  const tx = calCurrentTxns[idx];
+  let tx = calCurrentTxns[idx];
   if (!tx) return;
   // calCurrentTxns may be stale (set before fresh fetch); look up rowIndex live from DOM cell
   if (!tx.rowIndex && calCurrentDateStr) {
     const cell = document.querySelector(`#page-home .cal-day[onclick*="'${calCurrentDateStr}'"]`);
     if (cell) {
       const fresh = JSON.parse(cell.dataset.txns || '[]');
-      const match = fresh.find(f => f.tx === tx.tx && f.rowIndex && f.amt === tx.amt);
+      const match = fresh.find(f => f.tx.toLowerCase() === tx.tx.toLowerCase() && f.rowIndex && f.amt === tx.amt);
       if (match) tx = match;
     }
   }
@@ -3708,7 +3708,7 @@ function patchCurMonthCache() {
     const k = `${d}|${h.tx}|${h.amount}|${isInc?'i':'e'}`;
     usedCount[k] = (usedCount[k]||0) + 1;
     if ((cacheCount[k]||0) >= usedCount[k]) continue; // cache already has this many
-    const _live = (HIST.opex||[]).find(r=>r.y===y&&r.m===m-1&&r.d===d&&r.tx===h.tx&&r.rowIndex);
+    const _live = (HIST.opex||[]).find(r=>r.y===y&&r.m===m-1&&r.d===d&&r.rowIndex&&r.tx.toLowerCase()===h.tx.toLowerCase()&&((r.exp||r.inc||0)===h.amount));
     cached.push({d, cat:h.category, tx:h.tx, pm:h.pm,
       ...(h.notes?{notes:h.notes}:{}),
       ...(isInc?{inc:h.amount}:{exp:h.amount}),
