@@ -1424,11 +1424,11 @@ function resetOpexForm() {
 }
 
 // ── EDIT / DELETE TRANSACTION ─────────────────────────────────
-function openEditOverlay(idx) {
+async function openEditOverlay(idx) {
   let tx = calCurrentTxns[idx];
   if (!tx) return;
-  // calCurrentTxns may be stale (set before fresh fetch completed).
-  // Look up rowIndex directly from HIST.opex — always up-to-date, no DOM/timing dependency.
+  // calCurrentTxns may be stale or lack rowIndex (e.g. loaded from old cache without rowIndex).
+  // Step 1: try HIST.opex in-memory lookup (fast path — works when fresh data is loaded).
   if (!tx.rowIndex && calCurrentDateStr) {
     const [fy, fm, fd] = calCurrentDateStr.split('-').map(Number);
     const live = (HIST.opex || []).find(r =>
@@ -1438,15 +1438,28 @@ function openEditOverlay(idx) {
     );
     if (live) tx = {...tx, rowIndex: live.rowIndex};
   }
-  if (!tx.rowIndex) {
-    const [_fy,_fm,_fd] = calCurrentDateStr ? calCurrentDateStr.split('-').map(Number) : [0,0,0];
-    const _mo = (HIST.opex||[]).filter(r=>r.y===_fy&&r.m===_fm-1);
-    const _ri = _mo.filter(r=>r.rowIndex).length;
-    const _day = _mo.filter(r=>r.d===_fd);
-    const _riDay = _day.filter(r=>r.rowIndex).length;
-    showToast(`SS tot:${_mo.length} ri:${_ri} day:${_day.length} riDay:${_riDay} amt:${tx.amt} tx:"${(tx.tx||'').slice(0,12)}"`, 'error', 8000);
-    return;
+  // Step 2: if still no rowIndex, fetch live from server (handles stale/old cache).
+  if (!tx.rowIndex && calCurrentDateStr) {
+    showToast('Loading…', 'loading', 0);
+    try {
+      const [fy, fm, fd] = calCurrentDateStr.split('-').map(Number);
+      const res = await fetch(`${APPS_SCRIPT_URL}?type=month&y=${fy}&m=${fm}`);
+      const j = await res.json();
+      if (j.status === 'ok' && Array.isArray(j.rows)) {
+        // Update cache and HIST.opex with the fresh authoritative data
+        localStorage.setItem(`nota_curMonth_${fy}_${fm}`, JSON.stringify(j.rows));
+        _applyCurrentMonthRows(j.rows, fy, fm);
+        const match = j.rows.find(r =>
+          r.d === fd && r.rowIndex &&
+          r.tx.toLowerCase() === tx.tx.toLowerCase() &&
+          (r.exp || r.inc || 0) === tx.amt
+        );
+        if (match) tx = {...tx, rowIndex: match.rowIndex};
+      }
+    } catch(e) { /* network error — fall through to toast */ }
+    hideToast();
   }
+  if (!tx.rowIndex) { showToast('Still syncing — please try again', 'error', 3000); return; }
   overlayEditRowIndex = tx.rowIndex;
 
   // Set mode pill (income vs expense)
