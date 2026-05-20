@@ -826,6 +826,11 @@ let inputMode = 'expense';
 let investAction = 'Buy';
 let editingIndex = null;
 let overlayEditRowIndex = null; // non-null = edit mode; holds sheet rowIndex
+let overlayEditOrigDate  = '';  // original "DD Mmm" date string for server-side lookup
+let overlayEditOrigMonth = '';  // original "Mmm YYYY" month key for server-side lookup
+let overlayEditOrigTx    = '';  // original transaction name for server-side lookup
+let overlayEditOrigAmt   = 0;   // original amount for server-side lookup
+let overlayEditOrigInc   = false; // original isIncome flag for server-side lookup
 let calCurrentTxns = [];        // txns for the currently selected calendar day
 let calCurrentDateStr = '';     // ISO date of the selected calendar day
 let queue = JSON.parse(localStorage.getItem('nota_queue_v2') || '[]');
@@ -1424,11 +1429,11 @@ function resetOpexForm() {
 }
 
 // ── EDIT / DELETE TRANSACTION ─────────────────────────────────
-async function openEditOverlay(idx) {
+function openEditOverlay(idx) {
   let tx = calCurrentTxns[idx];
   if (!tx) return;
-  // calCurrentTxns may be stale or lack rowIndex (e.g. loaded from old cache without rowIndex).
-  // Step 1: try HIST.opex in-memory lookup (fast path — works when fresh data is loaded).
+  // Try HIST.opex for a rowIndex (fast path; works once fresh data is cached).
+  // If rowIndex is still missing the server will find the row by content via _findRowIndex.
   if (!tx.rowIndex && calCurrentDateStr) {
     const [fy, fm, fd] = calCurrentDateStr.split('-').map(Number);
     const live = (HIST.opex || []).find(r =>
@@ -1438,34 +1443,15 @@ async function openEditOverlay(idx) {
     );
     if (live) tx = {...tx, rowIndex: live.rowIndex};
   }
-  // Step 2: if still no rowIndex, fetch live from server (handles stale/old cache).
-  if (!tx.rowIndex && calCurrentDateStr) {
-    showToast('Loading…', 'loading', 0);
-    try {
-      const [fy, fm, fd] = calCurrentDateStr.split('-').map(Number);
-      const res = await fetch(`${APPS_SCRIPT_URL}?type=month&y=${fy}&m=${fm}`);
-      const j = await res.json();
-      if (j.status === 'ok' && Array.isArray(j.rows)) {
-        // Update cache and HIST.opex with the fresh authoritative data
-        localStorage.setItem(`nota_curMonth_${fy}_${fm}`, JSON.stringify(j.rows));
-        _applyCurrentMonthRows(j.rows, fy, fm);
-        const match = j.rows.find(r =>
-          r.d === fd && r.rowIndex &&
-          r.tx.toLowerCase() === tx.tx.toLowerCase() &&
-          (r.exp || r.inc || 0) === tx.amt
-        );
-        if (match) tx = {...tx, rowIndex: match.rowIndex};
-        // DEBUG: show what server returned
-        const sampleDay = j.rows.find(r => r.d === fd) || j.rows[0] || {};
-        showToast(`srv rows:${j.rows.length} sampleRI:${sampleDay.rowIndex??'none'} d:${sampleDay.d} match:${match?match.rowIndex:'no'}`, 'info', 8000);
-      } else {
-        showToast(`srv err: status=${j.status} rows=${Array.isArray(j.rows)?j.rows.length:'no'}`, 'error', 8000);
-      }
-    } catch(e) { showToast(`fetch err: ${e.message}`, 'error', 8000); return; }
-    hideToast();
-  }
-  if (!tx.rowIndex) { showToast('Still syncing — please try again', 'error', 3000); return; }
-  overlayEditRowIndex = tx.rowIndex;
+  overlayEditRowIndex = tx.rowIndex || null;
+
+  // Store original identifying info so the server can find the row by content
+  // when rowIndex is unavailable (old Apps Script cache / stale response).
+  overlayEditOrigDate  = calCurrentDateStr ? isoSheetDate(calCurrentDateStr) : '';
+  overlayEditOrigMonth = calCurrentDateStr ? isoMonthKey(calCurrentDateStr)  : '';
+  overlayEditOrigTx    = tx.tx  || '';
+  overlayEditOrigAmt   = tx.amt || 0;
+  overlayEditOrigInc   = (tx.inc || 0) > 0;
 
   // Set mode pill (income vs expense)
   const mode = tx.inc > 0 ? 'income' : 'expense';
@@ -1514,7 +1500,10 @@ async function updateTransaction() {
     type: 'opex', action: 'edit', rowIndex,
     date: isoSheetDate(date), month: isoMonthKey(date),
     cat, tx, pm, amount, notes,
-    isIncome: inputMode === 'income'
+    isIncome: inputMode === 'income',
+    origDate: overlayEditOrigDate, origMonth: overlayEditOrigMonth,
+    origTx: overlayEditOrigTx, origAmt: overlayEditOrigAmt,
+    origIsIncome: overlayEditOrigInc
   };
   try {
     const res = await fetchWithTimeout(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
@@ -1535,14 +1524,18 @@ async function updateTransaction() {
 }
 
 async function deleteSheetTransaction() {
-  if (!overlayEditRowIndex) return;
   if (!confirm('Delete this transaction?')) return;
   const rowIndex = overlayEditRowIndex;
 
   closeInputOverlay();
   showToast('Deleting…', 'loading', 0);
 
-  const payload = { type: 'opex', action: 'delete', rowIndex };
+  const payload = {
+    type: 'opex', action: 'delete', rowIndex,
+    origDate: overlayEditOrigDate, origMonth: overlayEditOrigMonth,
+    origTx: overlayEditOrigTx, origAmt: overlayEditOrigAmt,
+    origIsIncome: overlayEditOrigInc
+  };
   try {
     const res = await fetchWithTimeout(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
     const j = await res.json().catch(() => ({}));
