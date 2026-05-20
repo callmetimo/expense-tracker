@@ -751,7 +751,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 
 <script>
 const APP_VERSION = 'v3.74';
-const APP_BUILD = '2026-05-19';
+const APP_BUILD = '2026-05-20';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1362,9 +1362,18 @@ function submitOpex() {
       queue=queue.filter(q=>q.id!==r.id);
       txHistory=txHistory.map(h=>h.id===r.id?{...h,synced:true}:h);
       saveLocal();updateStatus();showToast('Saved ✓','success');
+      // Optimistically write the new row into nota_curMonth cache so the transaction
+      // survives a browser close before fetchCurrentMonth(true) completes.
+      // fetchCurrentMonth(true) will overwrite this with the authoritative sheet row
+      // (which includes rowIndex, making it editable). Without this, deleting the
+      // cache key first creates a window where a reload shows no transaction at all.
+      const _t=new Date(),_cKey=`nota_curMonth_${_t.getFullYear()}_${_t.getMonth()+1}`;
+      const _dp=r.date.split('-');
+      const _optRow={d:parseInt(_dp[2]),cat:r.category,tx:r.tx,pm:r.pm,...(r.notes?{notes:r.notes}:{}),...(r.type==='income'?{inc:r.amount}:{exp:r.amount})};
+      const _cached=JSON.parse(localStorage.getItem(_cKey)||'[]');
+      _cached.push(_optRow);
+      localStorage.setItem(_cKey,JSON.stringify(_cached));
       // Force-refresh so the new row gets rowIndex from the sheet (makes it editable)
-      const _t=new Date();
-      localStorage.removeItem(`nota_curMonth_${_t.getFullYear()}_${_t.getMonth()+1}`);
       fetchCurrentMonth(true).then(()=>{calInited=false;if(document.getElementById('page-home').classList.contains('active'))initCalendar();});
     }
     else showToast('Saved locally — sync pending','');
