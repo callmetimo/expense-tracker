@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'nota-shell-v1';
+const SHELL_CACHE = 'nota-shell-v2';
 const DATA_CACHE  = 'nota-data-v1';
 const CDN_CACHE   = 'nota-cdn-v1';
 
