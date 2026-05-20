@@ -750,10 +750,11 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 </div>
 
 <script>
-const APP_VERSION = 'v3.75';
+const APP_VERSION = 'v3.76';
 const APP_BUILD = '2026-05-20';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+document.getElementById('appVersionLabel').textContent = APP_VERSION;
 
 const allCategories = ['Administration','Auto','Books','Entertainment','Gadget','Gas','Gifts','Groceries','Home Repair','Household','Income','Insurance','Investment','Meals','Medical','Mortgage','Self Care','Transport','Travel','Utilities'];
 const allPMs = ['BCA','eWallet','Flazz','CC BCA','CC Niaga'];
@@ -897,6 +898,12 @@ async function fetchCurrentMonth(force) {
       // Wait for histLoaded before merging, to avoid race with loadHistData
       if (histLoaded) {
         _applyCurrentMonthRows(j.rows, y, m);
+        // Re-render calendar so rowIndex (edit/delete) becomes available.
+        // Critical when this fetch completes after the 8-second startup timeout —
+        // without this the calendar stays in non-editable state for the whole session.
+        if (document.getElementById('page-home').classList.contains('active')) {
+          calInited = false; initCalendar();
+        }
       } else {
         onHistLoaded(() => _applyCurrentMonthRows(j.rows, y, m));
       }
@@ -3424,7 +3431,7 @@ function calSelectDay(cell, dateStr, totalStr) {
     document.getElementById('calTxTotal').textContent = totalStr + ' total';
     document.getElementById('calTxList').innerHTML = txns.map((tx, idx) => {
       const canEdit = isCurrentMonth && tx.rowIndex;
-      return `<div class="cal-tx-item${canEdit ? ' editable' : ''}" ${canEdit ? `onclick="openEditOverlay(${idx})"` : ''}>
+      return `<div class="cal-tx-item${canEdit ? ' editable' : ''}" ${canEdit ? `data-idx="${idx}"` : ''}>
         <div class="cal-tx-dot ${tx.type||''}"></div>
         <div class="cal-tx-info">
           <div class="cal-tx-tx">${tx.tx}</div>
@@ -3511,6 +3518,35 @@ initDatePicker('inputDateRawI','inputDateDisplayI','inputDateTextI');
 // ── INIT v3.5: Render from cache instantly, fetch in background ──
 window.addEventListener('DOMContentLoaded', async () => {
   const isHome = () => document.getElementById('page-home').classList.contains('active');
+
+  // Reliable tap-to-edit on mobile: inline onclick is swallowed by iOS
+  // -webkit-overflow-scrolling:touch scroll layers. Use touchstart/touchend
+  // event delegation on the container to detect taps vs scrolls.
+  (function() {
+    const list = document.getElementById('calTxList');
+    if (!list) return;
+    let _ts = 0, _tx = 0, _ty = 0, _touchFired = 0;
+    list.addEventListener('touchstart', e => {
+      _ts = Date.now(); _tx = e.touches[0].clientX; _ty = e.touches[0].clientY;
+    }, {passive: true});
+    list.addEventListener('touchend', e => {
+      const dt = Date.now() - _ts;
+      const dx = Math.abs(e.changedTouches[0].clientX - _tx);
+      const dy = Math.abs(e.changedTouches[0].clientY - _ty);
+      if (dt > 400 || dx > 8 || dy > 8) return; // scroll or long-press
+      const item = e.target.closest('.cal-tx-item[data-idx]');
+      if (!item) return;
+      _touchFired = Date.now();
+      openEditOverlay(parseInt(item.dataset.idx));
+    }, {passive: true});
+    // click fallback for non-touch (desktop); suppressed after touchend to avoid double-fire
+    list.addEventListener('click', e => {
+      if (Date.now() - _touchFired < 600) return;
+      const item = e.target.closest('.cal-tx-item[data-idx]');
+      if (!item) return;
+      openEditOverlay(parseInt(item.dataset.idx));
+    });
+  })();
 
   // Step 1: Show skeleton instantly
   if (isHome()) initCalendarSkeleton();
