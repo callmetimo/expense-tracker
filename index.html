@@ -62,6 +62,8 @@ body{font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;background:
 .toast.success{color:var(--accent)}
 .toast.error{color:var(--red)}
 .toast.loading{color:var(--text3)}
+.toast.loading::before{content:'';width:8px;height:8px;border:1.5px solid var(--text3);border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin 0.7s linear infinite;margin-right:5px;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 .page{display:none;padding:0 20px}
 .page.active{display:block}
@@ -754,7 +756,16 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 <script>
 const APP_VERSION = 'v3.76';
 const APP_BUILD = '2026-05-20';
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(e => console.warn('[SW]', e.message));
+}
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
+function fetchWithTimeout(url, opts, ms = 8000) {
+  return Promise.race([
+    fetch(url, opts),
+    new Promise((_, r) => setTimeout(() => r(new Error('timeout')), ms))
+  ]);
+}
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 document.getElementById('appVersionLabel').textContent = APP_VERSION;
 
@@ -817,6 +828,7 @@ let fxLastFetch = parseInt(localStorage.getItem('nota_fx_ts') || '0');
 let stockPrices = JSON.parse(localStorage.getItem('nota_prices') || '{}');
 
 let sheetPricesLastFetch = parseInt(localStorage.getItem('nota_sp_ts') || '0');
+let isSyncing = false;
 
 function parsePrice(str) {
   if (!str) return 0;
@@ -1347,6 +1359,7 @@ function openInputFromHome() {
 
 // ── SUBMIT OPEX ───────────────────────────────────────────────
 function submitOpex() {
+  if (isSyncing) return;
   if (overlayEditRowIndex !== null) { updateTransaction(); return; }
   const date=document.getElementById('inputDateRaw').value;
   const tx=document.getElementById('inputTx').value.trim();
@@ -1363,7 +1376,9 @@ function submitOpex() {
   // Navigate back to Home immediately, with Saving toast
   switchTab('home', null);
   showToast('Saving transaction…', 'loading', 0);
+  isSyncing = true;
   syncOpex(r).then(ok=>{
+    isSyncing = false;
     if(ok){
       queue=queue.filter(q=>q.id!==r.id);
       txHistory=txHistory.map(h=>h.id===r.id?{...h,synced:true}:h);
@@ -1382,7 +1397,7 @@ function submitOpex() {
       // Force-refresh so the new row gets rowIndex from the sheet (makes it editable)
       fetchCurrentMonth(true).then(()=>{calInited=false;if(document.getElementById('page-home').classList.contains('active'))initCalendar();});
     }
-    else showToast('Saved locally — sync pending','');
+    else showToast(navigator.onLine ? 'Saved locally — sync pending' : 'Offline — will sync when connected','');
   });
   resetOpexForm();
 }
@@ -1456,7 +1471,7 @@ async function updateTransaction() {
     isIncome: inputMode === 'income'
   };
   try {
-    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
+    const res = await fetchWithTimeout(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
     const j = await res.json().catch(() => ({}));
     if (j.status === 'ok') {
       const today = new Date();
@@ -1467,7 +1482,10 @@ async function updateTransaction() {
     } else {
       showToast('Update failed', 'error');
     }
-  } catch(e) { showToast('Update failed', 'error'); }
+  } catch(e) {
+    const msg = e.message === 'timeout' ? 'Server slow — try again' : !navigator.onLine ? 'Offline' : 'Update failed';
+    showToast(msg, 'error');
+  }
 }
 
 async function deleteSheetTransaction() {
@@ -1480,7 +1498,7 @@ async function deleteSheetTransaction() {
 
   const payload = { type: 'opex', action: 'delete', rowIndex };
   try {
-    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
+    const res = await fetchWithTimeout(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
     const j = await res.json().catch(() => ({}));
     if (j.status === 'ok') {
       const today = new Date();
@@ -1491,11 +1509,15 @@ async function deleteSheetTransaction() {
     } else {
       showToast('Delete failed', 'error');
     }
-  } catch(e) { showToast('Delete failed', 'error'); }
+  } catch(e) {
+    const msg = e.message === 'timeout' ? 'Server slow — try again' : !navigator.onLine ? 'Offline' : 'Delete failed';
+    showToast(msg, 'error');
+  }
 }
 
 // ── SUBMIT INVEST ─────────────────────────────────────────────
 function submitInvest() {
+  if (isSyncing) return;
   const date=document.getElementById('inputDateRawI').value;
   const stock=document.getElementById('inputStock').value.trim();
   const lot=parseFloat(document.getElementById('inputLot').value)||0;
@@ -1506,7 +1528,12 @@ function submitInvest() {
   investHistory.unshift(r);
   queue.push({...r});
   saveLocal();updateStatus();
+  const investBtn = document.querySelector('#form-invest .submit-btn');
+  if (investBtn) { investBtn.disabled = true; investBtn.textContent = 'Saving…'; }
+  isSyncing = true;
   syncInvest(r).then(ok=>{
+    isSyncing = false;
+    if (investBtn) { investBtn.disabled = false; investBtn.textContent = 'Save Investment'; }
     if(ok){
       queue=queue.filter(q=>q.id!==r.id);
       investHistory=investHistory.map(h=>h.id===r.id?{...h,synced:true}:h);
@@ -1516,7 +1543,7 @@ function submitInvest() {
       localStorage.removeItem(`nota_curMonth_${_t.getFullYear()}_${_t.getMonth()+1}`);
       fetchCurrentMonth(true);
     }
-    else showToast('Saved locally — sync pending','');
+    else showToast(navigator.onLine ? 'Saved locally — sync pending' : 'Offline — will sync when connected','');
   });
   const t=todayISO();
   document.getElementById('inputDateRawI').value=t;
@@ -1540,11 +1567,11 @@ async function syncOpex(r) {
       date:sheetDate, month, monthHeader,
       tx:r.tx, cat:r.category, pm:r.pm, amount:r.amount, notes:r.notes||''
     };
-    const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    const res = await fetchWithTimeout(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
     const j = await res.json().catch(()=>({}));
     // Guard: doGet fallback returns {status:'ok', version:N} — not a real write
     return j.status === 'ok' && !j.version;
-  } catch(e){return false}
+  } catch(e){console.error('[syncOpex]',e.message);return false}
 }
 async function syncInvest(r) {
   try {
@@ -1554,10 +1581,10 @@ async function syncInvest(r) {
       stockType:STOCK_TYPE[r.stock]||'',
       action:r.action, lot:r.lot, price:r.price, totalIdr:r.totalIdr
     };
-    const res = await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    const res = await fetchWithTimeout(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
     const j = await res.json().catch(()=>({}));
     return j.status === 'ok' && !j.version;
-  } catch(e){return false}
+  } catch(e){console.error('[syncInvest]',e.message);return false}
 }
 
 // ── HISTORY ───────────────────────────────────────────────────
@@ -3614,6 +3641,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // Retry any locally-queued transactions that failed to sync previously
   retryPendingQueue();
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') fetchCurrentMonth(true);
+  });
 });
 
 // Patch nota_curMonth_YYYY_M with any synced txHistory items that are missing from it.
@@ -3827,7 +3857,7 @@ async function saveGoal() {
     completedDate: existing ? (existing.completedDate || '') : ''
   };
   try {
-    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
+    const res = await fetchWithTimeout(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
     const j = await res.json().catch(() => ({}));
     if (j.status === 'ok') {
       if (goalsEditId) {
@@ -3849,7 +3879,7 @@ async function deleteGoal() {
   const delBtn = document.getElementById('goalDeleteBtn');
   if (delBtn) delBtn.textContent = 'Deleting…';
   try {
-    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({ type: 'goals', action: 'delete', rowNum: goalsEditId }) });
+    const res = await fetchWithTimeout(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({ type: 'goals', action: 'delete', rowNum: goalsEditId }) });
     const j = await res.json().catch(() => ({}));
     if (j.status === 'ok') {
       GOALS = GOALS.filter(g => g.rowNum !== goalsEditId);
@@ -3870,7 +3900,7 @@ async function toggleGoalComplete() {
   const completeBtn = document.getElementById('goalMarkCompleteBtn');
   if (completeBtn) completeBtn.textContent = 'Saving…';
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
+    const res = await fetchWithTimeout(APPS_SCRIPT_URL, {
       method: 'POST', headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({
         type: 'goals', action: 'save', rowNum: goalsEditId,
@@ -3944,6 +3974,7 @@ async function fetchCurrentMonthFresh() {
     return false;
   }
 }
+window.addEventListener('error', e => console.error('[runtime]', e.message, e.filename + ':' + e.lineno));
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 </body>
