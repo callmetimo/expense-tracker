@@ -1426,7 +1426,8 @@ function resetOpexForm() {
 // ── EDIT / DELETE TRANSACTION ─────────────────────────────────
 function openEditOverlay(idx) {
   const tx = calCurrentTxns[idx];
-  if (!tx || !tx.rowIndex) return;
+  if (!tx) return;
+  if (!tx.rowIndex) { showToast('Still syncing — please try again', 'error', 3000); return; }
   overlayEditRowIndex = tx.rowIndex;
 
   // Set mode pill (income vs expense)
@@ -3032,18 +3033,33 @@ function initCalendar() {
   cs.addEventListener('scroll', calOnScroll);
   calSetPanelH(0);
 
+  const _prevDateStr = calCurrentDateStr;
+  const todayStr = `${year}-${String(month).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
   const todayCells = document.querySelectorAll('#page-home .cal-day.today');
   if (todayCells.length > 0) {
     const tc = todayCells[0];
     const txns = JSON.parse(tc.dataset.txns || '[]');
-    if (txns.length > 0) {
-      calSelectDay(tc, `${year}-${String(month).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`, fRpS(txns.reduce((s,t)=>s+(t.amt||0),0)));
-    } else {
+    if (txns.length > 0 && (!_prevDateStr || _prevDateStr === todayStr)) {
+      calSelectDay(tc, todayStr, fRpS(txns.reduce((s,t)=>s+(t.amt||0),0)));
+    } else if (!_prevDateStr) {
       const d = today;
       document.getElementById('calTxDate').textContent =
         d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
       document.getElementById('calTxTotal').textContent = 'No transactions today';
     }
+  }
+
+  // After hidden weeks are built (calRevealOlder runs in setTimeout 50ms), re-select
+  // the previously selected day so calTxList shows fresh rowIndex data.
+  if (_prevDateStr && _prevDateStr !== todayStr) {
+    setTimeout(() => {
+      const cell = document.querySelector(`#page-home .cal-day[onclick*="'${_prevDateStr}'"]`);
+      if (cell) {
+        const t = JSON.parse(cell.dataset.txns || '[]');
+        if (t.length > 0) calSelectDay(cell, _prevDateStr, fRpS(t.reduce((s,x)=>s+(x.amt||0),0)));
+      }
+    }, 80);
   }
 }
 
@@ -3472,7 +3488,7 @@ function calSelectDay(cell, dateStr, totalStr) {
   } else {
     document.getElementById('calTxTotal').textContent = totalStr + ' total';
     document.getElementById('calTxList').innerHTML = txns.map((tx, idx) => {
-      const canEdit = isCurrentMonth && tx.rowIndex;
+      const canEdit = isCurrentMonth;
       return `<div class="cal-tx-item${canEdit ? ' editable' : ''}" ${canEdit ? `data-idx="${idx}"` : ''}>
         <div class="cal-tx-dot ${tx.type||''}"></div>
         <div class="cal-tx-info">
