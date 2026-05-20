@@ -750,7 +750,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 </div>
 
 <script>
-const APP_VERSION = 'v3.74';
+const APP_VERSION = 'v3.75';
 const APP_BUILD = '2026-05-20';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRF9YuO0mcqW5MMODkRPxZM1H_uVH4nr2CAKvm6D19Rv3jqfzhgtjGks_G2NCTA-uqEg/exec';
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -3535,6 +3535,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     histLoadCallbacks = [];
     const today = new Date();
     _applyCurrentMonthRows(cachedCurMonth, today.getFullYear(), today.getMonth() + 1);
+    patchCurMonthCache();
     calInited = false;
     if (isHome()) initCalendar();
     // Show loading toast then fetch fresh in background
@@ -3546,6 +3547,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     // Always re-render: first render used cache-only HIST.opex (no data.json history).
     // Re-render after both loadHistData + fetchCurrentMonthFresh complete so the
     // current-month total and any pre-loaded older months reflect full data.
+    patchCurMonthCache();
     calInited = false;
     if (isHome()) {
       if (calOlderShown) calRefreshOlderMonths();
@@ -3562,6 +3564,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     // Race fetchCurrentMonth against a 8s timeout so a hung network never
     // prevents initCalendar from running (e.g. no internet, sandboxed preview).
     await Promise.race([fetchCurrentMonth(), new Promise(r => setTimeout(r, 8000))]);
+    patchCurMonthCache();
     hideToast();
     calInited = false;
     if (isHome()) initCalendar();
@@ -3570,6 +3573,45 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Retry any locally-queued transactions that failed to sync previously
   retryPendingQueue();
 });
+
+// Patch nota_curMonth_YYYY_M with any synced txHistory items that are missing from it.
+// Guards against: (a) browser closed between cache-delete and fetchCurrentMonth completing,
+// (b) fetchCurrentMonth timing out on cold Apps Script start. Uses count-based dedup so
+// two identical transactions (e.g. two KRL 4k rides) are handled correctly.
+// fetchCurrentMonth(true) called afterward will overwrite with authoritative rows + rowIndex.
+function patchCurMonthCache() {
+  const today = new Date();
+  const y = today.getFullYear(), m = today.getMonth() + 1;
+  const cacheKey = `nota_curMonth_${y}_${m}`;
+  const mPad = String(m).padStart(2,'0');
+  const prefix = `${y}-${mPad}-`;
+  const syncedLocal = txHistory.filter(h => h.synced && typeof h.date === 'string' && h.date.startsWith(prefix));
+  if (!syncedLocal.length) return;
+  const cached = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+  // Count how many of each signature already exist in the cache
+  const cacheCount = {};
+  cached.forEach(e => {
+    const k = `${e.d}|${e.tx}|${e.inc||e.exp||0}|${e.inc?'i':'e'}`;
+    cacheCount[k] = (cacheCount[k]||0) + 1;
+  });
+  const usedCount = {};
+  let changed = false;
+  for (const h of syncedLocal) {
+    const d = parseInt(h.date.split('-')[2]);
+    const isInc = h.type === 'income';
+    const k = `${d}|${h.tx}|${h.amount}|${isInc?'i':'e'}`;
+    usedCount[k] = (usedCount[k]||0) + 1;
+    if ((cacheCount[k]||0) >= usedCount[k]) continue; // cache already has this many
+    cached.push({d, cat:h.category, tx:h.tx, pm:h.pm,
+      ...(h.notes?{notes:h.notes}:{}),
+      ...(isInc?{inc:h.amount}:{exp:h.amount})});
+    changed = true;
+  }
+  if (changed) {
+    localStorage.setItem(cacheKey, JSON.stringify(cached));
+    if (histLoaded) _applyCurrentMonthRows(cached, y, m);
+  }
+}
 
 async function retryPendingQueue() {
   if (!queue.length) return;
@@ -3587,8 +3629,9 @@ async function retryPendingQueue() {
   if (synced > 0) {
     saveLocal();
     updateStatus();
-    const _t = new Date();
-    localStorage.removeItem(`nota_curMonth_${_t.getFullYear()}_${_t.getMonth()+1}`);
+    // Same optimistic-insert pattern as submitOpex: patch cache before forced refresh
+    // so a browser close between the removeItem and the fetch doesn't lose the rows.
+    patchCurMonthCache();
     fetchCurrentMonth(true).then(() => {
       calInited = false;
       if (document.getElementById('page-home').classList.contains('active')) initCalendar();
