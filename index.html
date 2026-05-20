@@ -298,7 +298,6 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
 .cal-day.has-data:active{background:var(--bg3);transform:scale(0.92)}
 .cal-day.selected{background:rgba(255,255,255,0.15)}
 .cal-day.today .cal-day-num{color:var(--accent);font-weight:700}
-.cal-day.today.selected .cal-day-num{background:var(--accent);color:#000;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto}
 .cal-day.other-month{opacity:0.25;pointer-events:none}
 .cal-day.future{pointer-events:none}
 .cal-day-num{font-size:16px;font-weight:500;line-height:1;color:var(--text)}
@@ -585,9 +584,10 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div id="monthlyControls">
         <div class="toggle-row" id="monthlySourceToggle">
           <div class="toggle-btn active" data-v="all" onclick="setMV('all',this)">All</div>
-          <div class="toggle-btn" data-v="opex" onclick="setMV('opex',this)">OPEX</div>
-          <div class="toggle-btn" data-v="cc-bca" onclick="setMV('cc-bca',this)">CC BCA</div>
-          <div class="toggle-btn" data-v="cc-niaga" onclick="setMV('cc-niaga',this)">CC Niaga</div>
+          <div class="toggle-btn" data-v="flazz" onclick="setMV('flazz',this)">Flazz</div>
+          <div class="toggle-btn" data-v="ewallet" onclick="setMV('ewallet',this)">eWallet</div>
+          <div class="toggle-btn" data-v="bank" onclick="setMV('bank',this)">Bank</div>
+          <div class="toggle-btn" data-v="cc" onclick="setMV('cc',this)">CC</div>
         </div>
         <div class="toggle-row" id="monthlyRangeToggle">
           <div class="toggle-btn active" data-r="3" onclick="setMR(3,this)">3 Mo</div>
@@ -599,9 +599,10 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div id="yearlyControls" style="display:none">
         <div class="toggle-row" id="yearlySourceToggle">
           <div class="toggle-btn active" data-v="all" onclick="setYV('all',this)">All</div>
-          <div class="toggle-btn" data-v="opex" onclick="setYV('opex',this)">OPEX</div>
-          <div class="toggle-btn" data-v="cc-bca" onclick="setYV('cc-bca',this)">CC BCA</div>
-          <div class="toggle-btn" data-v="cc-niaga" onclick="setYV('cc-niaga',this)">CC Niaga</div>
+          <div class="toggle-btn" data-v="flazz" onclick="setYV('flazz',this)">Flazz</div>
+          <div class="toggle-btn" data-v="ewallet" onclick="setYV('ewallet',this)">eWallet</div>
+          <div class="toggle-btn" data-v="bank" onclick="setYV('bank',this)">Bank</div>
+          <div class="toggle-btn" data-v="cc" onclick="setYV('cc',this)">CC</div>
         </div>
         <div class="toggle-row" id="yearlyRangeToggle">
           <div class="toggle-btn active" data-r="3" onclick="setYR(3,this)">3 Yr</div>
@@ -612,9 +613,10 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div id="categoryControls" style="display:none">
         <div class="toggle-row" id="catSourceToggle">
           <div class="toggle-btn active" data-v="all" onclick="setCV('all',this)">All</div>
-          <div class="toggle-btn" data-v="opex" onclick="setCV('opex',this)">OPEX</div>
-          <div class="toggle-btn" data-v="cc-bca" onclick="setCV('cc-bca',this)">CC BCA</div>
-          <div class="toggle-btn" data-v="cc-niaga" onclick="setCV('cc-niaga',this)">CC Niaga</div>
+          <div class="toggle-btn" data-v="flazz" onclick="setCV('flazz',this)">Flazz</div>
+          <div class="toggle-btn" data-v="ewallet" onclick="setCV('ewallet',this)">eWallet</div>
+          <div class="toggle-btn" data-v="bank" onclick="setCV('bank',this)">Bank</div>
+          <div class="toggle-btn" data-v="cc" onclick="setCV('cc',this)">CC</div>
         </div>
         <div class="toggle-row" id="catRangeToggle">
           <div class="toggle-btn active" data-r="3" onclick="setCR(3,this)">3 Mo</div>
@@ -949,7 +951,7 @@ function getAllOpexRows() {
     mk: r.mk,
     isIncome: !!r.inc,
   }));
-  const local = txHistory.map(r => {
+  const local = txHistory.filter(r => !r.synced).map(r => {
     const dt = new Date(r.date);
     return {
       y:dt.getFullYear(), m:dt.getMonth(), d:dt.getDate(),
@@ -964,17 +966,14 @@ function getAllOpexRows() {
   return [...hist, ...local];
 }
 
-function getCCRows(source) {
-  const hist = HIST.opex || [];
-  if (source === 'cc-bca') return hist.filter(r => r.pm === 'CC BCA' && r.exp);
-  if (source === 'cc-niaga') return hist.filter(r => r.pm === 'CC Niaga' && r.exp);
-  return [];
-}
-
 function getRows(view) {
-  if (view === 'all') return getAllOpexRows().filter(r => r.exp);
-  if (view === 'opex') return getAllOpexRows().filter(r => r.exp && r.pm !== 'CC BCA' && r.pm !== 'CC Niaga');
-  return getCCRows(view);
+  const hist = getAllOpexRows().filter(r => r.exp);
+  if (view === 'all') return hist;
+  if (view === 'flazz') return hist.filter(r => r.pm === 'Flazz');
+  if (view === 'ewallet') return hist.filter(r => r.pm === 'eWallet');
+  if (view === 'bank') return hist.filter(r => r.pm !== 'CC BCA' && r.pm !== 'CC Niaga' && r.pm !== 'eWallet' && r.pm !== 'Flazz');
+  if (view === 'cc') return hist.filter(r => r.pm === 'CC BCA' || r.pm === 'CC Niaga');
+  return [];
 }
 
 function getAllInvestRows() {
@@ -1771,7 +1770,7 @@ function renderMonthly(){
   const trend=prevTotal>0?((curTotal-prevTotal)/prevTotal*100):null;
   const trendStr=trend!==null?`${trend>0?'+':''}${trend.toFixed(0)}%`:'—';
   const trendColor=trend===null?'var(--text2)':trend>0?'var(--red)':'var(--accent)';
-  const viewLabel=mView==='all'?'All':mView==='opex'?'OPEX':mView==='cc-bca'?'CC BCA':'CC Niaga';
+  const viewLabel=mView==='all'?'All':mView==='flazz'?'Flazz':mView==='ewallet'?'eWallet':mView==='bank'?'Bank':'CC';
 
   document.getElementById('monthlySummary').innerHTML=`
     <div class="summary-row">
@@ -1852,7 +1851,7 @@ function renderYearly(){
 
   document.getElementById('yearlySummary').innerHTML=`
     <div class="summary-row">
-      <div class="summary-card"><div class="s-label">${selY}</div><div class="s-value">${fRpS(curTotal)}</div><div class="s-sub">${yView==='all'?'All':yView==='opex'?'OPEX':yView==='cc-bca'?'CC BCA':'CC Niaga'}</div></div>
+      <div class="summary-card"><div class="s-label">${selY}</div><div class="s-value">${fRpS(curTotal)}</div><div class="s-sub">${yView==='all'?'All':yView==='flazz'?'Flazz':yView==='ewallet'?'eWallet':yView==='bank'?'Bank':'CC'}</div></div>
       <div class="summary-card"><div class="s-label">vs Last Year</div><div class="s-value" style="color:${trendColor}">${trendStr}</div><div class="s-sub">Prev: ${fRpS(prevTotal)}</div></div>
     </div>`;
 
@@ -2639,7 +2638,14 @@ function calGetMonthData(year, month) {
 
   const total = opex
     .filter(r => r.y === year && r.m === month - 1 && r.cat !== 'Income' && r.cat !== 'Investment')
-    .reduce((s, r) => s + (r.exp || 0), 0);
+    .reduce((s, r) => s + (r.exp || 0), 0)
+    + (txHistory || [])
+      .filter(r => {
+        if (r.synced || !r.date || r.type !== 'expense') return false;
+        const d = new Date(r.date);
+        return d.getFullYear() === year && d.getMonth() + 1 === month;
+      })
+      .reduce((s, r) => s + (r.amount || 0), 0);
 
   const localIncome = (txHistory || [])
     .filter(r => {
