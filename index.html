@@ -1439,9 +1439,12 @@ function openEditOverlay(idx) {
     if (live) tx = {...tx, rowIndex: live.rowIndex};
   }
   if (!tx.rowIndex) {
-    const [_fy,_fm] = calCurrentDateStr ? calCurrentDateStr.split('-').map(Number) : [0,0];
-    const _cnt = (HIST.opex||[]).filter(r=>r.y===_fy&&r.m===_fm-1).length;
-    showToast(`Still syncing [opex:${_cnt} date:${calCurrentDateStr||'?'} tx:"${tx.tx||'?'}"]`, 'error', 6000);
+    const [_fy,_fm,_fd] = calCurrentDateStr ? calCurrentDateStr.split('-').map(Number) : [0,0,0];
+    const _mo = (HIST.opex||[]).filter(r=>r.y===_fy&&r.m===_fm-1);
+    const _ri = _mo.filter(r=>r.rowIndex).length;
+    const _day = _mo.filter(r=>r.d===_fd);
+    const _riDay = _day.filter(r=>r.rowIndex).length;
+    showToast(`SS tot:${_mo.length} ri:${_ri} day:${_day.length} riDay:${_riDay} amt:${tx.amt} tx:"${(tx.tx||'').slice(0,12)}"`, 'error', 8000);
     return;
   }
   overlayEditRowIndex = tx.rowIndex;
