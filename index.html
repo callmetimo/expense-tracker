@@ -462,13 +462,13 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="form-group autocomplete-wrapper">
           <label class="form-label">Transaction</label>
-          <input type="text" class="form-input" id="inputTx" placeholder="Payee or transaction name..." autocomplete="off"
+          <input type="text" class="form-input" id="inputTx" placeholder="Payee or transaction name..." autocomplete="off" maxlength="100"
             oninput="onTxInput()" onfocus="onTxFocus()">
           <div class="autocomplete-list" id="ac-inputTx" style="display:none"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Category</label>
-          <input type="text" class="form-input" id="inputCat" placeholder="Category..." autocomplete="off"
+          <input type="text" class="form-input" id="inputCat" placeholder="Category..." autocomplete="off" maxlength="50"
             oninput="showAC('inputCat', allCategories)" onfocus="showAC('inputCat', allCategories)">
           <div class="autocomplete-list" id="ac-inputCat" style="display:none"></div>
           <div class="smart-pills" id="catPills" style="margin-top:6px;margin-bottom:0"></div>
@@ -484,7 +484,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
         </div>
         <div class="form-group autocomplete-wrapper">
           <label class="form-label">Payment Method</label>
-          <input type="text" class="form-input" id="inputPm" placeholder="Method..." autocomplete="off"
+          <input type="text" class="form-input" id="inputPm" placeholder="Method..." autocomplete="off" maxlength="50"
             oninput="showAC('inputPm', allPMs)" onfocus="showAC('inputPm', allPMs)">
           <div class="autocomplete-list" id="ac-inputPm" style="display:none"></div>
           <div class="smart-pills" id="pmPills" style="margin-top:6px;margin-bottom:0"></div>
@@ -492,7 +492,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       </div>
       <div class="form-group">
         <label class="form-label">Notes</label>
-        <input type="text" class="form-input" id="inputNotes" placeholder="Add a note…" autocomplete="off">
+        <input type="text" class="form-input" id="inputNotes" placeholder="Add a note…" autocomplete="off" maxlength="200">
       </div>
       <button class="submit-btn expense" id="submitOpexBtn" onclick="submitOpex()">Save Transaction</button>
       <button class="delete-btn" id="deleteOpexBtn" onclick="deleteSheetTransaction()" style="display:none">Delete Transaction</button>
@@ -510,7 +510,7 @@ select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://
       </div>
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">Stock / Asset</label>
-        <input type="text" class="form-input" id="inputStock" placeholder="e.g. QQQ, Star Stable..." autocomplete="off"
+        <input type="text" class="form-input" id="inputStock" placeholder="e.g. QQQ, Star Stable..." autocomplete="off" maxlength="50"
           oninput="showAC('inputStock', allStocks)" onfocus="showAC('inputStock', allStocks)">
         <div class="autocomplete-list" id="ac-inputStock" style="display:none"></div>
       </div>
@@ -765,6 +765,14 @@ function fetchWithTimeout(url, opts, ms = 8000) {
     fetch(url, opts),
     new Promise((_, r) => setTimeout(() => r(new Error('timeout')), ms))
   ]);
+}
+// Escape HTML special chars — use when injecting user text into innerHTML
+function esc(str) {
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+// Trim + enforce max length on form string fields
+function sanitizeInput(str, maxLen = 100) {
+  return String(str ?? '').trim().slice(0, maxLen);
 }
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 document.getElementById('appVersionLabel').textContent = APP_VERSION;
@@ -1050,7 +1058,7 @@ function showAC(fid, list) {
   if(!f.length){dd.style.display='none';return}
   dd.innerHTML=f.map(i=>{
     const safe=i.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-    return `<div class="autocomplete-item" data-val="${safe}" data-fid="${fid}" onmousedown="selectAC(this.dataset.fid,this.dataset.val)"><span>${i}</span></div>`;
+    return `<div class="autocomplete-item" data-val="${safe}" data-fid="${fid}" onmousedown="selectAC(this.dataset.fid,this.dataset.val)"><span>${esc(i)}</span></div>`;
   }).join('');
   dd.style.display='block';
 }
@@ -1133,11 +1141,11 @@ function updateSmartSuggestions(txName) {
   const sugPms  = pmKey  ? txPm[pmKey]   : allPMs;
   const catContainer = document.getElementById('catPills');
   catContainer.innerHTML = sugCats.map(c=>
-    `<div class="smart-pill" data-cat="${c}" onclick="selectSmartCat(this.dataset.cat)">${c}</div>`
+    `<div class="smart-pill" data-cat="${esc(c)}" onclick="selectSmartCat(this.dataset.cat)">${esc(c)}</div>`
   ).join('');
   const pmContainer = document.getElementById('pmPills');
   pmContainer.innerHTML = sugPms.map(p=>
-    `<div class="smart-pill pm" data-pm="${p}" onclick="selectSmartPm(this.dataset.pm)">${p}</div>`
+    `<div class="smart-pill pm" data-pm="${esc(p)}" onclick="selectSmartPm(this.dataset.pm)">${esc(p)}</div>`
   ).join('');
 }
 function selectSmartCat(cat) {
@@ -1362,11 +1370,11 @@ function submitOpex() {
   if (isSyncing) return;
   if (overlayEditRowIndex !== null) { updateTransaction(); return; }
   const date=document.getElementById('inputDateRaw').value;
-  const tx=document.getElementById('inputTx').value.trim();
+  const tx=sanitizeInput(document.getElementById('inputTx').value,100);
   const amount=parseInt(document.getElementById('inputAmount').value)||0;
-  const cat=document.getElementById('inputCat').value.trim();
-  const pm=document.getElementById('inputPm').value.trim();
-  const notes=document.getElementById('inputNotes').value.trim();
+  const cat=sanitizeInput(document.getElementById('inputCat').value,50);
+  const pm=sanitizeInput(document.getElementById('inputPm').value,50);
+  const notes=sanitizeInput(document.getElementById('inputNotes').value,200);
   if(!date||!tx||!amount||!cat||!pm){showToast('All fields required','error');return}
   const _b=curMonthBounds();if(date<_b.min||date>_b.max){showToast('Date must be within the current month','error');return}
   const r = {id:Date.now(),date,tx,amount,category:cat,pm,notes,type:inputMode,synced:false};
@@ -1519,7 +1527,7 @@ async function deleteSheetTransaction() {
 function submitInvest() {
   if (isSyncing) return;
   const date=document.getElementById('inputDateRawI').value;
-  const stock=document.getElementById('inputStock').value.trim();
+  const stock=sanitizeInput(document.getElementById('inputStock').value,50);
   const lot=parseFloat(document.getElementById('inputLot').value)||0;
   const price=parseFloat(document.getElementById('inputPrice').value)||0;
   const total=parseInt(document.getElementById('inputTotal').value)||0;
@@ -1608,8 +1616,8 @@ function renderHistory() {
                (r.pm==='CC BCA'?'cc-bca':r.pm==='CC Niaga'?'cc-niaga':'expense');
     const color = isInvest?'var(--blue)':isIncome?'var(--green)':
                  (r.pm==='CC BCA'?'var(--blue)':r.pm==='CC Niaga'?'var(--red)':'var(--accent)');
-    const name = isInvest?`${r.action} ${r.stock}`:r.tx||r.payee||r.transaction||'';
-    const meta = isInvest?`${r.lot} units @ ${fRp(r.price)}`:`${r.category} · ${r.pm}`;
+    const name = isInvest?`${r.action} ${esc(r.stock)}`:esc(r.tx||r.payee||r.transaction||'');
+    const meta = isInvest?`${r.lot} units @ ${fRp(r.price)}`:`${esc(r.category)} · ${esc(r.pm)}`;
     const amt = isInvest?fRp(r.totalIdr):fRp(r.amount);
     const syncDot = r.synced?'':'<span class="badge badge-pending">pending</span>';
     const oi = txHistory.indexOf(r);
@@ -1636,16 +1644,16 @@ function openEdit(idx) {
     <div class="form-group"><label class="form-label">Date</label>
       <input type="date" class="form-input" id="edit-date" value="${r.date}"></div>
     <div class="form-group"><label class="form-label">Transaction</label>
-      <input type="text" class="form-input" id="edit-tx" value="${r.tx||r.payee||''}"></div>
+      <input type="text" class="form-input" id="edit-tx" value="${esc(r.tx||r.payee||'')}"></div>
     <div class="form-group"><label class="form-label">Amount</label>
       <div class="amount-wrapper"><span class="amount-prefix">Rp</span>
         <input type="number" class="form-input amount-input" id="edit-amount" value="${r.amount}" inputmode="numeric"></div></div>
     <div class="form-group autocomplete-wrapper"><label class="form-label">Category</label>
-      <input type="text" class="form-input" id="edit-cat" value="${r.category||''}" autocomplete="off"
+      <input type="text" class="form-input" id="edit-cat" value="${esc(r.category||'')}" autocomplete="off"
         oninput="showAC('edit-cat',allCategories)" onfocus="showAC('edit-cat',allCategories)">
       <div class="autocomplete-list" id="ac-edit-cat" style="display:none"></div></div>
     <div class="form-group"><label class="form-label">Payment Method</label>
-      <input type="text" class="form-input" id="edit-pm" value="${r.pm||''}"></div>`;
+      <input type="text" class="form-input" id="edit-pm" value="${esc(r.pm||'')}"></div>`;
   document.getElementById('editModal').classList.add('open');
 }
 function openEditInvest(idx) {
@@ -1657,7 +1665,7 @@ function openEditInvest(idx) {
     <div class="form-group"><label class="form-label">Date</label>
       <input type="date" class="form-input" id="edit-date" value="${r.date}"></div>
     <div class="form-group"><label class="form-label">Stock</label>
-      <input type="text" class="form-input" id="edit-stock" value="${r.stock||''}"></div>
+      <input type="text" class="form-input" id="edit-stock" value="${esc(r.stock||'')}"></div>
     <div class="form-group"><label class="form-label">Action</label>
       <select class="form-input" id="edit-action">
         <option ${r.action==='Buy'?'selected':''}>Buy</option>
@@ -2530,7 +2538,7 @@ function renderSearchResults(query) {
       <div class="tx-icon ${cls}">${icon}</div>
       <div class="tx-info" style="flex:1">
         <div class="tx-payee">${highlightMatches(tx, query)}${syncBadge}</div>
-        <div class="tx-meta">${date} • ${cat} · ${pm}</div>
+        <div class="tx-meta">${date} • ${esc(cat)} · ${esc(pm)}</div>
         ${notesHtml}
       </div>
       <div class="tx-amount" style="color:${color}">${amount}</div>
@@ -2559,9 +2567,10 @@ function loadMoreSearchResults(query) {
 }
 
 function highlightMatches(text, query) {
-  if (!query) return text;
-  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-  return text.replace(regex, '<span class="highlight">$1</span>');
+  const safe = esc(text);
+  if (!query) return safe;
+  const regex = new RegExp(`(${esc(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return safe.replace(regex, '<span class="highlight">$1</span>');
 }
 
 function openSearchOverlay() {
@@ -3467,8 +3476,8 @@ function calSelectDay(cell, dateStr, totalStr) {
       return `<div class="cal-tx-item${canEdit ? ' editable' : ''}" ${canEdit ? `data-idx="${idx}"` : ''}>
         <div class="cal-tx-dot ${tx.type||''}"></div>
         <div class="cal-tx-info">
-          <div class="cal-tx-tx">${tx.tx}</div>
-          <div class="cal-tx-meta">${tx.cat} - ${tx.pm}</div>
+          <div class="cal-tx-tx">${esc(tx.tx)}</div>
+          <div class="cal-tx-meta">${esc(tx.cat)} - ${esc(tx.pm)}</div>
         </div>
         <div class="cal-tx-amt ${tx.type||''}">${fRp(tx.amt)}</div>
         ${canEdit ? '<div class="cal-tx-edit-chevron">›</div>' : ''}
