@@ -1455,8 +1455,13 @@ async function openEditOverlay(idx) {
           (r.exp || r.inc || 0) === tx.amt
         );
         if (match) tx = {...tx, rowIndex: match.rowIndex};
+        // DEBUG: show what server returned
+        const sampleDay = j.rows.find(r => r.d === fd) || j.rows[0] || {};
+        showToast(`srv rows:${j.rows.length} sampleRI:${sampleDay.rowIndex??'none'} d:${sampleDay.d} match:${match?match.rowIndex:'no'}`, 'info', 8000);
+      } else {
+        showToast(`srv err: status=${j.status} rows=${Array.isArray(j.rows)?j.rows.length:'no'}`, 'error', 8000);
       }
-    } catch(e) { /* network error — fall through to toast */ }
+    } catch(e) { showToast(`fetch err: ${e.message}`, 'error', 8000); return; }
     hideToast();
   }
   if (!tx.rowIndex) { showToast('Still syncing — please try again', 'error', 3000); return; }
