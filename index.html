@@ -1427,14 +1427,16 @@ function resetOpexForm() {
 function openEditOverlay(idx) {
   let tx = calCurrentTxns[idx];
   if (!tx) return;
-  // calCurrentTxns may be stale (set before fresh fetch); look up rowIndex live from DOM cell
+  // calCurrentTxns may be stale (set before fresh fetch completed).
+  // Look up rowIndex directly from HIST.opex — always up-to-date, no DOM/timing dependency.
   if (!tx.rowIndex && calCurrentDateStr) {
-    const cell = document.querySelector(`#page-home .cal-day[onclick*="'${calCurrentDateStr}'"]`);
-    if (cell) {
-      const fresh = JSON.parse(cell.dataset.txns || '[]');
-      const match = fresh.find(f => f.tx.toLowerCase() === tx.tx.toLowerCase() && f.rowIndex && f.amt === tx.amt);
-      if (match) tx = match;
-    }
+    const [fy, fm, fd] = calCurrentDateStr.split('-').map(Number);
+    const live = (HIST.opex || []).find(r =>
+      r.y === fy && r.m === fm - 1 && r.d === fd && r.rowIndex &&
+      r.tx.toLowerCase() === tx.tx.toLowerCase() &&
+      (r.exp || r.inc || 0) === tx.amt
+    );
+    if (live) tx = {...tx, rowIndex: live.rowIndex};
   }
   if (!tx.rowIndex) { showToast('Still syncing — please try again', 'error', 3000); return; }
   overlayEditRowIndex = tx.rowIndex;
