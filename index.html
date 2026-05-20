@@ -825,12 +825,13 @@ function onHistLoaded(cb) {
 let inputMode = 'expense';
 let investAction = 'Buy';
 let editingIndex = null;
-let overlayEditRowIndex = null; // non-null = edit mode; holds sheet rowIndex
-let overlayEditOrigDate  = '';  // original "DD Mmm" date string for server-side lookup
+let overlayEditRowIndex = null; // sheet row number when known (null = unknown)
+let overlayEditMode     = false; // true while edit overlay is open (even without rowIndex)
+let overlayEditOrigDate  = '';  // original ISO date string for local & server-side lookup
 let overlayEditOrigMonth = '';  // original "Mmm YYYY" month key for server-side lookup
-let overlayEditOrigTx    = '';  // original transaction name for server-side lookup
-let overlayEditOrigAmt   = 0;   // original amount for server-side lookup
-let overlayEditOrigInc   = false; // original isIncome flag for server-side lookup
+let overlayEditOrigTx    = '';  // original transaction name for local & server-side lookup
+let overlayEditOrigAmt   = 0;   // original amount for local & server-side lookup
+let overlayEditOrigInc   = false; // original isIncome flag for local & server-side lookup
 let calCurrentTxns = [];        // txns for the currently selected calendar day
 let calCurrentDateStr = '';     // ISO date of the selected calendar day
 let queue = JSON.parse(localStorage.getItem('nota_queue_v2') || '[]');
@@ -1282,6 +1283,7 @@ function switchTab(tab, el) {
 function openInputOverlay() {
   // Reset edit state
   overlayEditRowIndex = null;
+  overlayEditMode = false;
   const submitBtn = document.getElementById('submitOpexBtn');
   if (submitBtn) submitBtn.textContent = 'Save Transaction';
   const delBtn = document.getElementById('deleteOpexBtn');
@@ -1313,6 +1315,7 @@ function closeInputOverlay() {
   if (ov) ov.classList.remove('open');
   // Reset edit state
   overlayEditRowIndex = null;
+  overlayEditMode = false;
   const submitBtn = document.getElementById('submitOpexBtn');
   if (submitBtn) submitBtn.textContent = 'Save Transaction';
   const delBtn = document.getElementById('deleteOpexBtn');
@@ -1373,7 +1376,7 @@ function openInputFromHome() {
 // ── SUBMIT OPEX ───────────────────────────────────────────────
 function submitOpex() {
   if (isSyncing) return;
-  if (overlayEditRowIndex !== null) { updateTransaction(); return; }
+  if (overlayEditMode) { updateTransaction(); return; }
   const date=document.getElementById('inputDateRaw').value;
   const tx=sanitizeInput(document.getElementById('inputTx').value,100);
   const amount=parseInt(document.getElementById('inputAmount').value)||0;
@@ -1428,6 +1431,71 @@ function resetOpexForm() {
   document.getElementById('pmPills').innerHTML='';
 }
 
+// ── LOCAL-ONLY TRANSACTION MUTATIONS ──────────────────────────
+// Used as fallback when the server can't be reached or rowIndex is unknown.
+// Keeps HIST.opex, txHistory, and the curMonth localStorage cache consistent.
+
+function _applyLocalDelete(isoDate, txName, amount) {
+  const [fy, fm, fd] = isoDate.split('-').map(Number);
+  const nl = txName.toLowerCase();
+  // HIST.opex
+  if (HIST.opex) {
+    HIST.opex = HIST.opex.filter(r => !(
+      r.y === fy && r.m === fm - 1 && r.d === fd &&
+      r.tx.toLowerCase() === nl && (r.exp || r.inc || 0) === amount
+    ));
+  }
+  // txHistory (entries use ISO date string)
+  txHistory = txHistory.filter(h => !(
+    h.date === isoDate && h.tx.toLowerCase() === nl && h.amount === amount
+  ));
+  localStorage.setItem('nota_history_v2', JSON.stringify(txHistory));
+  // nota_curMonth cache
+  const cKey = `nota_curMonth_${fy}_${fm}`;
+  const cached = JSON.parse(localStorage.getItem(cKey) || '[]');
+  localStorage.setItem(cKey, JSON.stringify(
+    cached.filter(r => !(r.d === fd && (r.tx||'').toLowerCase() === nl && (r.exp||r.inc||0) === amount))
+  ));
+}
+
+function _applyLocalEdit(isoDate, txName, amount, newDate, newTx, newAmount, newCat, newPm, newNotes, newIsIncome) {
+  const [fy, fm, fd] = isoDate.split('-').map(Number);
+  const [nfy, nfm, nfd] = newDate.split('-').map(Number);
+  const nl = txName.toLowerCase();
+  // HIST.opex
+  if (HIST.opex) {
+    HIST.opex = HIST.opex.map(r => {
+      if (r.y === fy && r.m === fm-1 && r.d === fd && r.tx.toLowerCase() === nl && (r.exp||r.inc||0) === amount) {
+        return {...r, y:nfy, m:nfm-1, d:nfd, tx:newTx, cat:newCat, pm:newPm, notes:newNotes||'',
+                inc: newIsIncome ? newAmount : 0, exp: newIsIncome ? 0 : newAmount, amt: newAmount};
+      }
+      return r;
+    });
+  }
+  // txHistory
+  txHistory = txHistory.map(h => {
+    if (h.date === isoDate && h.tx.toLowerCase() === nl && h.amount === amount) {
+      return {...h, date:newDate, tx:newTx, amount:newAmount, category:newCat, pm:newPm,
+              notes:newNotes||'', type: newIsIncome ? 'income' : 'expense'};
+    }
+    return h;
+  });
+  localStorage.setItem('nota_history_v2', JSON.stringify(txHistory));
+  // nota_curMonth cache: remove from old month, add to new month
+  const oldKey = `nota_curMonth_${fy}_${fm}`;
+  const oldCached = JSON.parse(localStorage.getItem(oldKey) || '[]');
+  localStorage.setItem(oldKey, JSON.stringify(
+    oldCached.filter(r => !(r.d === fd && (r.tx||'').toLowerCase() === nl && (r.exp||r.inc||0) === amount))
+  ));
+  const newKey = `nota_curMonth_${nfy}_${nfm}`;
+  const newCached = JSON.parse(localStorage.getItem(newKey) || '[]');
+  const newRow = {d:nfd, cat:newCat, tx:newTx, pm:newPm,
+                  ...(newNotes ? {notes:newNotes} : {}),
+                  ...(newIsIncome ? {inc:newAmount} : {exp:newAmount})};
+  newCached.push(newRow);
+  localStorage.setItem(newKey, JSON.stringify(newCached));
+}
+
 // ── EDIT / DELETE TRANSACTION ─────────────────────────────────
 function openEditOverlay(idx) {
   let tx = calCurrentTxns[idx];
@@ -1444,6 +1512,7 @@ function openEditOverlay(idx) {
     if (live) tx = {...tx, rowIndex: live.rowIndex};
   }
   overlayEditRowIndex = tx.rowIndex || null;
+  overlayEditMode = true;
 
   // Store original identifying info so the server can find the row by content
   // when rowIndex is unavailable (old Apps Script cache / stale response).
@@ -1491,35 +1560,43 @@ async function updateTransaction() {
   const cat    = document.getElementById('inputCat').value.trim();
   const pm     = document.getElementById('inputPm').value.trim();
   const notes  = document.getElementById('inputNotes').value.trim();
+  const isInc  = inputMode === 'income';
   if (!date || !tx || !amount || !cat || !pm) { showToast('All fields required', 'error'); return; }
 
+  // Snapshot orig values before closeInputOverlay clears them
+  const origDate = overlayEditOrigDate;
+  const origMonth = overlayEditOrigMonth;
+  const origTx  = overlayEditOrigTx;
+  const origAmt = overlayEditOrigAmt;
+  const origInc = overlayEditOrigInc;
+  const origISO = calCurrentDateStr;
+
+  // Apply locally first — calendar updates immediately
+  _applyLocalEdit(origISO, origTx, origAmt, date, tx, amount, cat, pm, notes, isInc);
   closeInputOverlay();
+  calInited = false; initCalendar();
   showToast('Updating…', 'loading', 0);
 
   const payload = {
     type: 'opex', action: 'edit', rowIndex,
     date: isoSheetDate(date), month: isoMonthKey(date),
-    cat, tx, pm, amount, notes,
-    isIncome: inputMode === 'income',
-    origDate: overlayEditOrigDate, origMonth: overlayEditOrigMonth,
-    origTx: overlayEditOrigTx, origAmt: overlayEditOrigAmt,
-    origIsIncome: overlayEditOrigInc
+    cat, tx, pm, amount, notes, isIncome: isInc,
+    origDate, origMonth, origTx, origAmt, origIsIncome: origInc
   };
   try {
     const res = await fetchWithTimeout(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
     const j = await res.json().catch(() => ({}));
     if (j.status === 'ok') {
-      const today = new Date();
-      localStorage.removeItem(`nota_curMonth_${today.getFullYear()}_${today.getMonth()+1}`);
+      // Refresh from server to get authoritative rowIndex
+      localStorage.removeItem(`nota_curMonth_${new Date().getFullYear()}_${new Date().getMonth()+1}`);
       await fetchCurrentMonth(true);
       calInited = false; initCalendar();
       showToast('Updated ✓', 'success');
     } else {
-      showToast('Update failed', 'error');
+      showToast('Updated locally ✓', 'success');
     }
   } catch(e) {
-    const msg = e.message === 'timeout' ? 'Server slow — try again' : !navigator.onLine ? 'Offline' : 'Update failed';
-    showToast(msg, 'error');
+    showToast(navigator.onLine ? 'Updated locally ✓' : 'Offline — updated locally', 'success');
   }
 }
 
@@ -1527,30 +1604,34 @@ async function deleteSheetTransaction() {
   if (!confirm('Delete this transaction?')) return;
   const rowIndex = overlayEditRowIndex;
 
+  // Snapshot before closeInputOverlay clears state
+  const origDate  = overlayEditOrigDate;
+  const origMonth = overlayEditOrigMonth;
+  const origTx    = overlayEditOrigTx;
+  const origAmt   = overlayEditOrigAmt;
+  const origInc   = overlayEditOrigInc;
+  const origISO   = calCurrentDateStr;
+
+  // Delete locally first — calendar updates immediately regardless of server
+  _applyLocalDelete(origISO, origTx, origAmt);
   closeInputOverlay();
+  calInited = false; initCalendar();
   showToast('Deleting…', 'loading', 0);
 
   const payload = {
     type: 'opex', action: 'delete', rowIndex,
-    origDate: overlayEditOrigDate, origMonth: overlayEditOrigMonth,
-    origTx: overlayEditOrigTx, origAmt: overlayEditOrigAmt,
-    origIsIncome: overlayEditOrigInc
+    origDate, origMonth, origTx, origAmt, origIsIncome: origInc
   };
   try {
     const res = await fetchWithTimeout(APPS_SCRIPT_URL, { method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload) });
     const j = await res.json().catch(() => ({}));
     if (j.status === 'ok') {
-      const today = new Date();
-      localStorage.removeItem(`nota_curMonth_${today.getFullYear()}_${today.getMonth()+1}`);
-      await fetchCurrentMonth(true);
-      calInited = false; initCalendar();
       showToast('Deleted ✓', 'success');
     } else {
-      showToast('Delete failed', 'error');
+      showToast('Deleted locally ✓', 'success');
     }
   } catch(e) {
-    const msg = e.message === 'timeout' ? 'Server slow — try again' : !navigator.onLine ? 'Offline' : 'Delete failed';
-    showToast(msg, 'error');
+    showToast(navigator.onLine ? 'Deleted locally ✓' : 'Offline — deleted locally', 'success');
   }
 }
 
