@@ -1438,7 +1438,12 @@ function openEditOverlay(idx) {
     );
     if (live) tx = {...tx, rowIndex: live.rowIndex};
   }
-  if (!tx.rowIndex) { showToast('Still syncing — please try again', 'error', 3000); return; }
+  if (!tx.rowIndex) {
+    const [_fy,_fm] = calCurrentDateStr ? calCurrentDateStr.split('-').map(Number) : [0,0];
+    const _cnt = (HIST.opex||[]).filter(r=>r.y===_fy&&r.m===_fm-1).length;
+    showToast(`Still syncing [opex:${_cnt} date:${calCurrentDateStr||'?'} tx:"${tx.tx||'?'}"]`, 'error', 6000);
+    return;
+  }
   overlayEditRowIndex = tx.rowIndex;
 
   // Set mode pill (income vs expense)
